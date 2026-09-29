@@ -1,10 +1,10 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
+// Configura o servidor de desenvolvimento e habilita a transformação de JSX pelo React.
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000 // Sistema rodando na porta 3000
+    port: 3000 // Mantém a aplicação disponível na porta padrão do projeto.
   }
 })
