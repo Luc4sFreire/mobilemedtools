@@ -1,6 +1,9 @@
 import './style/index.css';
 import { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
+import DoctorForm from './components/DoctorForm';
+import ImageUploader from './components/ImageUploader';
+import SignaturePreview from './components/SignaturePreview';
 
 export default function App(){
   const [image, setImage] = useState(null);
@@ -48,32 +51,40 @@ export default function App(){
           backgroundColor: '#ffffff', // O PNG suporta transparência. Sem essa opção, se sua div.saida não tiver fundo definido no CSS, o PNG sai com fundo transparente. Em um documento Word ou PDF, o texto pode ficar ilegível sobre o fundo. Forçar branco garante portabilidade.
         })
 
+
+        // Gera o link temporário para download
         const link = document.createElement("a");
         link.download = `Assinatura-${doctor}.png`
         link.href = dataURL;
         link.click();
+
+        
       }catch(err){
         console.error('Erro ao gerar PNG: ', err);
       }
     }
-  return (
+    return (
     <>
-      <label htmlFor="file">Escolha um arquivo</label>
-      <input type="file" onChange={handleFile} id='file'/>
-      <div>{file && file.name}</div>
+      <ImageUploader 
+        file={file}
+        onChangeFile={handleFile}
+      />
 
-      <label htmlFor="doctor">Nome do Profissional (com título)</label>
-      <input type='text' placeholder='Ex: Dr. João Silva' onChange={handleDoctor}/>
+      <DoctorForm 
+        doctor={doctor}
+        crm={crm}
+        onDoctorChange={handleDoctor}
+        onCrmChange={handleCrm}
+      />
 
-      <label htmlFor="crm">CRM com Estado</label>
-      <input type='text' placeholder='Ex: CRM 12345/SP' onChange={handleCrm}/>
-
-      
-      <div className="saida" ref={saidaRef}>
-        {image && <img src={image} alt={file && file?.name || ''} width={200} />}
-        <p className='doctor'>{doctor}</p>
-        <p className='crm'>{crm}</p>
-
+      <div className="contentExit">
+        <SignaturePreview 
+          image={image}
+          file={file}
+          doctor={doctor}
+          crm={crm}
+          saidaRef={saidaRef}
+        />
         <button onClick={handleDownload}>Baixar Assinatura (PNG)</button>
       </div>
     </>
