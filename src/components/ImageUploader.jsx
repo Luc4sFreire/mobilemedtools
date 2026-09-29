@@ -3,7 +3,7 @@ function ImageUploader({ file, onChangeFile }){
         <div className="imageUploader">
             <label htmlFor="file">Escolha um arquivo</label>
             <input type="file" onChange={onChangeFile} id='file'/>
-            <div>{file && file.name}</div>
+            <div>{file && "Arquivo: "+file.name}</div>
         </div>
     )
 }

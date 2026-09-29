@@ -11,6 +11,7 @@ export default function App(){
   const [doctor, setDoctor] = useState('');
   const [crm, setCrm] = useState('');
   const saidaRef = useRef(null);
+  const [typeDoctor, setTypeDoctor] = useState('');
 
     function handleFile(e){
       const arquivo = e.target.files;
@@ -63,6 +64,11 @@ export default function App(){
         console.error('Erro ao gerar PNG: ', err);
       }
     }
+
+    function chooseProfissional(e){
+      setTypeDoctor(e.target.value)
+    }
+
     return (
     <>
       <ImageUploader 
@@ -70,12 +76,20 @@ export default function App(){
         onChangeFile={handleFile}
       />
 
-      <DoctorForm 
+      <div className="buttonsProfissional">
+        <button onClick={chooseProfissional} value="doctor">Médico</button>
+        <button onClick={chooseProfissional} value="vet">Veterinário</button>
+        <button onClick={chooseProfissional} value="dentist">Dentista</button>
+      </div>
+
+      <DoctorForm
+        type={typeDoctor} 
         doctor={doctor}
         crm={crm}
         onDoctorChange={handleDoctor}
         onCrmChange={handleCrm}
       />
+      
 
       <div className="contentExit">
         <SignaturePreview 

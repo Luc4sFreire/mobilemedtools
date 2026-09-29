@@ -1,4 +1,16 @@
-function DoctorForm({ doctor, crm, onDoctorChange, onCrmChange }){
+function DoctorForm({ type, doctor, crm, onDoctorChange, onCrmChange }){
+    let text = "";
+    switch(type){
+        case "doctor":
+            text = "CRM";
+            break;
+        case "vet":
+            text = "CRMV";
+            break;
+        case "dentist":
+            text = "CRO";
+            break;
+    }
     return(
         <div className="doctorForm">
             <div className="doctor">
@@ -12,11 +24,11 @@ function DoctorForm({ doctor, crm, onDoctorChange, onCrmChange }){
                 />
             </div>
             <div className="crm">
-                <label htmlFor="crm">Nome do Profissional (com título)</label>
+                <label htmlFor="crm">{text} com Estado:</label>
                 <input
                     id="crm"
                     type="text"
-                    placeholder="Ex: CRM 12345/SP"
+                    placeholder={"Ex: "+text+" 12345/SP"}
                     onChange={onCrmChange}
                     value={crm}
                 />
