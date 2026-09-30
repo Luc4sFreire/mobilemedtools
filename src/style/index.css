@@ -1,4 +1,4 @@
-/* Tokens globais: tipografia, cores e dimensões compartilhadas pela interface. */
+ /* Tokens globais: tipografia, cores e dimensões compartilhadas pela interface. */
 :root {
     font-family: "Segoe UI", sans-serif;
     color: #192620;
@@ -531,6 +531,8 @@ button {
 
 /* Painel de resultado com espaço entre título e superfície da prévia. */
 .preview-panel {
+    position: sticky;
+    top: 0;
     min-width: 0;
     padding-top: 4px;
 }
@@ -581,11 +583,12 @@ button {
 /* Superfície quadriculada que representa transparência sem entrar no PNG exportado. */
 .preview-stage {
     display: grid;
-    min-height: 390px;
-    padding: 30px;
+    width: min(420px, 100%);
+    aspect-ratio: 21 / 10;
+    margin: 0 auto;
+    padding: 0;
     place-items: center;
-    overflow: auto;
-    border: 1px solid var(--line);
+    overflow: hidden;
     background-color: #fff;
     background-image: linear-gradient(45deg, #edf1ed 25%, transparent 25%), linear-gradient(-45deg, #edf1ed 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #edf1ed 75%), linear-gradient(-45deg, transparent 75%, #edf1ed 75%);
     background-position: 0 0, 0 8px, 8px -8px, -8px 0;
@@ -597,25 +600,43 @@ button {
     position: relative;
     display: block;
     width: 100%;
-    min-width: 180px;
-    max-width: 100%;
-    min-height: 330px;
-    padding: 22px;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
     color: #111;
     overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Mantém a composição em 420x200 mesmo quando o canvas exportado é maior. */
+.signature-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(420px, 100%);
+    aspect-ratio: 21 / 10;
+    overflow: hidden;
+    transform: translate(-50%, -50%);
 }
 
 /* Cada cartão pode ser arrastado; o hook persiste suas coordenadas percentuais. */
 .signature-card {
     position: absolute;
     display: flex;
+    box-sizing: border-box;
     min-width: 0;
+    min-height: 0;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: grab;
     touch-action: none;
     user-select: none;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
 }
 
 .signature-card:active {
@@ -625,14 +646,19 @@ button {
 /* Limita a imagem na prévia sem deformar sua proporção. */
 .signature-image {
     display: block;
-    width: auto;
-    max-width: min(100%, 420px);
-    max-height: 280px;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    height: 0;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
 }
 
 /* Mantém nome e registro alinhados abaixo da imagem. */
 .signature-details {
+    flex: 0 0 auto;
+    min-width: 0;
     width: 100%;
     margin-top: 8px;
     text-align: center;
@@ -699,15 +725,6 @@ button {
 
     .preview-panel {
         padding-top: 0;
-    }
-
-    .preview-stage {
-        min-height: 280px;
-        padding: 16px;
-    }
-
-    .signature-output {
-        padding: 16px;
     }
 
     .signature-output .signature-details {

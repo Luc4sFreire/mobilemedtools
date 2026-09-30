@@ -17,9 +17,9 @@ function createProfessional() {
 
 // Mantém as opções de processamento centralizadas e reproduz os valores do editor legado.
 const initialAdjustments = {
-  convertToBlack: true,
-  cleanWeakPixels: true,
-  autoCrop: true,
+  convertToBlack: false,
+  cleanWeakPixels: false,
+  autoCrop: false,
   removeBackground: false,
   contrast: 200,
   sharpness: 0,
@@ -67,7 +67,6 @@ export function useSignatureEditor() {
   ]);
   const [secondEnabled, setSecondEnabled] = useState(false);
   const [secondModelMode, setSecondModelMode] = useState(false);
-  const [signatureSizes, setSignatureSizes] = useState([100, 100]);
   const [fontFamily, setFontFamily] = useState('Arial');
   const [signatureGap, setSignatureGap] = useState(5);
   const [positions, setPositions] = useState([{ x: 50, y: 50 }, { x: 72, y: 50 }]);
@@ -185,7 +184,6 @@ export function useSignatureEditor() {
       setBackgroundThresholds((current) => [current[0], null]);
       setProfessionals((current) => [current[0], createProfessional()]);
       setSecondModelMode(false);
-      setSignatureSizes((current) => [current[0], 100]);
     }
   }
 
@@ -203,14 +201,6 @@ export function useSignatureEditor() {
     const { name, value } = event.currentTarget;
     setPhrases((current) => current.map((phrase, index) => (
       index === signatureIndex ? { ...phrase, [name]: value } : phrase
-    )));
-  }
-
-  // Atualiza o tamanho individual da primeira ou segunda assinatura.
-  function handleSizeChange(event, signatureIndex) {
-    const size = Number(event.currentTarget.value);
-    setSignatureSizes((current) => current.map((value, index) => (
-      index === signatureIndex ? size : value
     )));
   }
 
@@ -344,11 +334,37 @@ export function useSignatureEditor() {
 
     setIsExporting(true);
     setError('');
+
+    const exportNode = signatureRef.current;
+    const previousWidth = exportNode.style.width;
+    const previousHeight = exportNode.style.height;
+    const previousMinHeight = exportNode.style.minHeight;
+    const previousOverflow = exportNode.style.overflow;
+    const exportCards = [...exportNode.querySelectorAll('.signature-card')];
+    const previousFitScales = exportCards.map((card) => card.style.getPropertyValue('--export-fit-scale'));
+
+    exportNode.style.width = '840px';
+    exportNode.style.height = '400px';
+    exportNode.style.minHeight = '400px';
+    exportNode.style.overflow = 'hidden';
+
     try {
-      const png = await toPng(signatureRef.current, {
+      exportCards.forEach((card) => {
+        if (!card.clientWidth || !card.clientHeight) return;
+        const overflowScale = Math.max(
+          1,
+          card.scrollWidth / card.clientWidth,
+          card.scrollHeight / card.clientHeight,
+        );
+        card.style.setProperty('--export-fit-scale', String(1 / overflowScale));
+      });
+
+      const png = await toPng(exportNode, {
         cacheBust: true,
-        pixelRatio: 2,
-        backgroundColor: 'transparent',
+        width: 840,
+        height: 400,
+        pixelRatio: 1,
+        backgroundColor: '#ffffff',
       });
       const safeName = firstProfessional.name.trim().replace(/[\\/:*?"<>|]/g, '-') || 'Profissional';
       const link = document.createElement('a');
@@ -358,6 +374,17 @@ export function useSignatureEditor() {
     } catch (exportError) {
       setError(exportError.message || 'Não foi possível gerar o PNG.');
     } finally {
+      exportNode.style.width = previousWidth;
+      exportNode.style.height = previousHeight;
+      exportNode.style.minHeight = previousMinHeight;
+      exportNode.style.overflow = previousOverflow;
+      exportCards.forEach((card, index) => {
+        if (previousFitScales[index]) {
+          card.style.setProperty('--export-fit-scale', previousFitScales[index]);
+        } else {
+          card.style.removeProperty('--export-fit-scale');
+        }
+      });
       setIsExporting(false);
     }
   }
@@ -375,7 +402,7 @@ export function useSignatureEditor() {
         includePhrases,
         index === 1 && secondModelMode,
       ),
-      size: signatureSizes[index],
+      size: 100,
       fontFamily,
       gap: signatureGap,
       isModel: index === 1 && secondModelMode,
@@ -398,7 +425,6 @@ export function useSignatureEditor() {
     handleResetAdjustments,
     handleSecondModelChange,
     handleSecondSignatureChange,
-    handleSizeChange,
     handleUndo,
     handleRedo,
     history,
@@ -417,7 +443,6 @@ export function useSignatureEditor() {
     setSignatureGap,
     signatureRef,
     signatureGap,
-    signatureSizes,
     updateProfessional,
   };
 }

@@ -144,9 +144,8 @@ export default function App() {
             )}
           </section>
 
-          {/* Tamanho de cada imagem é configurado independentemente, como no legado. */}
-          <section className="form-section size-controls" aria-label="Tamanho das assinaturas">
-            {/* Fonte e intervalo vertical são aplicados a cada cartão antes da exportação. */}
+          {/* Fonte e intervalo vertical são aplicados a cada cartão antes da exportação. */}
+          <section className="form-section size-controls" aria-label="Fonte e espaçamento da assinatura">
             <label className="form-field" htmlFor="signature-font">
               <span>Fonte do texto profissional</span>
               <select
@@ -172,21 +171,6 @@ export default function App() {
                 value={editor.signatureGap}
               />
             </label>
-            {[0, ...(editor.secondEnabled ? [1] : [])].map((signatureIndex) => (
-              <label className="range-control" htmlFor={`signature-size-${signatureIndex + 1}`} key={signatureIndex}>
-                <span>{signatureIndex === 0 ? 'Tamanho da assinatura' : 'Tamanho da segunda assinatura'}</span>
-                <output>{editor.signatureSizes[signatureIndex]}%</output>
-                <input
-                  id={`signature-size-${signatureIndex + 1}`}
-                  max="150"
-                  min="50"
-                  onChange={(event) => editor.handleSizeChange(event, signatureIndex)}
-                  step="1"
-                  type="range"
-                  value={editor.signatureSizes[signatureIndex]}
-                />
-              </label>
-            ))}
           </section>
 
           {/* Erros de upload, processamento e exportação são apresentados junto aos controles. */}
