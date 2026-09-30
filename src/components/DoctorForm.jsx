@@ -5,7 +5,7 @@ const professionTypes = [
 ];
 
 
-// Formulário acessível e controlado para um dos profissionais da composição.
+// Edita um perfil profissional e mantém suas opções independentes do outro perfil.
 function DoctorForm({ signatureIndex, professional, onChange }) {
   const suffix = signatureIndex + 1;
   const registerLabel = professionTypes.find((item) => item.value === professional.type)?.register ?? 'CRM';
@@ -19,7 +19,7 @@ function DoctorForm({ signatureIndex, professional, onChange }) {
 
   return (
     <div className="doctorForm">
-      {/* A categoria define a sigla usada no campo e na identificação exportada. */}
+      {/* A categoria selecionada determina o rótulo CRM, CRMV ou CRO do registro. */}
       <div className="professional-types" role="group" aria-label={`Tipo do profissional ${suffix}`}>
         {professionTypes.map(({ value, label }) => (
           <button
@@ -34,7 +34,7 @@ function DoctorForm({ signatureIndex, professional, onChange }) {
         ))}
       </div>
 
-      {/* Nome é armazenado no perfil correspondente pelo hook. */}
+      {/* Mantém o nome controlado pelo hook para atualização da prévia e do arquivo. */}
       <label className="form-field" htmlFor={`professional-name-${suffix}`}>
         <span>Nome do profissional</span>
         <input
@@ -47,7 +47,7 @@ function DoctorForm({ signatureIndex, professional, onChange }) {
         />
       </label>
 
-      {/* A opção compacta altera apenas a apresentação do registro. */}
+      {/* O placeholder e o formato do registro acompanham os botões padrão/compacto abaixo. */}
       <label className="form-field" htmlFor={`professional-registration-${suffix}`}>
         <span>{registerLabel} com Estado</span>
         <input
@@ -59,6 +59,7 @@ function DoctorForm({ signatureIndex, professional, onChange }) {
         />
       </label>
       <label className="inline-option">
+        {/* O formato selecionado também controla a saída usada na assinatura. */}
         {crmTypes.map(({ value, label }) => (
           <button
             aria-pressed={professional.crmType === value}
@@ -75,7 +76,7 @@ function DoctorForm({ signatureIndex, professional, onChange }) {
         ))}
       </label>
 
-      {/* RQE só entra na composição quando o usuário ativa o campo. */}
+      {/* Mantém o RQE opcional e só mostra sua entrada quando o usuário o habilita. */}
       <label className="inline-option">
         <input
           checked={professional.includeRqe}
@@ -96,6 +97,7 @@ function DoctorForm({ signatureIndex, professional, onChange }) {
               value={professional.rqe}
             />
           </label>
+          {/* O formato muda o placeholder e o prefixo usado no RQE exportado. */}
           <div className="inline-option" role="group" aria-label={`Formato do RQE ${suffix}`}>
             {crmTypes.map(({ value, label }) => (
               <button

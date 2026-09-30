@@ -1,6 +1,6 @@
 import '../style/preview.css';
 
-// Exibe as mesmas imagens e linhas de identificação que serão exportadas.
+// Renderiza os cartões da composição, compartilhados pelo preview e pelo exportador PNG.
 function SignaturePreview({
   signatures,
   positions,
@@ -10,12 +10,12 @@ function SignaturePreview({
   onDragEnd,
 }) {
   return (
-    // O padrão quadriculado representa transparência e fica fora da composição exportada.
+    // O quadriculado indica transparência na tela; o elemento interno é o alvo da exportação.
     <div className="preview-stage">
       <div className="signature-output" ref={signatureRef}>
         <div className="signature-content">
           {signatures.map((signature, index) => (
-            // Cada cartão tem posição e escala próprias, controladas pelo hook.
+            // Cada cartão usa sua posição percentual, formato de texto e escala calculada no hook.
             <article
               className="signature-card"
               key={`signature-${index + 1}`}
@@ -45,7 +45,7 @@ function SignaturePreview({
                 </p>
               )}
 
-              {/* O modo modelo preserva somente a imagem, sem acrescentar identificação. */}
+              {/* No modo modelo, lines fica vazio e somente a imagem é exibida/exportada. */}
               {signature.lines.length > 0 && (
                 <div className="signature-details" style={{ marginTop: `${signature.gap}px` }}>
                   {signature.lines.map((line, lineIndex) => (

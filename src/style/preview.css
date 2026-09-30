@@ -1,3 +1,4 @@
+/* Exibe a área responsiva do preview com quadriculado para indicar transparência. */
 .preview-stage {
     display: grid;
     width: min(420px, 100%);
@@ -12,6 +13,7 @@
     background-size: 16px 16px;
 }
 
+/* Elemento capturado por html-to-image e redimensionado temporariamente no download. */
 .signature-output {
     position: relative;
     display: block;
@@ -25,6 +27,7 @@
     box-sizing: border-box;
 }
 
+/* Centraliza a composição editável e limita seu conteúdo a 420 x 200 px. */
 .signature-content {
     position: absolute;
     top: 50%;
@@ -35,6 +38,7 @@
     transform: translate(-50%, -50%);
 }
 
+/* Cartão arrastável com posição própria e conteúdo contido na área de composição. */
 .signature-card {
     position: absolute;
     display: flex;
@@ -53,10 +57,12 @@
     overflow: hidden;
 }
 
+/* Indica que o cartão está sendo arrastado pelo ponteiro. */
 .signature-card:active {
     cursor: grabbing;
 }
 
+/* Faz a imagem ocupar o espaço restante sem distorcer sua proporção. */
 .signature-image {
     display: block;
     flex: 1 1 auto;
@@ -68,6 +74,7 @@
     object-fit: contain;
 }
 
+/* Mantém nome, registro e frases agrupados abaixo da imagem. */
 .signature-details {
     flex: 0 0 auto;
     min-width: 0;
@@ -76,25 +83,30 @@
     text-align: center;
 }
 
+/* Controla a leitura e o espaçamento vertical de cada linha de identificação. */
 .signature-details p {
     line-height: 1.35;
 }
 
+/* Permite quebrar nomes extensos sem ultrapassar a largura do cartão. */
 .doctor-name,
 .doctor-registration {
     margin: 3px 0;
     overflow-wrap: anywhere;
 }
 
+/* Destaca o nome profissional sobre as linhas secundárias. */
 .doctor-name {
     font-size: 15px;
     font-weight: 700;
 }
 
+/* Apresenta CRM, CRMV, CRO e RQE abaixo do nome em hierarquia secundária. */
 .doctor-registration {
     font-size: 13px;
 }
 
+/* Orienta o upload quando ainda não há imagem para mostrar no cartão. */
 .preview-placeholder {
     margin: 0;
     color: #758078;

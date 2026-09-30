@@ -359,7 +359,7 @@ button {
     margin-bottom: 17px;
 }
 
-/* Aparência base dos botões de categoria. */
+/* Aparência comum aos botões de categoria profissional e formato de registro. */
 .type-button {
     min-height: 37px;
     padding: 6px 8px;
@@ -370,7 +370,7 @@ button {
     font-size: 12px;
 }
 
-/* Estado selecionado para identificar a categoria ativa. */
+/* Estado selecionado para identificar a categoria ou o formato de registro ativo. */
 .type-button.selected {
     border-color: var(--accent);
     background: #eaf2ed;
@@ -455,7 +455,7 @@ button {
     outline: 2px solid #d9e8df;
 }
 
-/* Checkbox e rótulo em linha para RQE, frases e segunda assinatura. */
+/* Alinha checkboxes e grupos de botões usados em RQE, frases e segunda assinatura. */
 .inline-option {
     display: flex;
     align-items: flex-start;

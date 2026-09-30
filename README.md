@@ -404,10 +404,6 @@ Não há banco de dados ou backend implementado na versão atual.
 ### Possíveis evoluções
 
 * [ ] Melhorar o layout e a experiência de utilização;
-* [ ] Adicionar opção de exportação em outros formatos;
-* [ ] Adicionar histórico de assinaturas;
-* [ ] Adicionar testes automatizados;
-* [ ] Adicionar suporte a diferentes modelos de documentos.
 
 ## Problemas conhecidos
 

@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
 import { processSignatureImage } from '../utils/processSignatureImage';
 
-// Define valores padrão usados para novos perfis de assinatura.
+// Inicializa cada perfil sem dados e com os formatos padrão de CRM e RQE.
 function createProfessional() {
   return {
     name: '',
@@ -16,7 +16,7 @@ function createProfessional() {
   };
 }
 
-// Mantém as opções de processamento centralizadas e reproduz os valores do editor legado.
+// Define filtros iniciais; contraste 200 e nitidez 0 preservam os pixels sem alteração.
 const initialAdjustments = {
   convertToBlack: false,
   cleanWeakPixels: false,
@@ -27,7 +27,7 @@ const initialAdjustments = {
   applyPythonFilters: false,
 };
 
-// Cria as linhas de identificação que aparecem abaixo de cada imagem.
+// Monta nome, registro, RQE e frases na ordem em que aparecem no cartão da assinatura.
 function formatProfessional(professional, phrases, includePhrases, isModel) {
   if (isModel) return [];
 
@@ -53,12 +53,12 @@ function formatProfessional(professional, phrases, includePhrases, isModel) {
 }
 
 export function useSignatureEditor() {
-  // O índice zero é a assinatura principal; o índice um é opcional.
+  // Mantém até dois arquivos e dados, associando índice zero ao perfil principal.
   const [files, setFiles] = useState([null, null]);
   const [images, setImages] = useState([null, null]);
   const [professionals, setProfessionals] = useState([createProfessional(), createProfessional()]);
 
-  // Ajustes comuns às imagens e textos opcionais que podem acompanhar cada assinatura.
+  // Guarda filtros compartilhados, thresholds por imagem e textos opcionais da composição.
   const [adjustments, setAdjustments] = useState(initialAdjustments);
   const [backgroundThresholds, setBackgroundThresholds] = useState([null, null]);
   const [includePhrases, setIncludePhrases] = useState(false);
@@ -76,13 +76,13 @@ export function useSignatureEditor() {
   const historyRef = useRef(history);
   const dragRef = useRef(null);
 
-  // Estados de processamento, exportação e erro usados pela interface.
+  // Informa à tela quando imagens estão sendo processadas, o PNG está sendo gerado ou há erro.
   const [isProcessing, setIsProcessing] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState('');
   const signatureRef = useRef(null);
 
-  // Recalcula as imagens a partir dos arquivos originais sempre que uma opção muda.
+  // Reprocessa os arquivos originais para evitar acumular perdas ao alternar filtros.
   useEffect(() => {
     if (!files.some(Boolean)) return undefined;
 
@@ -99,7 +99,7 @@ export function useSignatureEditor() {
         if (!isCurrent) return;
         setImages(results.map((result) => result?.image ?? null));
 
-        // Cada arquivo recebe e guarda sua própria recomendação de sensibilidade.
+        // Sugere uma sensibilidade uma vez por arquivo e preserva mudanças manuais do usuário.
         if (adjustments.removeBackground) {
           setBackgroundThresholds((current) => current.map((threshold, index) => (
             threshold === null && Number.isFinite(results[index]?.suggestedBackgroundThreshold)
@@ -118,12 +118,12 @@ export function useSignatureEditor() {
       });
 
     return () => {
-      // Impede que uma operação antiga sobrescreva o resultado da seleção mais recente.
+      // Descarta resultados atrasados quando upload ou opções já iniciaram novo processamento.
       isCurrent = false;
     };
   }, [files, adjustments, backgroundThresholds]);
 
-  // Valida e guarda um dos arquivos, permitindo re-selecionar o mesmo arquivo depois.
+  // Valida e associa o arquivo ao perfil indicado; limpa o input para permitir selecioná-lo de novo.
   function handleFileChange(event, signatureIndex = 0) {
     const selectedFile = event.currentTarget.files?.[0];
     event.currentTarget.value = '';
@@ -144,7 +144,7 @@ export function useSignatureEditor() {
     )));
   }
 
-  // Atualiza um checkbox ou slider dentro das opções de imagem.
+  // Atualiza filtros comuns ou o threshold individual da imagem indicada no elemento.
   function handleAdjustmentChange(event) {
     const { name, type, checked, value, dataset } = event.currentTarget;
     if (name === 'backgroundThreshold') {
@@ -163,14 +163,14 @@ export function useSignatureEditor() {
     setAdjustments((current) => ({ ...current, [name]: nextValue }));
   }
 
-  // Atualiza um campo de um dos perfis sem modificar o outro perfil.
+  // Altera somente o campo do perfil indicado e preserva os dados da outra assinatura.
   function updateProfessional(signatureIndex, field, value) {
     setProfessionals((current) => current.map((professional, index) => (
       index === signatureIndex ? { ...professional, [field]: value } : professional
     )));
   }
 
-  // Liga/desliga a assinatura adicional e restaura seus dados ao desativá-la.
+  // Habilita o segundo perfil ou limpa seus arquivos e dados quando ele é desativado.
   function handleSecondSignatureChange(event) {
     const enabled = event.currentTarget.checked;
     setSecondEnabled(enabled);
@@ -188,7 +188,7 @@ export function useSignatureEditor() {
     }
   }
 
-  // Controla o preset pronto usado como segunda imagem e remove dados de formulário conflitantes.
+  // Define a segunda imagem como modelo e limpa dados profissionais incompatíveis com esse modo.
   function handleSecondModelChange(event) {
     const enabled = event.currentTarget.checked;
     setSecondModelMode(enabled);
@@ -197,7 +197,7 @@ export function useSignatureEditor() {
     }
   }
 
-  // Atualiza frases comuns e ativa/desativa sua inclusão na composição.
+  // Armazena as frases antes/depois de cada perfil; includePhrases decide se entram no PNG.
   function handlePhraseChange(event, signatureIndex = 0) {
     const { name, value } = event.currentTarget;
     setPhrases((current) => current.map((phrase, index) => (
@@ -205,7 +205,7 @@ export function useSignatureEditor() {
     )));
   }
 
-  // Restaura os filtros ao estado inicial, respeitando a preferência padrão do editor.
+  // Restaura todos os filtros e thresholds aos valores padrão definidos em initialAdjustments.
   function handleResetAdjustments() {
     setAdjustments({ ...initialAdjustments });
     setBackgroundThresholds([null, null]);
@@ -213,13 +213,13 @@ export function useSignatureEditor() {
     setError('');
   }
 
-  // Mantém um valor síncrono das posições para o arraste e para o histórico.
+  // Sincroniza React e referências mutáveis para o arraste, undo e redo.
   function updatePositions(nextPositions) {
     positionsRef.current = nextPositions;
     setPositions(nextPositions);
   }
 
-  // Inicia o arraste e captura a posição que poderá ser restaurada com undo.
+  // Captura ponteiro e posições iniciais para arrastar apenas a imagem carregada.
   function handleDragStart(event, signatureIndex) {
     if (!images[signatureIndex]) return;
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -232,7 +232,7 @@ export function useSignatureEditor() {
     };
   }
 
-  // Atualiza a posição em percentuais relativos ao elemento que será exportado.
+  // Converte o movimento do ponteiro em percentuais do quadro e limita o cartão às bordas.
   function handleDragMove(event) {
     const drag = dragRef.current;
     const stage = signatureRef.current;
@@ -252,7 +252,7 @@ export function useSignatureEditor() {
     updatePositions(nextPositions);
   }
 
-  // Salva o ponto anterior ao arraste e limita o undo aos vinte movimentos mais recentes.
+  // Registra a posição anterior ao arraste e mantém somente vinte estados para desfazer.
   function handleDragEnd(event) {
     const drag = dragRef.current;
     if (!drag || event.pointerId !== drag.pointerId) return;
@@ -267,7 +267,7 @@ export function useSignatureEditor() {
     setHistory(nextHistory);
   }
 
-  // Desfaz um arraste e guarda a posição atual na pilha de redo.
+  // Restaura a posição anterior e guarda a atual para que possa ser refeita.
   function handleUndo() {
     const currentHistory = historyRef.current;
     if (!currentHistory.past.length) return;
@@ -281,7 +281,7 @@ export function useSignatureEditor() {
     updatePositions(previous);
   }
 
-  // Refaz o último arraste desfeito e restaura a possibilidade de desfazer novamente.
+  // Reaplica a posição da pilha futura e devolve a posição atual à pilha de undo.
   function handleRedo() {
     const currentHistory = historyRef.current;
     if (!currentHistory.future.length) return;
@@ -295,7 +295,7 @@ export function useSignatureEditor() {
     updatePositions(next);
   }
 
-  // Lê as referências e ações mais recentes dentro do listener sem recriá-lo por render.
+  // Usa os callbacks e históricos atuais sem reinstalar o listener a cada renderização.
   const handleKeyDown = useEffectEvent((event) => {
     const targetTag = event.target?.tagName;
     const isEditingText = ['INPUT', 'TEXTAREA'].includes(targetTag) || event.target?.isContentEditable;
@@ -311,13 +311,13 @@ export function useSignatureEditor() {
     }
   });
 
-  // Instala atalhos globais sem interferir no undo nativo dentro de campos editáveis.
+  // Registra atalhos Ctrl/Cmd para posições sem interceptar undo/redo em campos de texto.
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Converte a composição HTML em PNG transparente e baixa o arquivo.
+  // Exporta um PNG branco de 840 x 400 px com a composição limitada ao quadro de 420 x 200 px.
   async function handleDownload() {
     const requiredSecondImage = !secondEnabled || Boolean(images[1]);
     const firstProfessional = professionals[0];
@@ -350,6 +350,7 @@ export function useSignatureEditor() {
     exportNode.style.overflow = 'hidden';
 
     try {
+      // Reduz somente cartões cujo conteúdo excede suas dimensões no quadro de composição.
       exportCards.forEach((card) => {
         if (!card.clientWidth || !card.clientHeight) return;
         const overflowScale = Math.max(
@@ -379,6 +380,7 @@ export function useSignatureEditor() {
       exportNode.style.height = previousHeight;
       exportNode.style.minHeight = previousMinHeight;
       exportNode.style.overflow = previousOverflow;
+      // Restaura dimensões e escalas temporárias para não alterar o preview após o download.
       exportCards.forEach((card, index) => {
         if (previousFitScales[index]) {
           card.style.setProperty('--export-fit-scale', previousFitScales[index]);
@@ -390,7 +392,7 @@ export function useSignatureEditor() {
     }
   }
 
-  // Prepara os dados de apresentação sem misturar formatação com os componentes visuais.
+  // Entrega aos componentes imagens processadas, linhas formatadas e opções visuais por perfil.
   const previewSignatures = images.map((image, index) => {
     const professional = professionals[index];
     const registerLabel = { doctor: 'CRM', vet: 'CRMV', dentist: 'CRO' }[professional.type];

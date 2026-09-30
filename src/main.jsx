@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 
-// Ponto de entrada: busca a raiz declarada no HTML e monta nela o componente principal.
+// Monta o componente principal na raiz #root declarada em index.html.
 createRoot(document.getElementById('root')).render(
     <App />
 )

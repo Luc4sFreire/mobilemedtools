@@ -1,4 +1,4 @@
-// Importa os estilos globais, os componentes visuais e o hook que controla as operações do editor.
+// Carrega o layout global e conecta os componentes ao estado e às ações do editor.
 import './style/index.css';
 import DoctorForm from './components/DoctorForm';
 import ImageAdjustments from './components/ImageAdjustments';
@@ -7,7 +7,7 @@ import SignaturePreview from './components/SignaturePreview';
 import { useSignatureEditor } from './hooks/useSignatureEditor';
 
 export default function App() {
-  // O hook mantém a lógica fora da camada visual e fornece estado e eventos para a tela.
+  // Centraliza dados, processamento de imagem, histórico e exportação usados pela tela.
   const editor = useSignatureEditor();
   const firstProfessional = editor.professionals[0];
   const secondProfessional = editor.professionals[1];
@@ -15,14 +15,14 @@ export default function App() {
     ? editor.previewSignatures
     : editor.previewSignatures.slice(0, 1);
 
-  // Adapta os eventos dos subcampos ao atualizador por índice do hook.
+  // Encaminha cada alteração do formulário ao perfil principal ou secundário correto.
   function handleProfessionalChange(signatureIndex, field, value) {
     editor.updateProfessional(signatureIndex, field, value);
   }
 
   return (
     <main className="app-shell">
-      {/* Identidade do produto e resumo curto da ferramenta. */}
+      {/* Identifica a ferramenta e resume o processamento local da assinatura. */}
       <header className="app-header">
         <div>
           <p className="eyebrow">FERRAMENTA DE ASSINATURA</p>
@@ -31,9 +31,9 @@ export default function App() {
         <p className="header-note">Preparação local de imagem e identificação profissional</p>
       </header>
 
-      {/* Organiza os controles à esquerda e o resultado atualizado à direita. */}
+      {/* Separa o formulário de edição do preview atualizado em tempo real. */}
       <div className="workspace">
-        {/* Área de entrada: imagem, ajustes, dados profissionais e exportação. */}
+        {/* Reúne uploads, ajustes, dados profissionais e o comando de download. */}
         <section className="editor-panel" aria-label="Editar assinatura">
           <div className="panel-heading">
             <span className="step-number">01</span>
@@ -43,13 +43,13 @@ export default function App() {
             </div>
           </div>
 
-          {/* A mesma seção de upload atende à assinatura principal e à segunda assinatura. */}
+          {/* O índice zero associa este arquivo à imagem e aos dados do perfil principal. */}
           <ImageUploader
             file={editor.files[0]}
             onFileChange={(event) => editor.handleFileChange(event, 0)}
           />
 
-          {/* Cada opção é controlada pelo estado e dispara novo processamento da imagem. */}
+          {/* Os controles atualizam os filtros e reprocessam os arquivos originais no hook. */}
           <ImageAdjustments
             adjustments={editor.adjustments}
             backgroundThresholds={editor.backgroundThresholds}
@@ -60,7 +60,7 @@ export default function App() {
 
           <section className="form-section" aria-labelledby="professional-heading">
             <h3 id="professional-heading">Identificação profissional</h3>
-            {/* Os dados do perfil principal são armazenados no hook por índice. */}
+            {/* O índice zero mantém nome, registro e opções vinculados ao perfil principal. */}
             <DoctorForm
               signatureIndex={0}
               professional={firstProfessional}
@@ -68,7 +68,7 @@ export default function App() {
             />
           </section>
 
-          {/* Os textos extras são opcionais e aparecem antes/depois dos dados profissionais. */}
+          {/* Habilita frases opcionais antes e depois dos registros de cada assinatura. */}
           <section className="form-section phrase-section" aria-labelledby="phrases-heading">
             <h3 id="phrases-heading">Texto adicional</h3>
             <label className="inline-option">
@@ -106,7 +106,7 @@ export default function App() {
             )}
           </section>
 
-          {/* Ativa o segundo conjunto de imagem e dados, como no gerador legado. */}
+          {/* Habilita um segundo perfil ou uma imagem-modelo sem identificação profissional. */}
           <section className="form-section second-signature-section">
             <label className="inline-option second-signature-toggle">
               <input
@@ -144,7 +144,7 @@ export default function App() {
             )}
           </section>
 
-          {/* Fonte e intervalo vertical são aplicados a cada cartão antes da exportação. */}
+          {/* Define a fonte dos dados e o espaço entre a imagem e o texto de cada cartão. */}
           <section className="form-section size-controls" aria-label="Fonte e espaçamento da assinatura">
             <label className="form-field" htmlFor="signature-font">
               <span>Fonte do texto profissional</span>
@@ -173,10 +173,10 @@ export default function App() {
             </label>
           </section>
 
-          {/* Erros de upload, processamento e exportação são apresentados junto aos controles. */}
+          {/* Exibe junto ao formulário erros de arquivo, processamento ou exportação. */}
           {editor.error && <p className="error-message" role="alert">{editor.error}</p>}
 
-          {/* Evita exportar sem imagem ou enquanto a prévia ainda está sendo calculada. */}
+          {/* Só permite baixar quando as imagens necessárias estão prontas e sem processamento. */}
           <button
             className="download-button"
             disabled={
@@ -192,17 +192,17 @@ export default function App() {
           </button>
         </section>
 
-        {/* A mesma composição exibida aqui é rasterizada no download. */}
+        {/* Mostra os cartões que serão rasterizados no PNG de 840 x 400 px. */}
         <section className="preview-panel" aria-labelledby="preview-heading">
           <div className="preview-heading">
             <div>
               <p className="eyebrow">RESULTADO</p>
               <h2 id="preview-heading">Prévia da assinatura</h2>
             </div>
-            {/* Informa que uma alteração de checkbox está sendo aplicada. */}
+            {/* Sinaliza o reprocessamento iniciado por um ajuste de imagem. */}
             {editor.isProcessing && <span className="processing-status" role="status">Atualizando...</span>}
           </div>
-          {/* Mantém os comandos de posição próximos ao elemento que eles alteram. */}
+          {/* Desfaz ou refaz os últimos movimentos de posição dos cartões. */}
           <div className="position-history" aria-label="Histórico de posição das assinaturas">
             <button
               aria-label="Desfazer posição"

@@ -1,22 +1,22 @@
 /**
- * Aplica os ajustes escolhidos a uma cópia em Canvas do arquivo de origem.
- * Retorna a Data URL PNG e a sensibilidade sugerida para remoção de fundo.
+ * Processa uma cópia em Canvas sem modificar o arquivo original.
+ * Retorna a imagem PNG em Data URL e a sugestão de threshold, se houver remoção de fundo.
  */
 export async function processSignatureImage(file, adjustments) {
-  // Prefere ImageBitmap e usa HTMLImageElement como fallback para formatos como SVG.
+  // Decodifica com ImageBitmap quando possível e usa Image.decode como alternativa.
   const bitmap = await decodeImageFile(file);
   const canvas = document.createElement('canvas');
   canvas.width = bitmap.width;
   canvas.height = bitmap.height;
 
   try {
-    // Prepara um Canvas com as dimensões originais antes de aplicar qualquer opção.
+    // Mantém a resolução original enquanto os filtros de pixels são aplicados.
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) throw new Error('Não foi possível preparar o canvas da imagem.');
 
     context.drawImage(bitmap.source, 0, 0);
 
-    // Só lê os dados dos pixels quando ao menos um ajuste depende deles.
+    // Evita ler todos os pixels quando nenhum filtro ativo precisa alterar ou medir o conteúdo.
     let bounds = null;
     let suggestedBackgroundThreshold = null;
     if (
@@ -31,7 +31,7 @@ export async function processSignatureImage(file, adjustments) {
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
       const { data, width, height } = imageData;
 
-      // Detecta o tom dominante e remove seu alpha antes de limpar ruído ou calcular o crop.
+      // Torna transparente o fundo dominante antes da limpeza, do crop e dos demais filtros.
       if (adjustments.removeBackground) {
         suggestedBackgroundThreshold = removeBackground(
           imageData,
@@ -39,36 +39,36 @@ export async function processSignatureImage(file, adjustments) {
         );
       }
       
-        // O preset legado reforça o alpha restante antes dos filtros de contraste e nitidez.
+        // O preset torna opacos os pixels restantes antes de aplicar contraste e nitidez.
         if (adjustments.applyPythonFilters) {
           for (let index = 3; index < data.length; index += 4) {
             if (data[index] > 0) data[index] = 255;
           }
         }
 
-      // Aplica o contraste antes da nitidez, seguindo a ordem do processador legado.
+      // Aplica contraste antes da nitidez para manter a ordem de processamento definida.
       const contrast = adjustments.applyPythonFilters ? 400 : adjustments.contrast;
       if (contrast !== 200) applyContrast(imageData, contrast);
 
-      // O preset antigo usava nitidez 15; no modo manual vale o controle individual.
+      // Usa nitidez 15 no preset; fora dele respeita o valor do controle manual.
       const sharpness = adjustments.applyPythonFilters ? 15 : adjustments.sharpness;
       if (sharpness > 0) applySharpness(imageData, sharpness);
 
-      // O preset Python removia luminâncias a partir de 160 e convertia o restante para preto.
+      // O preset avançado remove pixels claros a partir do threshold 160.
       if (adjustments.applyPythonFilters) {
         applyBrightnessThreshold(imageData, 160);
       }
 
-      // Limites do conteúdo visível; usados pelo recorte automático.
+      // Inicializa a caixa delimitadora que será preenchida pelo crop automático.
       bounds = { left: width, top: height, right: -1, bottom: -1 };
 
-      // Cada pixel ocupa quatro posições: vermelho, verde, azul e alpha/transparência.
+      // Lê e altera cada pixel RGBA para aplicar filtros, limpeza e conversão de cor.
       for (let y = 0; y < height; y += 1) {
         for (let x = 0; x < width; x += 1) {
           const index = (y * width + x) * 4;
           const alpha = data[index + 3];
 
-          // Remove ruído quase transparente antes de calcular os limites do recorte.
+          // Descarta pixels fracos antes de decidir quais limites entram no recorte.
           if (adjustments.cleanWeakPixels && alpha < 15) {
             data[index + 3] = 0;
             continue;
@@ -76,14 +76,14 @@ export async function processSignatureImage(file, adjustments) {
 
           if (alpha === 0) continue;
 
-          // Define RGB (0, 0, 0) sem alterar o nível de opacidade do pixel.
+          // Converte pixels visíveis para preto e preserva o alpha calculado anteriormente.
           if (adjustments.convertToBlack || adjustments.applyPythonFilters) {
             data[index] = 0;
             data[index + 1] = 0;
             data[index + 2] = 0;
           }
 
-          // Inclui pixels ainda visíveis no retângulo mínimo de conteúdo.
+          // Expande a caixa do crop para incluir cada pixel que continua visível.
           if (adjustments.autoCrop) {
             bounds.left = Math.min(bounds.left, x);
             bounds.top = Math.min(bounds.top, y);
@@ -93,14 +93,14 @@ export async function processSignatureImage(file, adjustments) {
         }
       }
 
-      // Persiste as alterações de alpha e cor no Canvas.
+      // Grava no Canvas as alterações RGBA feitas no buffer de pixels.
       context.putImageData(imageData, 0, 0);
     }
 
-    // Se o crop estiver ativo, transfere o retângulo visível para um Canvas menor.
+    // Recorta somente a caixa visível e adiciona margem transparente quando solicitado.
     if (adjustments.autoCrop && bounds) {
       if (bounds.right < 0) {
-        // Imagem totalmente transparente: devolve um PNG vazio com dimensão mínima válida.
+        // Evita dimensões zero quando os filtros tornam todos os pixels transparentes.
         const emptyCanvas = document.createElement('canvas');
         emptyCanvas.width = 1;
         emptyCanvas.height = 1;
@@ -110,7 +110,7 @@ export async function processSignatureImage(file, adjustments) {
         };
       }
 
-      // Calcula dimensões do conteúdo e reserva 15 pixels transparentes em cada lado.
+      // Reserva 15 pixels em volta do conteúdo para evitar cortar traços da assinatura.
       const margin = 15;
       const cropWidth = bounds.right - bounds.left + 1;
       const cropHeight = bounds.bottom - bounds.top + 1;
@@ -121,7 +121,7 @@ export async function processSignatureImage(file, adjustments) {
       const croppedContext = croppedCanvas.getContext('2d');
       if (!croppedContext) throw new Error('Não foi possível recortar a imagem.');
 
-      // Copia apenas os pixels dentro dos limites detectados para a área central.
+      // Desenha a caixa detectada no centro do novo Canvas, preservando seus pixels.
       croppedContext.drawImage(
         canvas,
         bounds.left,
@@ -140,13 +140,13 @@ export async function processSignatureImage(file, adjustments) {
       };
     }
 
-    // Sem recorte, exporta o Canvas original com as alterações selecionadas.
+    // Sem crop, serializa o Canvas original com os filtros já aplicados.
     return {
       image: canvas.toDataURL('image/png'),
       suggestedBackgroundThreshold,
     };
   } finally {
-    // Libera a memória associada à imagem decodificada inclusive se houver erro.
+    // Libera o bitmap ou URL temporária mesmo quando o processamento falha.
     bitmap.close();
   }
 }

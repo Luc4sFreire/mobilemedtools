@@ -1,4 +1,4 @@
-// Metadados dos ajustes: o name conecta cada checkbox à propriedade correspondente do estado.
+// Cada name corresponde a uma opção processada pelo hook; descriptions resumem o efeito na imagem.
 const adjustmentOptions = [
   {
     name: 'convertToBlack',
@@ -29,17 +29,17 @@ const adjustmentOptions = [
 
 function ImageAdjustments({ adjustments, backgroundThresholds, showSecondThreshold, onChange, onReset }) {
   return (
-    // Fieldset agrupa controles relacionados e oferece um rótulo acessível para o conjunto.
+    // Agrupa os filtros e associa um nome acessível ao conjunto de controles.
     <fieldset className="image-adjustments">
       <legend>Ajustes da imagem</legend>
       <div className="adjustment-list">
         {adjustmentOptions.map(({ name, label, description }) => (
-          // Cada label torna toda a linha clicável e associa texto explicativo ao controle.
+          // O label permite alternar o filtro clicando no controle ou em sua descrição.
           <label className="adjustment-option" key={name}>
             <input
               type="checkbox"
               name={name}
-              // Estado controlado: o hook faz a nova prévia ao atualizar esta propriedade.
+              // O hook recebe a opção marcada e atualiza a imagem derivada do arquivo original.
               checked={adjustments[name]}
               onChange={onChange}
             />
@@ -52,7 +52,7 @@ function ImageAdjustments({ adjustments, backgroundThresholds, showSecondThresho
       </div>
       {adjustments.removeBackground && (
         [0, ...(showSecondThreshold ? [1] : [])].map((signatureIndex) => (
-          // Cada arquivo mantém seu threshold automático e seu valor manual independente.
+          // Exibe um controle de sensibilidade para cada imagem sujeita à remoção de fundo.
           <div className="background-threshold" key={`background-threshold-${signatureIndex}`}>
             <label className="threshold-label" htmlFor={`background-threshold-${signatureIndex}`}>
               <span>{signatureIndex === 0 ? 'Sensibilidade do fundo' : 'Sensibilidade do segundo fundo'}</span>
