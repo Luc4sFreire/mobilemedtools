@@ -148,31 +148,25 @@ Compõe a interface. Encaminha ao hook os valores e eventos usados pelos compone
 
 #### `src/hooks/useSignatureEditor.js`
 
-Controla até dois arquivos e imagens derivados, thresholds por imagem, ajustes, perfis profissionais, frases, posições, histórico, estados de carregamento/erro e a referência da composição exportada. Um efeito reprocessa os arquivos originais quando uma dependência muda e ignora resultados obsoletos. O hook valida os campos necessários e gera o PNG de 840 x 400 px.
+Este é o ponto central do estado e das ações de edição. Ele coordena os dados da assinatura principal e da segunda assinatura opcional: arquivos, imagens prontas para exibição, nome, registro, tipo profissional, RQE e frases.
+
+O hook recebe eventos dos formulários e dos controles e os converte em atualizações da prévia. Entre as responsabilidades estão:
+
+* Manter separadas as configurações e os dados dos dois perfis, além de controlar o modo de segunda imagem pronta sem dados profissionais.
+* Aplicar os filtros selecionados a partir dos arquivos originais e manter o estado de processamento e as mensagens de erro apresentados pela interface.
+* Formatar a identificação profissional, incluindo CRM/CRMV/CRO, formato padrão ou compacto, RQE opcional e frases adicionais.
+* Controlar posições dos cartões, arraste e histórico de desfazer/refazer, com suporte aos atalhos de teclado.
+* Validar os dados necessários e exportar o resultado em PNG de 840 x 400 px, mantendo a composição na área de 420 x 200 px.
+
+Os componentes recebem do hook os dados já formatados e as funções para alterar o estado, sem precisarem conhecer o processo completo de edição.
 
 #### `src/utils/processSignatureImage.js`
 
-Decodifica a imagem com `createImageBitmap` e, para formatos incompatíveis como SVG em alguns navegadores, usa `Image.decode` como fallback. Depois copia os pixels para Canvas e aplica as opções selecionadas. A remoção de fundo estima a luminância dominante pelo histograma, sugere um limiar automático e permite ajustá-lo pelo slider; pixels próximos do fundo ficam transparentes e a transição recebe suavização. Pixels abaixo do limite alpha 15 são descartados quando a limpeza está ativa; os pixels visíveis podem ser pintados de preto; e o recorte mede a área não transparente e acrescenta 15 px de margem. Devolve a imagem processada como PNG em Data URL.
+Este utilitário recebe um arquivo de imagem e as opções selecionadas e devolve a imagem resultante junto com uma sugestão de sensibilidade quando a remoção de fundo está ativa. O arquivo enviado pelo usuário permanece inalterado; uma nova imagem processada é criada para a prévia e para a exportação.
 
-O pipeline também oferece contraste, nitidez e preset local equivalente ao antigo bloco “Python”. O preset executa no Canvas do navegador, sem chamar um processo ou backend Python.
+As opções permitem converter a tinta para preto, limpar pixels quase transparentes, recortar margens vazias, remover fundos, ajustar contraste e nitidez ou aplicar o preset avançado. Os ajustes podem ser combinados e são reprocessados quando as opções mudam. O recorte automático reserva 15 px ao redor do conteúdo; se a imagem ficar totalmente transparente, o utilitário ainda retorna uma imagem válida.
 
-O utilitário retorna um objeto com a Data URL da imagem processada e o limiar sugerido para remoção de fundo.
-
-#### Ordem do processamento
-
-1. O arquivo é decodificado com `createImageBitmap`; se o navegador não aceitar o formato, o utilitário tenta `Image.decode`.
-2. A imagem é desenhada em Canvas e seus pixels RGBA são lidos.
-3. Se ativada, a remoção estima o fundo pelo histograma de luminância BT.601, sugere um threshold e suaviza o alpha próximo da transição tonal.
-4. O preset pode reforçar pixels semi-transparentes; em seguida, contraste e nitidez são aplicados.
-5. O preset remove pixels com luminância a partir de 160; a limpeza opcional remove pixels com alpha abaixo de 15.
-6. Os pixels restantes podem ser convertidos para preto e o crop calcula a caixa delimitadora da área visível.
-7. O resultado é serializado como PNG em Data URL; a prévia usa essa imagem e `html-to-image` gera o arquivo final branco de 840 x 400 px, com conteúdo central de 420 x 200 px.
-
-O crop calcula os limites de todos os pixels visíveis. Um elemento isolado ou ruído acima do limiar alpha pode, portanto, aumentar a área recortada.
-
-A remoção estima o tom de fundo dominante da imagem e funciona melhor quando sua luminância difere da tinta. Sombras fortes ou partes da assinatura com tom semelhante ao fundo podem exigir ajuste manual. Fundos fotográficos complexos exigem segmentação mais avançada, por exemplo, um modelo dedicado de remoção de fundo.
-
-O algoritmo usa luminância global, não segmentação semântica. Pixels da tinta com tom semelhante ao fundo também podem ficar transparentes; fundos fotográficos, sombras e gradientes podem não ser removidos de forma limpa.
+O processamento acontece no navegador. Se o formato não puder ser aberto pelo navegador, a operação retorna um erro que a interface apresenta ao usuário. A remoção de fundo funciona melhor em imagens com fundo uniforme e pode exigir ajuste de sensibilidade em casos difíceis.
 
 #### `src/components/ImageUploader.jsx`
 
