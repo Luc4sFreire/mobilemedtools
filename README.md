@@ -365,12 +365,12 @@ Não existe, na implementação atual, uma API ou servidor responsável por arma
 A interface, o estado do editor e a transformação de pixels são separados:
 
 ```text
-┌─────────────────────────────┐
-│          Browser            │
-│                             │
-│  ┌─────────────────────────┐  │
-│  │ App + componentes visuais│  │
-│  └────────────┬────────────┘  │
+┌───────────────────────────────┐
+│          Browser              │
+│                               │
+│  ┌──────────────────────────┐ │
+│  │ App + componentes visuais│ │
+│  └────────────┬─────────────┘ │
 │               │               │
 │               ▼               │
 │      useSignatureEditor       │
@@ -379,8 +379,8 @@ A interface, o estado do editor e a transformação de pixels são separados:
 │  Canvas/imagem   html-to-image│
 │        └──────┬──────┘        │
 │               ▼               │
-│            PNG                 │
-└─────────────────────────────┘
+│            PNG                │
+└───────────────────────────────┘
 ```
 
 Não há banco de dados ou backend implementado na versão atual.
