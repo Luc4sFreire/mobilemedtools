@@ -8,7 +8,7 @@
     place-items: center;
     overflow: hidden;
     background-color: #fff;
-    background-image: linear-gradient(45deg, #edf1ed 25%, transparent 25%), linear-gradient(-45deg, #edf1ed 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #edf1ed 75%), linear-gradient(-45deg, transparent 75%, #edf1ed 75%);
+    background-image: linear-gradient(45deg, #EAF1F7 25%, transparent 25%), linear-gradient(-45deg, #EAF1F7 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #EAF1F7 75%), linear-gradient(-45deg, #EAF1F7 75%, transparent 75%);
     background-position: 0 0, 0 8px, 8px -8px, -8px 0;
     background-size: 16px 16px;
 }
@@ -109,6 +109,6 @@
 /* Orienta o upload quando ainda não há imagem para mostrar no cartão. */
 .preview-placeholder {
     margin: 0;
-    color: #758078;
+    color: #6B7C8F;
     font-size: 13px;
 }

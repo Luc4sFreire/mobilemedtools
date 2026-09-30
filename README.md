@@ -43,6 +43,8 @@ Download da assinatura
 * Formatos padrão e compacto para CRM, CRMV, CRO e RQE;
 * RQE e frases adicionais opcionais;
 * Escolha de fonte e espaçamento entre imagem e texto;
+* Paleta visual em tons suaves de azul;
+* Opções de navegação no cabeçalho para Assinatura, Senhas e Logos;
 * Exportação e download automáticos em PNG de 840 x 400 px;
 * Processamento feito no navegador, sem envio das imagens a um servidor.
 
@@ -419,9 +421,24 @@ Quando imagem e textos excedem o quadro de 420 x 200 px, a exportação reduz a 
 
 O processamento de pixels roda na thread principal e não há limite de tamanho/dimensões para os arquivos. Imagens grandes podem deixar a página lenta. O input de arquivo é visualmente oculto, mas o estilo de foco atual não evidencia o foco no controle visível de upload.
 
+### Navegação Senhas e Logos
+
+As opções **Senhas** e **Logos** aparecem no cabeçalho, mas ainda não têm telas ou ações conectadas. A edição de assinatura é a única área funcional no momento.
+
 > Converter para preto atua sobre pixels não transparentes. Isso não remove um fundo branco ou colorido que já esteja opaco; esse caso exige uma etapa própria de remoção de fundo.
 
 ## 📝 Changelog
+
+### [1.1.2] - 2026-09-30
+
+#### Adicionado
+
+* Paleta em tons suaves de azul aplicada à interface e à prévia.
+* Opções de navegação no cabeçalho para Assinatura, Senhas e Logos.
+
+#### Atualizado
+
+* Versão do projeto e lockfile para `1.1.2`.
 
 ### [1.1.1] - 2026-09-30
 

@@ -6,6 +6,8 @@ import ImageUploader from './components/ImageUploader';
 import SignaturePreview from './components/SignaturePreview';
 import { useSignatureEditor } from './hooks/useSignatureEditor';
 
+const [style, setStyle] = useState('default');
+
 export default function App() {
   // Centraliza dados, processamento de imagem, histórico e exportação usados pela tela.
   const editor = useSignatureEditor();
@@ -25,14 +27,20 @@ export default function App() {
       {/* Identifica a ferramenta e resume o processamento local da assinatura. */}
       <header className="app-header">
         <div>
-          <p className="eyebrow">FERRAMENTA DE ASSINATURA</p>
           <h1>MobilemedTools</h1>
+          <p className="eyebrow">FERRAMENTA DE ASSINATURA</p>
         </div>
-        <p className="header-note">Preparação local de imagem e identificação profissional</p>
+        <div className="navbar">
+          <button id="signature-button">
+            Assinatura
+          </button>
+          <button id="password-button">Senhas</button>
+          <button id="logo-button">Logos</button>
+        </div>
       </header>
 
       {/* Separa o formulário de edição do preview atualizado em tempo real. */}
-      <div className="workspace">
+      <div id="signature-workspace">
         {/* Reúne uploads, ajustes, dados profissionais e o comando de download. */}
         <section className="editor-panel" aria-label="Editar assinatura">
           <div className="panel-heading">
