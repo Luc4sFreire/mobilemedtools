@@ -4,10 +4,18 @@ const professionTypes = [
   { value: 'dentist', label: 'Dentista', register: 'CRO' },
 ];
 
+
 // Formulário acessível e controlado para um dos profissionais da composição.
 function DoctorForm({ signatureIndex, professional, onChange }) {
   const suffix = signatureIndex + 1;
   const registerLabel = professionTypes.find((item) => item.value === professional.type)?.register ?? 'CRM';
+  const rqePlaceholder = professional.compactRqe
+    ? 'Digite "RS 40499" (sem barra) → "RQE/RS 40499"'
+    : 'Digite "40499/SP" → "RQE: 40499/SP"';
+  const crmTypes = [
+    { value: 'default', label: 'Padrão', placeholder: `Digite "12345/SP" → "${registerLabel}: 12345/SP`},
+    { value: 'compact', label: 'Compacto', placeholder: `Digite "RS 45534" (sem barra) → "${registerLabel}/RS 45534"` },
+  ];
 
   return (
     <div className="doctorForm">
@@ -45,18 +53,26 @@ function DoctorForm({ signatureIndex, professional, onChange }) {
         <input
           id={`professional-registration-${suffix}`}
           onChange={(event) => onChange('registration', event.target.value)}
-          placeholder={`Ex: ${registerLabel} 12345/SP`}
+          placeholder={crmTypes.find((item) => item.value === professional.crmType)?.placeholder}
           type="text"
           value={professional.registration}
         />
       </label>
       <label className="inline-option">
-        <input
-          checked={professional.compactRegistration}
-          onChange={(event) => onChange('compactRegistration', event.target.checked)}
-          type="checkbox"
-        />
-        <span>Formato compacto ({registerLabel}/valor)</span>
+        {crmTypes.map(({ value, label }) => (
+          <button
+            aria-pressed={professional.crmType === value}
+            className={professional.crmType === value ? 'type-button selected' : 'type-button'}
+            key={value}
+            onClick={() => {
+              onChange('crmType', value);
+              onChange('compactRegistration', value === 'compact');
+            }}
+            type="button"
+          >
+            {label}
+          </button>
+        ))}
       </label>
 
       {/* RQE só entra na composição quando o usuário ativa o campo. */}
@@ -75,19 +91,24 @@ function DoctorForm({ signatureIndex, professional, onChange }) {
             <input
               id={`professional-rqe-${suffix}`}
               onChange={(event) => onChange('rqe', event.target.value)}
-              placeholder="Ex: 12345/SP"
+              placeholder={rqePlaceholder}
               type="text"
               value={professional.rqe}
             />
           </label>
-          <label className="inline-option">
-            <input
-              checked={professional.compactRqe}
-              onChange={(event) => onChange('compactRqe', event.target.checked)}
-              type="checkbox"
-            />
-            <span>Formato compacto (RQE/valor)</span>
-          </label>
+          <div className="inline-option" role="group" aria-label={`Formato do RQE ${suffix}`}>
+            {crmTypes.map(({ value, label }) => (
+              <button
+                aria-pressed={professional.compactRqe === (value === 'compact')}
+                className={professional.compactRqe === (value === 'compact') ? 'type-button selected' : 'type-button'}
+                key={`rqe-${value}`}
+                onClick={() => onChange('compactRqe', value === 'compact')}
+                type="button"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </>
       )}
     </div>

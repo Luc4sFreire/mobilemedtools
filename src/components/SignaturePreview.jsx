@@ -1,3 +1,5 @@
+import '../style/preview.css';
+
 // Exibe as mesmas imagens e linhas de identificação que serão exportadas.
 function SignaturePreview({
   signatures,

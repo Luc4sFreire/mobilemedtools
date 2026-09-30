@@ -8,6 +8,7 @@ function createProfessional() {
     name: '',
     registration: '',
     type: 'doctor',
+    crmType: 'default',
     compactRegistration: false,
     includeRqe: false,
     rqe: '',

@@ -2,7 +2,7 @@
 
 Aplicação web desenvolvida em **React + Vite** para criação de assinaturas profissionais em formato PNG.
 
-A ferramenta permite selecionar uma imagem, ajustar seus pixels com opções independentes, informar os dados profissionais, visualizar o resultado atualizado e baixar a assinatura como PNG transparente em alta resolução.
+A ferramenta permite processar uma ou duas imagens, compor a assinatura com identificação profissional e baixar o resultado como PNG de 840 x 400 px. O conteúdo fica centralizado em uma área de 420 x 200 px.
 
 ---
 
@@ -19,7 +19,7 @@ Selecionar imagem
        ↓
 Informar nome do profissional
        ↓
-Informar CRM e estado
+Informar CRM/CRMV/CRO e estado
        ↓
 Visualizar assinatura
        ↓
@@ -32,41 +32,42 @@ Download da assinatura
 
 ## ✨ Funcionalidades
 
-* Seleção de imagem através do computador;
-* Conversão opcional dos pixels visíveis para preto puro (RGB 0, 0, 0);
-* Remoção opcional de pixels quase transparentes (alpha menor que 15);
-* Recorte automático opcional com margem transparente de 15 px;
-* Remoção opcional de fundo com threshold automático e sensibilidade ajustável por imagem;
-* Ajuste manual de contraste e nitidez, além de preset local de limpeza avançada;
-* Atualização da pré-visualização em tempo real ao alternar os ajustes;
-* Uma ou duas assinaturas, com escalas e posições independentes;
-* Arraste na prévia com undo/redo e atalhos Ctrl/Cmd+Z e Ctrl/Cmd+Y;
-* Modo para usar a segunda imagem como modelo pronto;
-* Registro em formato padrão ou compacto para CRM, CRMV e CRO;
-* Inclusão opcional de RQE e frases adicionais;
-* Seleção de fonte e espaçamento entre imagem e texto;
-* Restauração dos ajustes de imagem aos valores iniciais;
-* Geração da assinatura em formato PNG;
-* Download automático da imagem gerada;
-* Geração do PNG em resolução ampliada para melhorar a qualidade da imagem;
-* Processamento realizado no navegador.
+* Upload e processamento local de uma ou duas imagens;
+* Conversão dos pixels visíveis para preto puro e limpeza opcional de pixels quase transparentes;
+* Recorte automático do conteúdo visível com margem de 15 px;
+* Remoção de fundo com sensibilidade por imagem;
+* Ajuste de contraste e nitidez e preset local de limpeza avançada;
+* Prévia atualizada conforme os ajustes e os dados profissionais mudam;
+* Posicionamento das assinaturas por arraste, com desfazer/refazer e atalhos de teclado;
+* Segunda imagem opcional ou modo de modelo sem identificação profissional;
+* Formatos padrão e compacto para CRM, CRMV, CRO e RQE;
+* RQE e frases adicionais opcionais;
+* Escolha de fonte e espaçamento entre imagem e texto;
+* Exportação e download automáticos em PNG de 840 x 400 px;
+* Processamento feito no navegador, sem envio das imagens a um servidor.
 
-Os ajustes de preto, limpeza de pixels e recorte começam habilitados; remoção de fundo e preset avançado começam desligados. Contraste 200% é neutro e nitidez 0 não altera a imagem. O preset reproduz contraste 400%, nitidez 15, threshold 160 e preto puro em Canvas; enquanto está ativo, os sliders manuais ficam desabilitados. Cada alteração reprocessa os arquivos originais e atualiza a prévia.
+Os ajustes de imagem começam desativados. Contraste 200 é neutro, nitidez 0 não altera a imagem e o preset avançado começa desativado. Cada ajuste ativo reprocessa o arquivo original. O preset aplica contraste 400, nitidez 15, threshold 160 e conversão para preto; enquanto estiver ativo, os controles manuais de contraste e nitidez ficam desabilitados.
 
 ### Controles de imagem
 
 | Controle | Padrão | Efeito |
 | --- | --- | --- |
-| Converter para preto puro | Ativo | Define os canais RGB dos pixels visíveis como 0, sem alterar o alpha. |
-| Limpar pixels fracos | Ativo | Torna transparente qualquer pixel com alpha menor que 15. |
-| Crop automático | Ativo | Recorta pixels transparentes ao redor do conteúdo e deixa 15 px de margem. |
+| Converter para preto puro | Desativado | Define os canais RGB dos pixels visíveis como 0, sem alterar o alpha. |
+| Limpar pixels fracos | Desativado | Torna transparente qualquer pixel com alpha menor que 15. |
+| Crop automático | Desativado | Recorta os pixels transparentes ao redor do conteúdo e deixa 15 px de margem. |
 | Remover fundo | Inativo | Estima o tom de fundo dominante por luminância e torna tons semelhantes transparentes. |
-| Sensibilidade do fundo | Automática | Mostra um slider de 0 a 100 por imagem quando a remoção está ativa. |
+| Sensibilidade do fundo | Automática | Mostra um slider de 0 a 100 para cada imagem quando a remoção está ativa. |
 | Contraste | 200 | Ajuste manual; o valor 200 é tratado como neutro pelo fluxo atual. |
 | Nitidez | 0 | Ajuste manual aplicado com uma máscara de nitidez em Canvas. |
 | Preset avançado | Inativo | Reforça alpha e aplica contraste 400, nitidez 15, threshold 160 e preto puro. |
 
-Os controles compartilhados de preto, limpeza, recorte, contraste, nitidez e preset afetam as imagens carregadas. A sensibilidade para remover o fundo é independente para cada imagem. O botão **Restaurar ajustes** retorna as opções aos padrões acima.
+Os controles de preto, limpeza, recorte, contraste, nitidez e preset são compartilhados pelas imagens carregadas. A sensibilidade para remoção de fundo é independente para cada imagem. **Restaurar ajustes** retorna as opções aos padrões acima.
+
+### Identificação profissional
+
+O tipo profissional seleciona o rótulo CRM, CRMV ou CRO. Para o registro, os botões **Padrão** e **Compacto** alteram o exemplo do campo e a apresentação na assinatura. Por exemplo, `12345/SP` no padrão gera `CRM: 12345/SP`; `RS 45534` no compacto gera `CRM/RS 45534`.
+
+O RQE permanece opcional: só é exibido o campo quando **Adicionar RQE** está marcado, e o texto só entra na assinatura quando há um valor preenchido. Os botões **Padrão** e **Compacto** controlam sua apresentação; por exemplo, `40499/SP` gera `RQE: 40499/SP` no padrão e `RS 40499` gera `RQE/RS 40499` no compacto. Os placeholders mostram exemplos de acordo com a opção selecionada.
 
 ### Fluxos de uso
 
@@ -74,13 +75,13 @@ Os controles compartilhados de preto, limpeza, recorte, contraste, nitidez e pre
 2. Ajuste os filtros; a prévia é recalculada a partir do arquivo original, não da imagem já processada.
 3. Opcionalmente habilite RQE, frases, registro compacto, fonte e espaçamento.
 4. Para duas assinaturas, habilite a segunda, carregue outra imagem e preencha seus dados ou marque “Usar como modelo pronto”.
-5. Arraste os cartões na prévia, ajuste seus tamanhos e baixe o PNG.
+5. Arraste os cartões na prévia para posicioná-los e baixe o PNG.
 
 No modo modelo, a segunda imagem é exportada sem nome ou registro. Em modo normal, nome e registro são necessários para cada perfil antes de baixar.
 
-Os sliders oferecem contraste de 0 a 400, nitidez de 0 a 15, tamanho de 50% a 150% e espaçamento de 0 a 30 px. O histórico registra até vinte movimentos de posição; `Ctrl/Cmd+Z` desfaz e `Ctrl/Cmd+Y` ou `Ctrl/Cmd+Shift+Z` refaz. Os atalhos não interceptam digitação em campos de texto.
+Os sliders oferecem contraste de 0 a 400, nitidez de 0 a 15 e espaçamento de 0 a 30 px. O histórico registra até vinte movimentos de posição; `Ctrl/Cmd+Z` desfaz e `Ctrl/Cmd+Y` ou `Ctrl/Cmd+Shift+Z` refaz. Os atalhos não interceptam digitação em campos de texto.
 
-O upload aceita arquivos com MIME `image/*`. A decodificação efetiva depende do suporte do navegador a `createImageBitmap` ou `Image.decode`; não há limite explícito de tamanho no código. O botão de download exige a imagem principal e, se a segunda assinatura estiver habilitada, a segunda imagem. Nome e registro são validados ao solicitar o download.
+O upload aceita arquivos com MIME `image/*`. A decodificação depende do suporte do navegador a `createImageBitmap` ou `Image.decode`; não há limite explícito de tamanho. O download exige a imagem principal e, quando a segunda assinatura está habilitada, também a segunda imagem. Nome e registro são obrigatórios; RQE não é.
 
 ---
 
@@ -122,7 +123,8 @@ mobilemedtools/
 │   ├── hooks/
 │   │   └── useSignatureEditor.js
 │   ├── style/
-│   │   └── index.css
+│   │   ├── index.css
+│   │   └── preview.css
 │   ├── utils/
 │   │   └── processSignatureImage.js
 │   ├── App.jsx
@@ -146,7 +148,7 @@ Compõe a interface. Encaminha ao hook os valores e eventos usados pelos compone
 
 #### `src/hooks/useSignatureEditor.js`
 
-Controla até dois arquivos e imagens derivados, thresholds por imagem, ajustes, perfis profissionais, frases, escalas, posições, histórico, estados de carregamento/erro e a referência da composição exportada. Um efeito reprocessa os arquivos originais quando uma dependência muda e ignora resultados obsoletos. O hook valida os campos necessários e gera o PNG transparente.
+Controla até dois arquivos e imagens derivados, thresholds por imagem, ajustes, perfis profissionais, frases, posições, histórico, estados de carregamento/erro e a referência da composição exportada. Um efeito reprocessa os arquivos originais quando uma dependência muda e ignora resultados obsoletos. O hook valida os campos necessários e gera o PNG de 840 x 400 px.
 
 #### `src/utils/processSignatureImage.js`
 
@@ -164,7 +166,7 @@ O utilitário retorna um objeto com a Data URL da imagem processada e o limiar s
 4. O preset pode reforçar pixels semi-transparentes; em seguida, contraste e nitidez são aplicados.
 5. O preset remove pixels com luminância a partir de 160; a limpeza opcional remove pixels com alpha abaixo de 15.
 6. Os pixels restantes podem ser convertidos para preto e o crop calcula a caixa delimitadora da área visível.
-7. O resultado é serializado como PNG em Data URL; a prévia usa essa imagem e `html-to-image` gera o arquivo final.
+7. O resultado é serializado como PNG em Data URL; a prévia usa essa imagem e `html-to-image` gera o arquivo final branco de 840 x 400 px, com conteúdo central de 420 x 200 px.
 
 O crop calcula os limites de todos os pixels visíveis. Um elemento isolado ou ruído acima do limiar alpha pode, portanto, aumentar a área recortada.
 
@@ -182,25 +184,25 @@ Descreve checkboxes e sliders controlados pelo hook. Ao ativar a remoção de fu
 
 #### `src/components/DoctorForm.jsx`
 
-Exibe campos controlados para cada profissional: nome, CRM/CRMV/CRO, formato compacto e campos opcionais de RQE.
+Exibe os campos controlados de cada profissional. Os botões **Padrão** e **Compacto** atualizam o placeholder e a apresentação do CRM/CRMV/CRO. O RQE tem seus próprios botões de formato e permanece opcional.
 
 #### `src/components/SignaturePreview.jsx`
 
-Monta uma ou duas imagens e seus textos em cartões posicionáveis por pointer events. A referência no elemento de saída permite exportar exatamente a composição. O quadriculado de transparência fica fora do elemento capturado.
+Monta uma ou duas imagens e seus textos em cartões posicionáveis por pointer events. A referência do elemento de saída permite exportar a composição; o quadriculado do preview fica fora do PNG.
 
 #### `src/main.jsx`
 
 Cria a raiz React no elemento `#root` definido em `index.html` e monta `App`.
 
-#### `src/style/index.css`
+#### `src/style/index.css` e `src/style/preview.css`
 
-Define tokens de cor, layout dos painéis, controles, prévia quadriculada e regras responsivas para telas móveis.
+`index.css` contém os estilos globais, controles e layout responsivo. `preview.css`, importado pelo componente `SignaturePreview`, contém os estilos específicos da composição e do quadro quadriculado.
 
 #### `index.html`, `vite.config.js` e `eslint.config.js`
 
 O HTML define metadados e a raiz React; a configuração do Vite habilita React e usa a porta 3000; o ESLint combina regras de JavaScript, React Hooks e React Refresh.
 
-O fluxo de atualização pode ser resumido assim:
+O fluxo de atualização e exportação pode ser resumido assim:
 
 ```text
 Upload ou mudança de checkbox
@@ -211,7 +213,9 @@ processSignatureImage processa o arquivo original no Canvas
           ↓
 SignaturePreview recebe a nova imagem
           ↓
-html-to-image exporta a composição para PNG
+Composição limitada a 420 x 200 px
+          ↓
+html-to-image exporta o PNG de 840 x 400 px
 ```
 
 ---
@@ -312,21 +316,11 @@ No estado atual não existe comando `npm test` nem suíte automatizada. `npm run
 
 ---
 
-## 🖼️ Geração da assinatura
+## 🖼️ Prévia e exportação
 
-A geração da imagem é realizada através da biblioteca `html-to-image`.
+O preview representa uma área de conteúdo com proporção 21:10 e até 420 x 200 px. Em telas menores, reduz proporcionalmente. As imagens preservam sua proporção com `object-fit: contain`, e os cartões ficam limitados à área de conteúdo.
 
-O componente que representa a assinatura é convertido para PNG utilizando uma escala de renderização superior à resolução CSS original.
-
-Atualmente, a aplicação utiliza:
-
-```text
-pixelRatio: 2
-```
-
-Isso permite gerar uma imagem com maior definição, especialmente quando a assinatura será utilizada em documentos ou impressões. A exportação mantém o fundo transparente, e o padrão quadriculado mostrado na tela serve apenas para indicar essa transparência.
-
-Para aplicações que exigem fundo branco, o PNG pode ser colocado sobre uma página ou documento branco após o download.
+O download usa `html-to-image` e gera um PNG com dimensões exatas de **840 x 400 pixels** (`pixelRatio: 1`). A composição fica centralizada e limitada a **420 x 200 pixels**; quando necessário, a escala dos cartões é reduzida para acomodar imagem e textos. O fundo exportado é branco. O quadriculado da interface só indica a área do preview.
 
 ---
 
@@ -349,6 +343,8 @@ Por exemplo:
 ```text
 Assinatura-Dr. João Silva.png
 ```
+
+As dimensões do arquivo baixado são fixas, independentemente da densidade de pixels do monitor. A área ocupada pela composição corresponde a 420 x 200 pixels no centro do PNG.
 
 ---
 
@@ -400,8 +396,8 @@ Não há banco de dados ou backend implementado na versão atual.
 * [x] Ajustes de imagem, preset e prévia ao vivo
 * [x] CRM/CRMV/CRO, registro compacto, RQE e frases adicionais
 * [x] Modelo pronto para a segunda imagem
-* [x] Escala, fonte, espaçamento, arraste, undo e redo da composição
-* [x] Geração e download de PNG transparente
+* [x] Fonte, espaçamento, arraste, undo e redo da composição
+* [x] Exportação de PNG 840 x 400 px com conteúdo em área de 420 x 200 px
 * [x] Configuração de ESLint
 * [x] Build de produção
 
@@ -425,15 +421,30 @@ O efeito que processa imagens depende de `backgroundThresholds`. Ao terminar uma
 
 O controle exibe 200 como neutro, mas o processador só ignora exatamente esse valor. Em valores próximos, a fórmula aplica um fator próximo de 2, podendo causar uma mudança brusca ao mover o slider um ponto. Até corrigir o mapeamento, ajuste o contraste com cautela.
 
-### Escala e limites do arraste
+### Ajuste de conteúdo extenso
 
-O cálculo dos limites usa dimensões sem transformação CSS, enquanto o cartão pode estar ampliado. Em escalas acima de 100%, conteúdo posicionado perto da borda pode ser recortado na prévia/exportação.
+Quando imagem e textos excedem o quadro de 420 x 200 px, a exportação reduz a escala do cartão para mantê-los dentro da área. Textos muito longos podem, portanto, aparecer menores no PNG.
 
 ### Desempenho e acessibilidade
 
 O processamento de pixels roda na thread principal e não há limite de tamanho/dimensões para os arquivos. Imagens grandes podem deixar a página lenta. O input de arquivo é visualmente oculto, mas o estilo de foco atual não evidencia o foco no controle visível de upload.
 
 > Converter para preto atua sobre pixels não transparentes. Isso não remove um fundo branco ou colorido que já esteja opaco; esse caso exige uma etapa própria de remoção de fundo.
+
+## 📝 Changelog
+
+### [1.1.1] - 2026-09-30
+
+#### Adicionado
+
+* Preview responsivo com estilos próprios em `src/style/preview.css`.
+* Seletores **Padrão** e **Compacto** para CRM, CRMV, CRO e RQE, com placeholders atualizados conforme o formato.
+* Seleção de formato do RQE independente da opção **Adicionar RQE**, que continua controlando sua inclusão na assinatura.
+
+#### Alterado
+
+* Exportação em PNG com dimensões fixas de 840 x 400 px e fundo branco.
+* Conteúdo central limitado a 420 x 200 px, com redução automática para acomodar imagem e textos.
 
 ---
 
