@@ -1,6 +1,6 @@
 # MobilemedTools
 
-Aplicação web em React + Vite para criação de assinaturas profissionais em PNG, com módulos auxiliares de importação de planilhas e navegação para futuras extensões.
+Aplicação web em React + Vite para criação de assinaturas profissionais em PNG e navegação para futuras extensões.
 
 Versão atual: 1.2.0
 
@@ -15,7 +15,7 @@ O projeto está estruturado como um frontend leve, sem backend, em que a lógica
 | Módulo | Status | Observação |
 | --- | --- | --- |
 | Assinatura | ✅ Ativo | Fluxo principal implementado, com upload, ajustes, prévia e exportação em PNG. |
-| Senhas | ⚠️ Em desenvolvimento | A leitura de planilhas com SheetJS já está funcional; ainda não há fluxo completo de geração, validação e exportação de senhas. |
+| Senhas | ⚠️ Em desenvolvimento | O módulo ainda não possui fluxo de geração, validação e exportação de senhas. |
 | Logos | 🟡 Planejado | A navegação existe no cabeçalho, mas o módulo ainda não possui implementação real. |
 
 ### Arquitetura funcional
@@ -24,13 +24,11 @@ O projeto está estruturado como um frontend leve, sem backend, em que a lógica
 - SignatureWorkspace e useSignatureEditor concentram toda a lógica da assinatura, incluindo upload, ajustes de imagem, dados do profissional, arraste e exportação.
 - processSignatureImage gera uma imagem derivada do arquivo original, preservando o arquivo original para reprocessamentos e evitando perda cumulativa.
 - A área de tela exposta ao usuário é limitadora ao compor a assinatura em um card de preview; a exportação converte essa composição em PNG em 840 x 400 px.
-- O módulo de senhas ainda está em estágio inicial e depende de uma implementação mais completa para transformar dados da planilha em saída útil.
+- O módulo de senhas ainda está em estágio inicial e depende de uma implementação completa para gerar, validar e exportar senhas.
 
 ### Problemas detectados e ajustados
 
-- Corrigido o bug em usePasswordEditor em que o workbook era atribuído a uma variável inexistente.
-- Removido o log de depuração em PasswordWorkspace.
-- Atualizado o texto de comentários para refletir o status real do sistema e evitar confusão entre módulos maduros e em desenvolvimento.
+- O módulo Senhas permanece como placeholder até a implementação de seu fluxo funcional.
 
 ---
 
@@ -108,16 +106,12 @@ mobilemedtools/
 │   │   ├── SignaturePreview.jsx
 │   │   └── SignatureWorkspace.jsx
 │   ├── hooks/
-│   │   ├── usePasswordEditor.js
 │   │   ├── useSignatureEditor.js
-│   │   └── usePasswordEditor.js
 │   ├── style/
 │   │   ├── index.css
 │   │   └── preview.css
 │   └── utils/
 │       └── processSignatureImage.js
-├── vendor/
-│   └── xlsx-0.20.3.tgz
 ├── eslint.config.js
 ├── index.html
 ├── package.json
@@ -129,7 +123,7 @@ mobilemedtools/
 ### Observações importantes
 
 - A assinatura é a funcionalidade principal e está pronta para uso direto no navegador.
-- O leitor de planilhas é utilitário de suporte, mas não substitui uma rotina completa de geração de senhas.
+- O módulo de senhas ainda não possui implementação funcional.
 - O módulo de logos ainda está ausente do fluxo funcional real e deve ser implementado como recurso separado.
 
 ---
@@ -142,7 +136,6 @@ mobilemedtools/
 - JavaScript
 - CSS
 - html-to-image
-- SheetJS via pacote local do diretório vendor
 - ESLint com React Hooks e React Refresh
 
 ---
