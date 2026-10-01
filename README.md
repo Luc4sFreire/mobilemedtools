@@ -2,7 +2,7 @@
 
 Aplicação web em React + Vite para criação de assinaturas profissionais em PNG e navegação para futuras extensões.
 
-Versão atual: 1.2.0
+Versão atual: 1.2.1
 
 ---
 
@@ -15,20 +15,21 @@ O projeto está estruturado como um frontend leve, sem backend, em que a lógica
 | Módulo | Status | Observação |
 | --- | --- | --- |
 | Assinatura | ✅ Ativo | Fluxo principal implementado, com upload, ajustes, prévia e exportação em PNG. |
-| Senhas | ⚠️ Em desenvolvimento | O módulo ainda não possui fluxo de geração, validação e exportação de senhas. |
-| Logos | 🟡 Planejado | A navegação existe no cabeçalho, mas o módulo ainda não possui implementação real. |
+| Senhas | ⚠️ Em desenvolvimento | Permite selecionar `.xlsx` e ler a primeira planilha no navegador; os valores são inspecionados no console, sem tabela, mapeamento de dados ou fluxo de senhas. |
+| Logos | 🟡 Planejado | A opção de navegação exibe apenas um placeholder, sem ferramentas ou processamento de logos. |
 
 ### Arquitetura funcional
 
-- A interface principal em App.jsx alterna entre os módulos disponíveis.
-- SignatureWorkspace e useSignatureEditor concentram toda a lógica da assinatura, incluindo upload, ajustes de imagem, dados do profissional, arraste e exportação.
-- processSignatureImage gera uma imagem derivada do arquivo original, preservando o arquivo original para reprocessamentos e evitando perda cumulativa.
+- A interface principal em `App.jsx` alterna entre o editor de assinatura, a leitura experimental de planilhas e o placeholder de Logos.
+- `SignatureWorkspace` e `useSignatureEditor` concentram a lógica da assinatura, incluindo upload, ajustes de imagem, dados do profissional, arraste e exportação.
+- `processSignatureImage` gera uma imagem derivada do arquivo original, preservando o arquivo original para reprocessamentos e evitando perda cumulativa.
 - A área de tela exposta ao usuário é limitadora ao compor a assinatura em um card de preview; a exportação converte essa composição em PNG em 840 x 400 px.
-- O módulo de senhas ainda está em estágio inicial e depende de uma implementação completa para gerar, validar e exportar senhas.
+- `useExcel` carrega arquivos `.xlsx` com ExcelJS no navegador e disponibiliza a primeira planilha; a integração ainda não apresenta nem transforma os dados na interface.
 
-### Problemas detectados e ajustados
+### Diagnóstico atual
 
-- O módulo Senhas permanece como placeholder até a implementação de seu fluxo funcional.
+- A leitura ExcelJS usa `arrayBuffer()` e `workbook.xlsx.load()`; o módulo Senhas continua experimental até haver apresentação, mapeamento e uso dos dados.
+- O módulo Logos permanece como placeholder.
 
 ---
 
@@ -106,7 +107,8 @@ mobilemedtools/
 │   │   ├── SignaturePreview.jsx
 │   │   └── SignatureWorkspace.jsx
 │   ├── hooks/
-│   │   ├── useSignatureEditor.js
+│   │   ├── useExcel.js
+│   │   └── useSignatureEditor.js
 │   ├── style/
 │   │   ├── index.css
 │   │   └── preview.css
@@ -123,7 +125,7 @@ mobilemedtools/
 ### Observações importantes
 
 - A assinatura é a funcionalidade principal e está pronta para uso direto no navegador.
-- O módulo de senhas ainda não possui implementação funcional.
+- O módulo de senhas lê somente arquivos `.xlsx` e a primeira planilha; os valores ainda não são apresentados em uma interface nem usados em um fluxo de negócio.
 - O módulo de logos ainda está ausente do fluxo funcional real e deve ser implementado como recurso separado.
 
 ---
@@ -148,7 +150,7 @@ mobilemedtools/
 
 ## ▶️ Executando em desenvolvimento
 
-Para iniciar o servidor de desenvolvimento:
+Para iniciar o servidor de desenvolvimento, configurado na porta 3000:
 
 ```bash
 npm run dev
@@ -291,15 +293,11 @@ Não há banco de dados ou backend implementado na versão atual.
 
 ### Possíveis evoluções
 
-* [ ] Melhorar o layout e a experiência de utilização;
+* [ ] Implementar apresentação, mapeamento e processamento dos dados importados no módulo Senhas.
+* [ ] Criar o fluxo funcional do módulo Logos.
+* [ ] Adicionar testes automatizados para os fluxos principais.
 
 ## Problemas conhecidos
-
-### Remoção de fundo pode entrar em reprocessamento contínuo
-
-O efeito que processa imagens depende de `backgroundThresholds`. Ao terminar uma remoção, ele cria um novo array de thresholds mesmo quando os valores não mudaram; como a referência do array muda, o efeito pode disparar novamente sem parar. O resultado observado foi milhares de decodificações por segundo e a interface ficando sem resposta.
-
-**Workaround até a correção:** mantenha **Remover fundo** desativado. Evite ativá-lo em uma sessão com imagens importantes até que o estado seja atualizado somente quando um threshold realmente mudar.
 
 ### Contraste pode saltar perto do neutro
 
@@ -315,11 +313,23 @@ O processamento de pixels roda na thread principal e não há limite de tamanho/
 
 ### Navegação Senhas e Logos
 
-As opções **Senhas** e **Logos** aparecem no cabeçalho, mas ainda não têm telas ou ações conectadas. A edição de assinatura é a única área funcional no momento.
+**Senhas** permite selecionar e ler a primeira planilha de arquivos `.xlsx`, mas os valores só são inspecionados no console; não há tabela, mapeamento ou operação de negócio. **Logos** continua como placeholder. A assinatura é o único módulo com fluxo completo de interface e exportação.
 
 > Converter para preto atua sobre pixels não transparentes. Isso não remove um fundo branco ou colorido que já esteja opaco; esse caso exige uma etapa própria de remoção de fundo.
 
 ## 📝 Changelog
+
+### [1.2.1] - 2026-10-01
+
+#### Corrigido
+
+* Leitura de arquivos `.xlsx` no navegador com ExcelJS usando `arrayBuffer()` e `workbook.xlsx.load()`.
+* Armazenamento da primeira planilha carregada no estado do hook `useExcel`.
+
+#### Documentação
+
+* Atualizado o diagnóstico dos módulos e removido o alerta obsoleto de reprocessamento contínuo da remoção de fundo.
+* Registradas as limitações atuais da leitura de planilhas e as próximas evoluções dos módulos.
 
 ### [1.1.2] - 2026-09-30
 

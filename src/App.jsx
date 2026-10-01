@@ -33,7 +33,7 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      {/* O app ainda possui três áreas de navegação, mas apenas a assinatura está madura e validada no fluxo principal. */}
+      {/* Assinatura tem fluxo completo; Senhas está em leitura experimental e Logos segue como placeholder. */}
       <header className="app-header">
         <div>
           <h1>MobilemedTools</h1>
