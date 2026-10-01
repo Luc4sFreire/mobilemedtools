@@ -2,7 +2,7 @@
 
 Aplicação web em React + Vite para criação de assinaturas profissionais em PNG e navegação para futuras extensões.
 
-Versão atual: 1.2.1
+Versão atual: 0.2.0
 
 ---
 
@@ -319,7 +319,7 @@ O processamento de pixels roda na thread principal e não há limite de tamanho/
 
 ## 📝 Changelog
 
-### [1.2.1] - 2026-10-01
+### [0.2.0] - 01/10/26
 
 #### Corrigido
 
@@ -331,27 +331,18 @@ O processamento de pixels roda na thread principal e não há limite de tamanho/
 * Atualizado o diagnóstico dos módulos e removido o alerta obsoleto de reprocessamento contínuo da remoção de fundo.
 * Registradas as limitações atuais da leitura de planilhas e as próximas evoluções dos módulos.
 
-### [1.1.2] - 2026-09-30
+### [0.1.0] - 30/09/26
 
-#### Adicionado
+#### Interface
 
 * Paleta em tons suaves de azul aplicada à interface e à prévia.
 * Opções de navegação no cabeçalho para Assinatura, Senhas e Logos.
 
-#### Atualizado
-
-* Versão do projeto e lockfile para `1.1.2`.
-
-### [1.1.1] - 2026-09-30
-
-#### Adicionado
+#### Assinatura
 
 * Preview responsivo com estilos próprios em `src/style/preview.css`.
 * Seletores **Padrão** e **Compacto** para CRM, CRMV, CRO e RQE, com placeholders atualizados conforme o formato.
 * Seleção de formato do RQE independente da opção **Adicionar RQE**, que continua controlando sua inclusão na assinatura.
-
-#### Alterado
-
 * Exportação em PNG com dimensões fixas de 840 x 400 px e fundo branco.
 * Conteúdo central limitado a 420 x 200 px, com redução automática para acomodar imagem e textos.
 
