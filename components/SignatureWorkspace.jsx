@@ -1,5 +1,6 @@
 import '../style/signature.css'
 import { useSignature } from '../hooks/useSignature'
+import { useState } from 'react'
 
 const PROFESSIONAL_OPTIONS = [
     { value: 'doctor', label: '🩺 Médico' },
@@ -9,6 +10,11 @@ const PROFESSIONAL_OPTIONS = [
 
 function SignatureWorkspace(){
     const signature = useSignature()
+    const [style, setStyle] = useState("default")
+
+    function handleStyle(value){
+        setStyle(value)
+    }
 
     return(
         <main id="signature-workspace">
@@ -28,7 +34,7 @@ function SignatureWorkspace(){
                     />
                 </div>
                 <p>{signature.file?.name}</p>
-                {signature.fileUrl && (
+                {/* {signature.fileUrl && (
                     <div className="image-preview-container">
                         <img
                             src={signature.fileUrl}
@@ -36,12 +42,53 @@ function SignatureWorkspace(){
                             alt="Prévia da imagem da assinatura"
                         />
                     </div>
-                )}
+                )} */}
             </section>
 
             {signature.errorMessage && (
                 <p className="signature-message" role="alert">{signature.errorMessage}</p>
             )}
+
+            <section className="configImage">
+                <h1>Ajustes da Assinatura</h1>
+                <div className="controls">
+                    <button
+                        type="button"
+                        value="default"
+                        className={style === 'default' ? 'active' : ''}
+                        onClick={() => handleStyle('default')}
+                    >
+                        Automático
+                    </button>
+                    <button
+                        type="button"
+                        value="manual"
+                        className={style === 'manual' ? 'active' : ''}
+                        onClick={() => handleStyle('manual')}
+                    >
+                        Manual
+                    </button>
+                </div>
+                <form onSubmit={signature.handleSubmitFilters} className="filters">
+                    <div className="label-filter">
+                        <input type="checkbox" id='filter-remove' value="Remove" checked={signature.checkedItems.includes("Remove")} onChange={signature.checkFilters} />
+                        <label htmlFor="filter-remove">Remover Fundo</label>
+                    </div>
+                    <div className="label-filter">
+                        <input type="checkbox" id='filter-black' value="Black" checked={signature.checkedItems.includes("Black")} onChange={signature.checkFilters} />
+                        <label htmlFor="filter-black">Converter para preto puro</label>
+                    </div>
+                    <div className="label-filter">
+                        <input type="checkbox" id='filter-cleanWeaknessPixels' value="Clean" checked={signature.checkedItems.includes("Clean")} onChange={signature.checkFilters} />
+                        <label htmlFor="filter-cleanWeaknessPixels">Limpar pixels fracos</label>
+                    </div>
+                    <div className="label-filter">
+                        <input type="checkbox" id='filter-crop' value="Crop" checked={signature.checkedItems.includes("Crop")} onChange={signature.checkFilters} />
+                        <label htmlFor="filter-crop">Crop automático</label>
+                    </div>
+                    <button type='submit'>Definir Filtros</button>
+                </form>
+            </section>
 
             <section className="signature-professional">
                 <div className="signature-person">

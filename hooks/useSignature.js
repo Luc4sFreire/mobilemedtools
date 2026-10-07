@@ -23,6 +23,7 @@ export function useSignature(){
     const [extraPhrase, setExtraPhrase] = useState("")
     const [extraPhrase2, setExtraPhrase2] = useState("")
     const [specialty, setSpecialty] = useState("")
+    const [checkedItems, setCheckedItems] = useState([]);
 
     useEffect(() => () => {
         if(fileUrlRef.current) URL.revokeObjectURL(fileUrlRef.current)
@@ -60,6 +61,21 @@ export function useSignature(){
         setFormatCredentialsRQE(event.currentTarget.value)
     }
 
+    function checkFilters(e){
+        const { value, checked } = e.target;
+
+        if(checked){
+            setCheckedItems([...checkedItems, value])
+        }else{
+            setCheckedItems(checkedItems.filter((item) => item !== value))
+        }
+    }
+
+    function handleSubmitFilters(e){
+        e.preventDefault();
+        console.log("Itens selecionados: ", checkedItems)
+    }
+
     return{
         file,
         fileUrl,
@@ -89,5 +105,8 @@ export function useSignature(){
         selectProfessional,
         selectFormat,
         selectFormatRQE,
+        handleSubmitFilters,
+        checkFilters,
+        checkedItems,
     }
 }
