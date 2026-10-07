@@ -1,10 +1,12 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 
-// Habilita o plugin React e define a porta padrão do servidor Vite.
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000 // Expõe o servidor local na porta documentada do projeto.
-  }
-})
+    port: 3000,
+    proxy: {
+      '/api': 'http://127.0.0.1:5000',
+    },
+  },
+});

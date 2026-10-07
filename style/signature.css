@@ -1,0 +1,285 @@
+*{
+    font-family: var(--font-text);
+}
+
+main{
+    margin: 20px auto;
+    padding: 40px;
+    width: 90vw;
+    border-radius: 30px;
+    background-color: rgba(249, 249, 249, 0.145);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+#file{display: none;}
+
+.container-file{
+    height: 200px;
+    padding: 50px;
+    background-color: #ffffff26;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+}
+
+.container-file > div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    letter-spacing: 1px;
+    background-image: var(--background-gradiente-1);
+    font-family: var(--font-text);
+    margin: auto 20px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    transition: .2s ease-in;
+    cursor: pointer;
+}
+
+.container-file > div:hover{
+    transform: translateY(-5px);
+}
+
+.container-file > p{
+    text-align: center;
+    margin: auto 20px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--color-6);
+}
+
+.container-file > div label{
+    font-size: 20px;
+    color: #f9f9f9;
+    cursor: pointer;
+}
+
+.typeProfessional{
+    margin-top: 20px;
+}
+
+.typeProfessional h1{
+    font-size: 20px;
+    color: #f9f9f9;
+    letter-spacing: 1px;
+}
+
+.controlsProfessional{
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.controlsProfessional > div{
+    display: flex;
+    gap: 15px;
+}
+
+.controlsProfessional button, .typeCrm button, .typeRQE button{
+    transition: .5s;
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 20px;
+    border: 2px solid #f9f9f94a;
+    letter-spacing: 1px;
+    background-color: #ffffff26;
+    color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.170);
+}
+
+.controlsProfessional button.active, .typeCrm button.active, .typeRQE button.active{
+    background-color: #f9f9f9;
+    color: var(--color-6);
+    /* font-weight: 600; */
+}
+
+.controlsProfessional button:not(.active):hover, .typeCrm button:not(.active):hover, .typeRQE button:not(.active):hover{
+    background-color: #f9f9f95f;
+    /* color: var(--color-6); */
+    transform: translateY(-3px);
+}
+
+.labels{
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.labels > h2, .controlsProfessional > h2{
+    letter-spacing: 1px;
+    font-size: 16px;
+    color: #f9f9f9;
+}
+
+.controlsProfessional > h2{font-size: 18px;}
+
+.labels > input{
+    font-size: 15px;
+    padding: 15px 20px;
+    outline: none;
+    border: 1px solid #cacaca;
+    border-radius: 10px;
+}
+
+.labels > input:focus{
+    border: 2px solid #7c7c7c99;
+}
+
+.typeCrm, .typeRQE{
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+}
+
+#signature-workspace{
+    color: #f9f9f9;
+}
+
+#signature-workspace h1,
+#signature-workspace h2,
+#signature-workspace h3,
+#signature-workspace p{
+    color: inherit;
+}
+
+.signatureIntro > h1{
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.signatureIntro > p{
+    margin: 10px 0 18px;
+}
+
+.signature-person{
+    margin: 20px 0;
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.container-file.upload-section{
+    height: auto;
+    min-height: 0;
+    margin-top: 20px;
+    padding: 24px;
+}
+
+.file-input-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    border-radius: 10px;
+    background-image: var(--background-gradiente-1);
+}
+
+.file-input-wrapper > label{
+    cursor: pointer;
+    font-size: 17px;
+}
+
+.file-input-wrapper > input{
+    display: none;
+}
+
+.image-preview-container{
+    margin: 12px auto;
+    text-align: center;
+}
+
+.image-preview{
+    max-width: min(100%, 420px);
+    max-height: 150px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.signature-person > h2{
+    margin-bottom: 18px;
+    font-size: 19px;
+}
+
+.checkbox-group{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0 4px;
+}
+
+.checkbox-group input{
+    width: 17px;
+    height: 17px;
+    accent-color: var(--color-3);
+}
+
+.helper-text{
+    margin: 4px 0 14px;
+    font-size: 13px;
+    opacity: 0.75;
+}
+
+.labels > label{
+    color: #f9f9f9;
+    letter-spacing: 0.4px;
+}
+
+#signature-workspace .labels input,
+#signature-workspace .labels textarea{
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #cacaca;
+    border-radius: 10px;
+    outline: none;
+    background: #fff;
+    color: #202020;
+    font: inherit;
+}
+
+#signature-workspace .labels textarea{
+    resize: vertical;
+}
+
+.signature-professional{
+    margin-top: 28px;
+}
+
+.signature-message{
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 170, 170, 0.55);
+    border-radius: 10px;
+    background: rgba(130, 0, 0, 0.22);
+}
+
+@media (max-width: 650px){
+    #signature-workspace{
+        width: 96vw;
+        padding: 20px;
+    }
+
+    .signature-person,
+    .container-file.upload-section{
+        padding: 15px;
+    }
+
+    .controlsProfessional > div,
+    .typeCrm,
+    .typeRQE{
+        flex-wrap: wrap;
+    }
+
+    .controlsProfessional button,
+    .typeCrm button,
+    .typeRQE button{
+        flex: 1 1 auto;
+    }
+}

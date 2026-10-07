@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root{
+    --font-title: "Bodoni Moda", serif;
+    --font-text: "Montserrat", sans-serif;
+    --font-Arial: Arial, Helvetica, sans-serif;
+    --font-Times: 'Times New Roman', Times, serif;
+    --font-Courier: 'Courier New', Courier, monospace;
+
+    --size-text: 20px;
+    --size-title: 40px;
+
+    --color-1: #CAF0F3;
+    --color-2: #90E0EF;
+    --color-3: #00B4D8;
+    --color-4: #0077B6;
+    --color-5: #03045E;
+    --color-6: #00013E;
+
+    --background-gradiente-1: linear-gradient(to right, #004fb6, #0077B6);
+    --background-gradiente-invert-1: linear-gradient(to left, #004fb6, #0077B6);
+}
+
+body{
+    background-color: var(--color-4);
+}
