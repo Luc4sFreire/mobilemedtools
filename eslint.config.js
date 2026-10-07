@@ -6,7 +6,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 // Combina regras JavaScript/React e exclui dependências e artefatos gerados.
 export default defineConfig([
-  globalIgnores(['dist', '.venv/**', 'venv/**']),
+  globalIgnores(['dist']),
   {
     files: ['**/*.{js,jsx}'],
     // Aplica regras base, validação dos React Hooks e restrições do Fast Refresh.
