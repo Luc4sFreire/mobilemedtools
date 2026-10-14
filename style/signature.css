@@ -281,27 +281,3 @@ main{
 .configImage h1{
     font-size: 23px;
 }
-
-@media (max-width: 650px){
-    #signature-workspace{
-        width: 96vw;
-        padding: 20px;
-    }
-
-    .signature-person,
-    .container-file.upload-section{
-        padding: 15px;
-    }
-
-    .controlsProfessional > div,
-    .typeCrm,
-    .typeRQE{
-        flex-wrap: wrap;
-    }
-
-    .controlsProfessional button,
-    .typeCrm button,
-    .typeRQE button{
-        flex: 1 1 auto;
-    }
-}

@@ -1,8 +1,7 @@
 import '../style/signature.css'
 import { useSignature } from '../hooks/useSignature'
-import { useState } from 'react'
 
-const PROFESSIONAL_OPTIONS = [
+const professional_options = [
     { value: 'doctor', label: '🩺 Médico' },
     { value: 'vet', label: '🐾 Veterinário' },
     { value: 'dentist', label: '🦷 Dentista' },
@@ -10,11 +9,6 @@ const PROFESSIONAL_OPTIONS = [
 
 function SignatureWorkspace(){
     const signature = useSignature()
-    const [style, setStyle] = useState("default")
-
-    function handleStyle(value){
-        setStyle(value)
-    }
 
     return(
         <main id="signature-workspace">
@@ -23,6 +17,7 @@ function SignatureWorkspace(){
                 <p>Selecione a imagem e preencha os dados do profissional.</p>
             </section>
 
+            {/* A imagem é processada localmente para a prévia; a montagem e o download da assinatura final estão em desenvolvimento. */}
             <section className="container-file upload-section">
                 <div className="file-input-wrapper">
                     <label htmlFor="signature-file">📁 Selecionar Imagem da Assinatura</label>
@@ -34,69 +29,31 @@ function SignatureWorkspace(){
                     />
                 </div>
                 <p>{signature.file?.name}</p>
-                {/* {signature.fileUrl && (
-                    <div className="image-preview-container">
-                        <img
-                            src={signature.fileUrl}
-                            className="image-preview"
-                            alt="Prévia da imagem da assinatura"
-                        />
-                    </div>
-                )} */}
             </section>
 
             {signature.errorMessage && (
                 <p className="signature-message" role="alert">{signature.errorMessage}</p>
             )}
 
-            <section className="configImage">
-                <h1>Ajustes da Assinatura</h1>
-                <div className="controls">
-                    <button
-                        type="button"
-                        value="default"
-                        className={style === 'default' ? 'active' : ''}
-                        onClick={() => handleStyle('default')}
-                    >
-                        Automático
-                    </button>
-                    <button
-                        type="button"
-                        value="manual"
-                        className={style === 'manual' ? 'active' : ''}
-                        onClick={() => handleStyle('manual')}
-                    >
-                        Manual
-                    </button>
-                </div>
-                <form onSubmit={signature.handleSubmitFilters} className="filters">
-                    <div className="label-filter">
-                        <input type="checkbox" id='filter-remove' value="Remove" checked={signature.checkedItems.includes("Remove")} onChange={signature.checkFilters} />
-                        <label htmlFor="filter-remove">Remover Fundo</label>
-                    </div>
-                    <div className="label-filter">
-                        <input type="checkbox" id='filter-black' value="Black" checked={signature.checkedItems.includes("Black")} onChange={signature.checkFilters} />
-                        <label htmlFor="filter-black">Converter para preto puro</label>
-                    </div>
-                    <div className="label-filter">
-                        <input type="checkbox" id='filter-cleanWeaknessPixels' value="Clean" checked={signature.checkedItems.includes("Clean")} onChange={signature.checkFilters} />
-                        <label htmlFor="filter-cleanWeaknessPixels">Limpar pixels fracos</label>
-                    </div>
-                    <div className="label-filter">
-                        <input type="checkbox" id='filter-crop' value="Crop" checked={signature.checkedItems.includes("Crop")} onChange={signature.checkFilters} />
-                        <label htmlFor="filter-crop">Crop automático</label>
-                    </div>
-                    <button type='submit'>Definir Filtros</button>
-                </form>
+            <section className="addInfos">
+                <label className="checkbox-group">
+                    <input
+                        type="checkbox"
+                        checked={signature.addRQE}
+                        onChange={(event) => signature.setAddRQE(event.target.checked)}
+                    />
+                    Adicionar RQE (Registro de Qualificação de Especialista)
+                </label>
             </section>
 
+            {/* Esta etapa reúne os dados que compõem a assinatura; campos opcionais são exibidos conforme as escolhas do usuário. */}
             <section className="signature-professional">
                 <div className="signature-person">
                     <h2>👨‍⚕️ Assinatura Principal</h2>
                     <div className="controlsProfessional">
                         <h3>Tipo de Profissional</h3>
                         <div>
-                            {PROFESSIONAL_OPTIONS.map((professional) => (
+                            {professional_options.map((professional) => (
                                 <button
                                     type="button"
                                     key={professional.value}
@@ -148,17 +105,7 @@ function SignatureWorkspace(){
                                 Compacto ({signature.typeP.credentials}/RS 45534)
                             </button>
                         </div>
-                        <p className="helper-text">Padrão: digite 12345/SP. Compacto: digite RS 45534.</p>
                     </div>
-
-                    <label className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            checked={signature.addRQE}
-                            onChange={(event) => signature.setAddRQE(event.target.checked)}
-                        />
-                        ➕ Adicionar RQE (Registro de Qualificação de Especialista)
-                    </label>
 
                     {signature.addRQE && (
                         <div className="labels">
@@ -188,7 +135,6 @@ function SignatureWorkspace(){
                                     Compacto (RQE/RS 40499)
                                 </button>
                             </div>
-                            <p className="helper-text">Padrão: digite 40499/SP. Compacto: digite RS 40499.</p>
                         </div>
                     )}
 
@@ -237,6 +183,18 @@ function SignatureWorkspace(){
                         </div>
                     )}
                 </div>
+            </section>
+            <section className="previewImage">
+                {signature.isProcessing && <p role="status">Processando imagem...</p>}
+                {signature.fileUrl && (
+                    <div className="image-preview-container">
+                        <img
+                            src={signature.fileUrl}
+                            className="image-preview"
+                            alt="Prévia da imagem processada"
+                        />
+                    </div>
+                )}
             </section>
         </main>
     )

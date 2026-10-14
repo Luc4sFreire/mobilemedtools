@@ -1,15 +1,17 @@
 # MobilemedTools
 
-Aplicação em desenvolvimento para reunir ferramentas de apoio ao trabalho da equipe Mobilemed. A interface atual oferece o formulário básico de preparação de dados de assinatura profissional.
+Aplicação em desenvolvimento para reunir ferramentas de apoio ao trabalho da equipe Mobilemed. O módulo atual coleta dados profissionais e processa localmente uma imagem de assinatura para exibir uma prévia.
 
 ## Estado dos módulos
 
 | Módulo | Estado | O que está disponível |
 | --- | --- | --- |
-| Assinatura | Em desenvolvimento | Seleção e prévia local de uma imagem, dados do profissional, registro CRM/CRMV/CRO, formatos de registro, RQE, especialidade e frases adicionais. |
-| Geração, processamento e download de imagem | Não implementados | O formulário ainda não gera ou transforma um arquivo final de assinatura. |
+| Dados profissionais | Em desenvolvimento | Formulário para profissional, registro CRM/CRMV/CRO, formato do registro, RQE, especialidade e frases adicionais. |
+| Pré-processamento de imagem | Parcialmente implementado | A imagem selecionada é processada no navegador para gerar uma prévia PNG. O algoritmo ajusta iluminação e contraste, segmenta a tinta, remove pequenas manchas e suaviza as bordas. |
+| Filtros escolhidos pelo usuário | Em desenvolvimento | A seleção dos filtros é mantida no hook, mas ainda não altera o processamento da imagem. |
+| Montagem e download da assinatura final | Não implementados | Os dados profissionais ainda não são compostos sobre a imagem e não há opção para baixar uma assinatura final. |
 
-A seleção da imagem é feita localmente no navegador. Não há processamento ou persistência de imagem nesta versão.
+O processamento ocorre localmente no navegador; a imagem não é enviada nem persistida. A prévia mostra o PNG processado, mas o algoritmo ainda usa as próprias configurações internas e não aplica as opções de filtro do formulário.
 
 ## Estrutura
 
@@ -17,7 +19,9 @@ A seleção da imagem é feita localmente no navegador. Não há processamento o
 components/
   SignatureWorkspace.jsx     # Interface do módulo de assinatura
 hooks/
-  useSignature.js            # Estado e interações do formulário
+  useSignature.js            # Estado, validação e fluxo de processamento do formulário
+utils/
+  processImage.js            # Algoritmo de pré-processamento no canvas
 style/
   index.css                  # Estilos globais e variáveis visuais
   signature.css              # Estilos da interface de assinatura
@@ -51,4 +55,6 @@ npm run build
 
 Não há suíte de testes automatizados configurada no momento.
 
-## Versão - 0.1
+## Versão do pacote
+
+A versão definida em `package.json` é `0.3.0`.
