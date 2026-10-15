@@ -1,19 +1,23 @@
+/* Mantém a tipografia da interface consistente com os tokens globais. */
 *{
     font-family: var(--font-text);
 }
 
+/* Container principal translúcido que centraliza o fluxo da ferramenta. */
 main{
     margin: 20px auto;
     padding: 40px;
-    max-width: 90%;
+    max-width: 70%;
     border-radius: 30px;
     background-color: rgba(249, 249, 249, 0.145);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
 
+/* Esconde eventual input legado com id file. */
 #file{display: none;}
 
+/* Área de seleção de arquivo com contorno tracejado e indicação visual de dropzone. */
 .container-file{
     height: 200px;
     padding: 50px;
@@ -22,6 +26,7 @@ main{
     border-radius: 20px;
 }
 
+/* Alinha e estiliza os elementos de seleção que ficam dentro da área de upload. */
 .container-file > div{
     display: flex;
     flex-direction: column;
@@ -37,10 +42,12 @@ main{
     cursor: pointer;
 }
 
+/* Realça o controle de upload ao passar o cursor. */
 .container-file > div:hover{
     transform: translateY(-5px);
 }
 
+/* Centraliza o nome do arquivo abaixo da área de seleção. */
 .container-file > p{
     text-align: center;
     margin: auto 20px;
@@ -53,22 +60,26 @@ main{
     color: var(--color-6);
 }
 
+/* Deixa claro que o texto do rótulo aciona o seletor de arquivos. */
 .container-file > div label{
     font-size: 20px;
     color: #f9f9f9;
     cursor: pointer;
 }
 
+/* Espaçamento do bloco legado de seleção de profissional. */
 .typeProfessional{
     margin-top: 20px;
 }
 
+/* Cabeçalhos do bloco legado de tipo profissional. */
 .typeProfessional h1{
     font-size: 20px;
     color: #f9f9f9;
     letter-spacing: 1px;
 }
 
+/* Agrupa título e botões para selecionar tipo de profissional. */
 .controlsProfessional{
     margin: 30px 0;
     display: flex;
@@ -76,6 +87,7 @@ main{
     gap: 15px;
 }
 
+/* Organiza horizontalmente os controles legados de imagem. */
 .configImage .controls{
     display: flex;
     gap: 15px;
@@ -83,12 +95,14 @@ main{
     flex-wrap: wrap;
 }
 
+/* Mantém os botões de escolha de profissional em uma linha com espaçamento. */
 .controlsProfessional > div{
     display: flex;
     gap: 15px;
 }
 
-.controlsProfessional button, .typeCrm button, .typeRQE button, .configImage button{
+/* Aparência comum para botões de opção em profissão, registro, imagem e frases. */
+.controlsProfessional button, .typeCrm button, .typeRQE button, .configImage button, .signature-extra-phrases > button{
     transition: .5s;
     padding: 12px;
     cursor: pointer;
@@ -100,18 +114,22 @@ main{
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.170);
 }
 
-.controlsProfessional button.active, .typeCrm button.active, .typeRQE button.active, .configImage button.active{
+/* Destaca a escolha ativa com fundo claro e texto escuro. */
+.controlsProfessional button.active, .typeCrm button.active, .typeRQE button.active, .configImage button.active, .signature-extra-phrases > button.active{
     background-color: #f9f9f9;
     color: var(--color-6);
     /* font-weight: 600; */
 }
 
-.controlsProfessional button:not(.active):hover, .typeCrm button:not(.active):hover, .typeRQE button:not(.active):hover, .configImage button:not(.active):hover{
+/* Feedback de hover para botões não selecionados; os comentários antigos abaixo
+   preservam as declarações de cor que foram intencionalmente desativadas. */
+.controlsProfessional button:not(.active):hover, .typeCrm button:not(.active):hover, .typeRQE button:not(.active):hover, .configImage button:not(.active):hover, .signature-extra-phrases > button:not(.active):hover{
     background-color: #f9f9f95f;
     /* color: var(--color-6); */
     transform: translateY(-3px);
 }
 
+/* Organiza verticalmente cada rótulo com seu campo de entrada. */
 .labels{
     margin: 10px 0;
     display: flex;
@@ -119,14 +137,17 @@ main{
     gap: 10px;
 }
 
+/* Tipografia de títulos dentro de grupos de campos e controles. */
 .labels > h2, .controlsProfessional > h2{
     letter-spacing: 1px;
     font-size: 16px;
     color: #f9f9f9;
 }
 
+/* Ajuste de tamanho para subtítulos dos controles profissionais. */
 .controlsProfessional > h2{font-size: 18px;}
 
+/* Aparência dos inputs na interface anterior de formulários. */
 .labels > input{
     font-size: 15px;
     padding: 15px 20px;
@@ -135,20 +156,24 @@ main{
     border-radius: 10px;
 }
 
+/* Realça input legado durante foco do teclado ou mouse. */
 .labels > input:focus{
     border: 2px solid #7c7c7c99;
 }
 
+/* Agrupa escolhas de formato do registro principal e do RQE. */
 .typeCrm, .typeRQE{
     margin: 20px 0;
     display: flex;
     gap: 10px;
 }
 
+/* Define a cor padrão do texto da ferramenta como branco. */
 #signature-workspace{
     color: #f9f9f9;
 }
 
+/* Faz títulos e parágrafos herdarem a cor do container principal. */
 #signature-workspace h1,
 #signature-workspace h2,
 #signature-workspace h3,
@@ -156,16 +181,19 @@ main{
     color: inherit;
 }
 
+/* Hierarquia visual da introdução da ferramenta. */
 .signatureIntro > h1{
     font-size: 24px;
     letter-spacing: 1px;
 }
 
+/* Distância entre a introdução e o restante do formulário. */
 .signatureIntro > p{
     margin: 10px 0 18px;
 }
 
-.signature-person{
+/* Cartões com moldura translúcida para dados e configurações avançadas. */
+.signature-person, .configSigt{
     margin: 20px 0;
     padding: 22px;
     border: 1px solid rgba(255, 255, 255, 0.18);
@@ -173,6 +201,7 @@ main{
     background: rgba(255, 255, 255, 0.09);
 }
 
+/* Ajusta a zona de upload para sua altura acompanhar os elementos internos. */
 .container-file.upload-section{
     height: auto;
     min-height: 0;
@@ -180,6 +209,7 @@ main{
     padding: 24px;
 }
 
+/* Área clicável e centralizada que abre o seletor de imagem. */
 .file-input-wrapper{
     display: flex;
     justify-content: center;
@@ -189,33 +219,72 @@ main{
     background-image: var(--background-gradiente-1);
 }
 
+/* Indica que o rótulo de upload é uma ação. */
 .file-input-wrapper > label{
     cursor: pointer;
     font-size: 17px;
 }
 
+/* O input nativo é acionado pelo rótulo estilizado acima dele. */
 .file-input-wrapper > input{
     display: none;
 }
 
+/* Centraliza e separa visualmente o preview da imagem final. */
 .image-preview-container{
     margin: 12px auto;
     text-align: center;
 }
 
+/* Título descritivo imediatamente acima da prévia final. */
+.image-preview-container h2{
+    margin-bottom: 12px;
+    font-size: 19px;
+}
+
+/* Exibe o PNG final em escala de tela sem alterar sua proporção. */
 .image-preview{
-    max-width: min(100%, 420px);
-    max-height: 150px;
+    display: block;
+    width: min(100%, 420px);
+    height: auto;
+    margin: 0 auto;
     object-fit: contain;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.12);
 }
 
+/* Botão primário para exportar a composição PNG produzida pelo hook. */
+.download-signature-button{
+    display: block;
+    margin: 18px auto 0;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--background-gradiente-1);
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+    transition: .2s ease-in-out;
+}
+
+/* Feedback de interação no botão quando o download está liberado. */
+.download-signature-button:hover:not(:disabled){
+    transform: translateY(-2px);
+}
+
+/* Comunica visualmente que não existe prévia válida para baixar. */
+.download-signature-button:disabled{
+    cursor: not-allowed;
+    opacity: .55;
+}
+
+/* Espaço e tamanho do título do cartão de dados profissionais. */
 .signature-person > h2{
     margin-bottom: 18px;
     font-size: 19px;
 }
 
+/* Alinha checkbox e texto mantendo alvos de controle compactos. */
 .checkbox-group{
     display: flex;
     align-items: center;
@@ -223,24 +292,29 @@ main{
     margin: 12px 0 4px;
 }
 
+/* Tamanho e cor dos controles checkbox nativos. */
 .checkbox-group input{
     width: 17px;
     height: 17px;
     accent-color: var(--color-3);
 }
 
+/* Texto auxiliar de menor ênfase usado junto aos controles. */
 .helper-text{
     margin: 4px 0 14px;
     font-size: 13px;
     opacity: 0.75;
 }
 
+/* Contraste e espaçamento dos rótulos dos campos personalizados. */
 .labels > label{
     color: #f9f9f9;
     letter-spacing: 0.4px;
 }
 
+/* Aparência compartilhada dos campos controlados e das áreas de texto. */
 #signature-workspace .labels input,
+/* Permite aumentar verticalmente uma frase longa, sem alargar o formulário. */
 #signature-workspace .labels textarea{
     width: 100%;
     padding: 12px 15px;
@@ -256,10 +330,12 @@ main{
     resize: vertical;
 }
 
+/* Separa o formulário profissional dos cartões anteriores. */
 .signature-professional{
     margin-top: 28px;
 }
 
+/* Painel de alerta para falhas de seleção, processamento ou composição. */
 .signature-message{
     padding: 12px 16px;
     border: 1px solid rgba(255, 170, 170, 0.55);
@@ -267,6 +343,7 @@ main{
     background: rgba(130, 0, 0, 0.22);
 }
 
+/* Layout vertical para o painel de personalização de imagem. */
 .configImage{
     display: flex;
     flex-direction: column;
@@ -278,6 +355,130 @@ main{
     background-color: #ffffff26;
 }
 
+/* Título dentro do painel de configuração genérico. */
 .configImage h1{
     font-size: 23px;
+}
+
+/* Cabeçalho das opções de imagem; botão de reset fica alinhado à direita. */
+.signature-image-options-header{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+/* Tamanho do título específico das opções da assinatura. */
+.signature-image-options-header h2{
+    font-size: 20px;
+}
+
+/* Impede que o botão de reset encolha quando o título é longo. */
+.signature-image-options-header > button{
+    align-self: flex-start;
+    flex: 0 0 auto;
+}
+
+/* Grade adaptável para sliders e outros controles de personalização. */
+.signature-image-options-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+}
+
+/* Cada controle agrupa nome, input e texto explicativo verticalmente. */
+.signature-option-field{
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+/* Mantém rótulos legíveis sobre o painel azul translúcido. */
+.signature-option-field > label{
+    color: #f9f9f9;
+}
+
+/* Campo numérico legado para dimensões, se usado em telas anteriores. */
+.signature-option-field > input[type="number"]{
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid #cacaca;
+    border-radius: 10px;
+    background: #fff;
+    color: #202020;
+    font: inherit;
+}
+
+/* Slider usa a cor de destaque global e ocupa toda a largura disponível. */
+.signature-option-field > input[type="range"]{
+    width: 100%;
+    accent-color: var(--color-3);
+}
+
+/* Opções booleanas quebram em novas linhas em telas estreitas. */
+.signature-image-checkboxes{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+}
+
+/* Organiza verticalmente o painel geral de configurações avançadas. */
+.configSigt{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+    padding: 20px;
+}
+
+/* Separa verticalmente os campos de frases adicionais. */
+.signature-extra-phrases{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+/* Limita o botão de adicionar frase para não tomar a largura toda em desktop. */
+.signature-extra-phrases > button{
+    max-width: 30vw;
+}
+
+/* Deixa o rótulo da frase e o botão de remover em extremidades opostas. */
+.extra-phrase-header{
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Estilo discreto para o controle de remoção de uma frase. */
+.remove-phrase-button{
+    transition: .2s ease-in-out;
+    background-color: transparent;
+    border-radius: 5px;
+    border: none;
+}
+
+/* Ícone de lixeira apresentado como imagem de fundo dentro do botão acessível. */
+.icon{
+    background-image: url("../assets/icons8-lixeira-24.png");
+    background-repeat: no-repeat;
+    width: 25px;
+    height: 25px;
+}
+
+/* Mostra hover sobre o controle de remoção para indicar ação destrutiva. */
+.remove-phrase-button:hover{
+    background-color: #ffa6a6e3;
+    cursor: pointer;
+}
+
+/* Em celulares, empilha cabeçalho e botão de restauração para evitar aperto. */
+@media (max-width: 600px){
+    .signature-image-options-header{
+        flex-direction: column;
+    }
+
+    .signature-image-options-header > button{
+        align-self: stretch;
+    }
 }

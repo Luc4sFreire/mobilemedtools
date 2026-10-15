@@ -5,4 +5,9 @@
 ### Alterado
 
 - A seleção de imagem agora executa o pré-processamento no navegador e apresenta o resultado como prévia PNG.
-- A documentação descreve os limites atuais: as opções de filtro ainda não controlam o algoritmo, e a montagem e o download da assinatura final não estão implementados.
+- A prévia final é recomposta automaticamente com os dados profissionais, RQE, especialidade e frases extras selecionados.
+- A assinatura composta pode ser baixada em PNG; o processamento e a composição acontecem localmente no navegador.
+- Foram adicionados controles de espessura, transparência, cor da tinta e suavização, com atualização automática da prévia e do PNG final.
+- A imagem final passou a ter dimensões fixas de 420 × 120 pixels, ajustando o conteúdo completo sem recortes.
+- O ajuste de tamanho foi substituído por um slider de escala de 50% a 200%; a assinatura reduz ou amplia proporcionalmente para acompanhar o espaço restante quando o texto muda.
+- Os ajustes avançados de segmentação continuam usando as configurações internas do algoritmo.

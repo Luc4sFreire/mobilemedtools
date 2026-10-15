@@ -1,10 +1,13 @@
+/* Fontes remotas preferidas; a lista inclui alternativas locais se não houver rede. */
 @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+/* Reseta a margem padrão e faz medidas incluírem padding e borda. */
 *{
     margin: 0;
     box-sizing: border-box;
 }
 
+/* Tokens compartilhados de tipografia, tamanhos, cores e gradientes do produto. */
 :root{
     --font-title: "Bodoni Moda", serif;
     --font-text: "Montserrat", sans-serif;
@@ -26,6 +29,7 @@
     --background-gradiente-invert-1: linear-gradient(to left, #004fb6, #0077B6);
 }
 
+/* Fundo base visto atrás dos painéis translúcidos da aplicação. */
 body{
     background-color: var(--color-4);
 }
