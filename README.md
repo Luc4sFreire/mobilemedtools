@@ -13,7 +13,7 @@
 
 ## Sobre
 
-O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed. O módulo atual, o **Gerador de Assinatura**, transforma uma foto ou digitalização de uma assinatura em um PNG limpo, com fundo branco ou transparente, e o compõe com os dados profissionais (nome, CRM/CRMV/CRO, RQE, especialidade e frases extras) em uma imagem final de **420 × 120 px**.
+O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed. O módulo atual transforma uma foto ou digitalização de uma assinatura em um PNG limpo, com fundo branco ou transparente, e o compõe com os dados profissionais (nome, CRM/CRMV/CRO, RQE, especialidade e frases extras) em uma imagem final de **420 × 120 px**.
 
 > 🔒 **Privacidade:** todo o processamento e a composição acontecem localmente no navegador. A imagem não é enviada a nenhum servidor nem armazenada.
 
@@ -35,7 +35,6 @@ O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed
 | Dados profissionais | ✅ Implementado | Nome, tipo e número de registro, RQE, especialidade e frases extras |
 | Pré-processamento da imagem | ✅ Implementado | Segmentação da tinta no `canvas`, com prévia atualizada a cada ajuste |
 | Montagem e download | ✅ Implementado | Composição em 420 × 120 px e exportação em PNG |
-| Ajustes avançados de segmentação | 🚧 Em desenvolvimento | Iluminação, limiares e remoção de manchas usam hoje valores internos |
 
 ## Como funciona
 
@@ -55,7 +54,10 @@ Fechamento de lacunas ──► Remoção de manchas ──► Espessura (dilata
 Suavização das bordas ──► Aplicação da cor/transparência
    │
    ▼
-Composição com os dados profissionais (canvas 420 × 120 px) ──► PNG
+Composição com os dados profissionais (canvas 420 × 120 px)
+   │
+   ▼
+Download no formato PNG.
 ```
 
 A assinatura aparece acima dos dados profissionais. Ela se ajusta ao espaço que sobra conforme o texto cresce; se o texto não couber nem na escala mínima, a interface pede que você reduza as frases.
@@ -122,14 +124,11 @@ A aplicação abre em `http://localhost:3000`.
 
 ## Tecnologias
 
-- [React 19](https://react.dev/) e [Vite 8](https://vite.dev/)
+- [React 19](https://react.dev/)
+- [Vite 8](https://vite.dev/)
 - JavaScript (ES Modules) e Canvas API, sem bibliotecas de processamento de imagem
 - ESLint com plugins de React Hooks e React Refresh
 - Hospedagem na [Vercel](https://vercel.com/)
-
-## Histórico de mudanças
-
-Veja o [CHANGELOG.md](CHANGELOG.md).
 
 ## Contribuindo
 
@@ -149,4 +148,4 @@ Distribuído sob a licença MIT. Veja [LICENSE](LICENSE).
 
 ---
 
-Feito por [Lucas Freire](https://github.com/Luc4sFreire)
+Feito por [Pedro Freire](https://github.com/Luc4sFreire)
