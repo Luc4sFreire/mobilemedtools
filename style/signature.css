@@ -14,6 +14,12 @@ main{
     -webkit-backdrop-filter: blur(10px);
 }
 
+.signatureIntro{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 /* Esconde eventual input legado com id file. */
 #file{display: none;}
 
