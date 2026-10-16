@@ -404,9 +404,9 @@ export function useSignature(){
         if (!hasCurrentPreview || isProcessing || isComposing) return
 
         const link = document.createElement("a")
-        const baseName = file?.name.replace(/\.[^.]+$/, "") || "assinatura"
+        const baseName = professionalName || "assinatura"
         link.href = previewUrl
-        link.download = `${baseName}-final.png`
+        link.download = `Assinatura-${baseName}.png`
         document.body.appendChild(link)
         link.click()
         link.remove()
