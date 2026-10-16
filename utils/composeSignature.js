@@ -88,14 +88,16 @@ export async function composeSignature(imageUrl, details, options = {}) {
         // Começa logo após a área da assinatura; não desenha divisor entre os elementos.
         let textY = PADDING + signatureAreaHeight
         // Usa texto escuro sobre branco ou transparência, garantindo contraste.
-        context.fillStyle = options.transparente ? "#111827" : "#1f2937"
+        context.fillStyle = options.transparente ? "#000" : "#000"
+        // Centraliza cada linha no eixo horizontal da imagem final.
+        context.textAlign = "center"
 
         // Cada linha foi previamente medida e quebrada para caber na largura útil.
         textLayout.lines.forEach((line) => {
             context.font = `${line.emphasis ? "700" : "400"} ${line.fontSize}px Arial, sans-serif`
             // Canvas recebe a coordenada da linha de base, não o topo da caixa do texto.
             textY += line.fontSize
-            context.fillText(line.text, PADDING, textY, contentWidth)
+            context.fillText(line.text, FINAL_WIDTH / 2, textY, contentWidth)
             // Avança até a próxima linha respeitando seu espaçamento vertical.
             textY += line.lineHeight - line.fontSize
         })
