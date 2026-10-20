@@ -6,7 +6,7 @@
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.1.0-blue)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.1-blue)
 ![Licença](https://img.shields.io/github/license/Luc4sFreire/mobilemedtools)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
