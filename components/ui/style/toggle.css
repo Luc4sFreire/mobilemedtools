@@ -1,0 +1,61 @@
+@import url('../../../style/index.css');
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* esconde o checkbox, mas mantém acessível ao teclado */
+.toggle__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* trilha */
+.toggle__track {
+  position: relative;
+  width: 46px;
+  height: 20px;
+  background: #a8a8a8;          /* cor desligado */
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+/* bolinha */
+.toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+/* estado ligado */
+.toggle__input:checked + .toggle__track {
+  background: var(--color-3b);          /* ciano da imagem */
+}
+
+.toggle__input:checked + .toggle__track .toggle__thumb {
+  transform: translateX(26px);  /* largura da trilha - bolinha - 2 × margem */
+}
+
+/* foco via teclado */
+.toggle__input:focus-visible + .toggle__track {
+  outline: 2px solid #00bcd4;
+  outline-offset: 2px;
+}
+
+/* desabilitado */
+.toggle--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

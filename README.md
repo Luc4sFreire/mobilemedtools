@@ -2,10 +2,11 @@
 
 # 🩺 MobilemedTools
 
-**Gere assinaturas médicas padronizadas a partir de uma foto da sua assinatura manuscrita, direto no navegador.**
+**Ferramentas para assinaturas profissionais e geração de senhas, direto no navegador.**
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.1.0-blue)
 ![Licença](https://img.shields.io/github/license/Luc4sFreire/mobilemedtools)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
@@ -13,28 +14,25 @@
 
 ## Sobre
 
-O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed. O módulo atual transforma uma foto ou digitalização de uma assinatura em um PNG limpo, com fundo branco ou transparente, e o compõe com os dados profissionais (nome, CRM/CRMV/CRO, RQE, especialidade e frases extras) em uma imagem final de **420 × 120 px**.
+O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed. A versão **1.1.0** oferece um gerador de assinaturas profissionais e um gerador de senhas, executados no navegador.
 
-> 🔒 **Privacidade:** todo o processamento e a composição acontecem localmente no navegador. A imagem não é enviada a nenhum servidor nem armazenada.
+> 🔒 **Privacidade:** o processamento das imagens e a geração das senhas acontecem localmente no navegador. As imagens selecionadas não são enviadas a um servidor nem armazenadas pela aplicação.
 
 ## Funcionalidades
 
-- 📁 Seleção de qualquer imagem (`image/*`) com a assinatura manuscrita
-- 🧹 Remoção automática de fundo e correção de iluminação, mesmo em fotos com sombras
-- 🎛️ Ajustes com prévia imediata: escala (50% a 200%), espessura do traço (-10 a +10), cor da tinta (preto puro ou cor original), suavização das bordas e fundo transparente
-- 👨‍⚕️ Três tipos de profissional: **CRM** (médico), **CRMV** (veterinário) e **CRO** (dentista)
-- 🏷️ Dois formatos de registro: padrão (`CRM: 12345`) e compacto com estado (`CRM/SP 12345`)
-- ➕ Campos opcionais: RQE, especialidade e quantas frases adicionais forem necessárias
-- 📐 Saída com dimensões fixas (420 × 120 px), com o texto ajustado automaticamente ao espaço disponível
-- ⬇️ Download em PNG (`Assinatura-<nome>.png`)
+- **Assinaturas:** selecione uma foto, remova o fundo e ajuste iluminação, escala, espessura, cor e suavização. Inclua nome, registro profissional (CRM/CRMV/CRO), RQE, especialidade e frases extras; a saída é um PNG de **420 × 120 px**.
+- **Senhas:** gere de 1 a 50 senhas com prefixo configurável, comprimento do sufixo, letras maiúsculas e caracteres especiais. Copie cada resultado pela interface.
 
 ## Estado dos módulos
 
 | Módulo | Estado | Descrição |
 | --- | --- | --- |
-| Dados profissionais | ✅ Implementado | Nome, tipo e número de registro, RQE, especialidade e frases extras |
-| Pré-processamento da imagem | ✅ Implementado | Segmentação da tinta no `canvas`, com prévia atualizada a cada ajuste |
-| Montagem e download | ✅ Implementado | Composição em 420 × 120 px e exportação em PNG |
+| Gerador de assinaturas | ✅ Implementado | Processamento local de imagem, dados profissionais, prévia e download em PNG |
+| Gerador de senhas — Padrão | ✅ Implementado | Prefixo, quantidade, comprimento, opções de caracteres e cópia |
+| Gerador de senhas — Implantação | ⚠️ Em desenvolvimento | Atualmente reproduz o comportamento do modo Padrão |
+| Gerador de senhas — Avançado | 🚧 Planejado | A opção aparece no menu, mas a geração ainda não foi implementada |
+
+> **Nota sobre senhas:** o gerador atual usa `Math.random()`, que não é uma fonte criptograficamente segura. Não use as senhas produzidas para contas ou sistemas que exijam credenciais de alta segurança.
 
 ## Como funciona
 
@@ -62,6 +60,8 @@ Download no formato PNG.
 
 A assinatura aparece acima dos dados profissionais. Ela se ajusta ao espaço que sobra conforme o texto cresce; se o texto não couber nem na escala mínima, a interface pede que você reduza as frases.
 
+No gerador de senhas, o modo **Padrão** permite definir prefixo, quantidade, tamanho do sufixo após `@`, uso de caracteres especiais e letras maiúsculas. As senhas são geradas quando você aciona **Gerar Novas Senhas** e podem ser copiadas individualmente.
+
 ## Primeiros passos
 
 ### Pré-requisitos
@@ -88,15 +88,23 @@ A aplicação abre em `http://localhost:3000`.
 | `npm run preview` | Serve localmente o build de produção |
 | `npm run lint` | Executa o ESLint |
 
-> Ainda não há suíte de testes automatizados configurada.
+> Ainda não há suíte de testes automatizados configurada. O projeto não define script de testes.
 
 ## Como usar
+
+### Gerar uma assinatura
 
 1. Clique em **Selecionar Imagem da Assinatura** e escolha a foto.
 2. Escolha o tipo de profissional e preencha nome e registro.
 3. Em **Configurações Avançadas**, ative RQE, especialidade ou frases adicionais, se precisar.
-4. Em **Personalização da Imagem**, ajuste escala, espessura, cor e transparência até ficar satisfeito. Use o botão de redefinir para voltar aos padrões.
+4. Em **Personalização da Imagem**, ajuste escala, espessura, cor e transparência. Use **Restaurar padrão** para voltar às opções iniciais.
 5. Confira a **Prévia final** e faça o download do PNG.
+
+### Gerar senhas
+
+1. Selecione **Senha** no menu e mantenha o modo **Padrão**.
+2. Ajuste o prefixo, a quantidade, o comprimento do sufixo e as opções de caracteres.
+3. Clique em **Gerar Novas Senhas** e use o botão de cópia ao lado do resultado desejado.
 
 💡 **Dica:** fotografe a assinatura em papel branco, com boa luz e sem dobras para obter o melhor resultado.
 
@@ -105,15 +113,21 @@ A aplicação abre em `http://localhost:3000`.
 ```text
 .
 ├── components/
-│   └── SignatureWorkspace.jsx   # Interface do módulo de assinatura
+│   ├── SignatureWorkspace.jsx   # Interface do módulo de assinatura
+│   ├── Header.jsx               # Navegação entre módulos
+│   ├── PasswordWorkspace.jsx    # Interface do módulo de senhas
+│   ├── subcomponents/           # Modos do gerador de senhas
+│   └── ui/                      # Componentes reutilizáveis
 ├── hooks/
-│   └── useSignature.js          # Estado, validação e fluxo de processamento
+│   ├── useSignature.js          # Estado, validação e fluxo de processamento
+│   └── usePassword.js           # Configuração e geração de senhas
 ├── utils/
 │   ├── processImage.js          # Algoritmo de segmentação no canvas
 │   └── composeSignature.js      # Composição final (texto + assinatura) em 420 × 120 px
 ├── style/
 │   ├── index.css                # Estilos globais e variáveis visuais
-│   └── signature.css            # Estilos da interface de assinatura
+│   ├── signature.css            # Estilos da interface de assinatura
+│   └── password.css             # Estilos da interface de senhas
 ├── src/
 │   ├── App.jsx                  # Composição da aplicação
 │   └── main.jsx                 # Ponto de entrada
@@ -127,6 +141,7 @@ A aplicação abre em `http://localhost:3000`.
 - [React 19](https://react.dev/)
 - [Vite 8](https://vite.dev/)
 - JavaScript (ES Modules) e Canvas API, sem bibliotecas de processamento de imagem
+- Web Crypto API não é usada atualmente pelo gerador de senhas; veja a nota de segurança acima
 - ESLint com plugins de React Hooks e React Refresh
 - Hospedagem na [Vercel](https://vercel.com/)
 

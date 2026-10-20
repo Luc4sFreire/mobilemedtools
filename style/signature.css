@@ -9,7 +9,8 @@ main{
     padding: 40px;
     max-width: 70%;
     border-radius: 30px;
-    background-color: rgba(249, 249, 249, 0.145);
+    border: 1px solid #cacaca46;
+    background-color: rgba(249, 249, 249, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
