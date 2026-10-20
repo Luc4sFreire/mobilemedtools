@@ -100,13 +100,13 @@ A aplicação abre em `http://localhost:3000`.
 4. Em **Personalização da Imagem**, ajuste escala, espessura, cor e transparência. Use **Restaurar padrão** para voltar às opções iniciais.
 5. Confira a **Prévia final** e faça o download do PNG.
 
+💡 **Dica:** fotografe a assinatura em papel branco, com boa luz e sem dobras para obter o melhor resultado.
+
 ### Gerar senhas
 
 1. Selecione **Senha** no menu e mantenha o modo **Padrão**.
 2. Ajuste o prefixo, a quantidade, o comprimento do sufixo e as opções de caracteres.
 3. Clique em **Gerar Novas Senhas** e use o botão de cópia ao lado do resultado desejado.
-
-💡 **Dica:** fotografe a assinatura em papel branco, com boa luz e sem dobras para obter o melhor resultado.
 
 ## Estrutura do projeto
 
