@@ -6,7 +6,7 @@
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.1.0-blue)
+![Versão](https://img.shields.io/badge/vers%C3%A3o-1.1-blue)
 ![Licença](https://img.shields.io/github/license/Luc4sFreire/mobilemedtools)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
@@ -14,7 +14,7 @@
 
 ## Sobre
 
-O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed. A versão **1.1.0** oferece um gerador de assinaturas profissionais e um gerador de senhas, executados no navegador.
+O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed. A versão **1.1** oferece um gerador de assinaturas profissionais e um gerador de senhas, executados no navegador.
 
 > 🔒 **Privacidade:** o processamento das imagens e a geração das senhas acontecem localmente no navegador. As imagens selecionadas não são enviadas a um servidor nem armazenadas pela aplicação.
 
@@ -100,13 +100,13 @@ A aplicação abre em `http://localhost:3000`.
 4. Em **Personalização da Imagem**, ajuste escala, espessura, cor e transparência. Use **Restaurar padrão** para voltar às opções iniciais.
 5. Confira a **Prévia final** e faça o download do PNG.
 
+💡 **Dica:** fotografe a assinatura em papel branco, com boa luz e sem dobras para obter o melhor resultado.
+
 ### Gerar senhas
 
 1. Selecione **Senha** no menu e mantenha o modo **Padrão**.
 2. Ajuste o prefixo, a quantidade, o comprimento do sufixo e as opções de caracteres.
 3. Clique em **Gerar Novas Senhas** e use o botão de cópia ao lado do resultado desejado.
-
-💡 **Dica:** fotografe a assinatura em papel branco, com boa luz e sem dobras para obter o melhor resultado.
 
 ## Estrutura do projeto
 
