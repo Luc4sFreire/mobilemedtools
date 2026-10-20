@@ -14,7 +14,7 @@
 
 ## Sobre
 
-O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed. A versão **1.1.0** oferece um gerador de assinaturas profissionais e um gerador de senhas, executados no navegador.
+O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed. A versão **1.1** oferece um gerador de assinaturas profissionais e um gerador de senhas, executados no navegador.
 
 > 🔒 **Privacidade:** o processamento das imagens e a geração das senhas acontecem localmente no navegador. As imagens selecionadas não são enviadas a um servidor nem armazenadas pela aplicação.
 
