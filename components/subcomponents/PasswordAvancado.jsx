@@ -20,8 +20,8 @@ function PasswordAvancado() {
     const [sheet, setSheet] = useState(null);
     const [emailColumn, setEmailColumn] = useState(0);
     const [credentialRows, setCredentialRows] = useState([]);
-    const [prefix, setPrefix] = useState("");
-    const [size, setSize] = useState(16);
+    const [prefix, setPrefix] = useState("mobile");
+    const [size, setSize] = useState(8);
     const [special, setSpecial] = useState(false);
     const [onlyUpper, setOnlyUpper] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -134,7 +134,7 @@ function PasswordAvancado() {
         importFile(event.dataTransfer.files?.[0]);
     }
 
-    const progressForSize = `${((size - 12) / 20) * 100}%`;
+    const progressForSize = `${((size - 4) / 28) * 100}%`;
 
     return (
         <>
@@ -188,7 +188,7 @@ function PasswordAvancado() {
                         <input
                             id="advanced-size"
                             type="range"
-                            min={12}
+                            min={4}
                             max={32}
                             step={1}
                             value={size}
@@ -203,7 +203,7 @@ function PasswordAvancado() {
                     <div className="labels password-config-uppercase">
                         <Toggle checked={onlyUpper} onChange={setOnlyUpper} label="Apenas letras maiúsculas" />
                     </div>
-                    <p className="input-hint">Maiúsculas e números são obrigatórios. Minúsculas e caracteres especiais seguem as opções acima. O prefixo é previsível e fica fora do comprimento aleatório.</p>
+                    <p className="input-hint">Maiúsculas e números são obrigatórios. O prefixo padrão é “mobile” e fica fora do comprimento aleatório.</p>
                     {sheet && (
                         <div className="advanced-column-select">
                             <label htmlFor="advanced-email-column">Coluna de e-mail em {sheet.fileName}</label>

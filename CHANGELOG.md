@@ -22,7 +22,7 @@ Este arquivo registra alterações relevantes para quem usa ou mantém o Mobilem
 ### Alterado
 
 - O modo Implantação grava alterações no armazenamento local de forma síncrona e só confirma a ação na interface quando a persistência termina. Falhas de armazenamento são reportadas.
-- Senhas agora usam parte aleatória de 12 a 32 caracteres, prefixo opcional com limite de 24 caracteres e valor inicial aleatório de 16 caracteres. Maiúsculas e números são obrigatórios; minúsculas e caracteres especiais são opcionais.
+- Senhas agora usam uma parte aleatória de 4 a 32 caracteres, iniciada em 8, e o prefixo `mobile` por padrão. Maiúsculas e números são obrigatórios; minúsculas e caracteres especiais são opcionais.
 - A seleção de assinatura está limitada a PNG, JPEG, WebP, GIF, BMP e AVIF, com no máximo 12 MB e 12 megapixels. GIFs são exportados como imagem estática.
 - Campos profissionais têm limites de comprimento, e o módulo permite até cinco frases adicionais de até 120 caracteres.
 - A prévia é recomposta quando imagem, opções ou dados profissionais mudam; o download só fica disponível quando representa o estado atual.

@@ -37,13 +37,13 @@ function shuffle(characters) {
 }
 
 // Mantém as mesmas regras nos modos Padrão, Implantação e Avançado.
-export function generatePassword({ prefix = "", size = 16, special = false, onlyUpper = false } = {}) {
+export function generatePassword({ prefix = "mobile", size = 8, special = false, onlyUpper = false } = {}) {
     const groups = [CHARACTER_GROUPS.uppercase];
     if (!onlyUpper) groups.push(CHARACTER_GROUPS.lowercase);
     groups.push(CHARACTER_GROUPS.numbers);
     if (special) groups.push(CHARACTER_GROUPS.special);
 
-    const length = Math.min(32, Math.max(12, Math.round(Number(size) || 16)));
+    const length = Math.min(32, Math.max(4, Math.round(Number(size) || 8)));
     const alphabet = groups.join("");
     const requiredCharacters = groups.map(pickCharacter);
     const remainingCharacters = Array.from(

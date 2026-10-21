@@ -31,12 +31,12 @@ function loadSavedUsers() {
 
 // Hook customizado que concentra toda a lógica de geração de senhas.
 export function usePassword({ loadSavedUsersOnMount = true } = {}) {
-    // Prefixo opcional; o padrão vazio evita uma parte fixa e previsível.
-    const [prefix, setPrefix] = useState("");
+    // Prefixo padrão solicitado; pode ser removido ou personalizado.
+    const [prefix, setPrefix] = useState("mobile");
     // Quantidade de senhas a serem geradas de uma vez
     const [qtde, setQtde] = useState(1);
-    // Tamanho da parte aleatória da senha (mínimo 12 caracteres).
-    const [size, setSize] = useState(16);
+    // Tamanho padrão da parte aleatória; o intervalo permitido vai de 4 a 32.
+    const [size, setSize] = useState(8);
     // Lista com as senhas geradas
     const [pass, setPass] = useState([]);
     // Define se os caracteres especiais serão incluídos
@@ -173,7 +173,7 @@ export function usePassword({ loadSavedUsersOnMount = true } = {}) {
     // Handlers para ligar os campos do formulário ao estado.
     const handlePrefix = (e) => setPrefix(e.target.value.slice(0, 24));
     const handleNumPass = (e) => setQtde(Number(e.target.value));
-    const handleSizePass = (e) => setSize(Math.min(32, Math.max(12, Number(e.target.value))));
+    const handleSizePass = (e) => setSize(Math.min(32, Math.max(4, Number(e.target.value))));
     // Recebem direto o valor booleano (checked) de um checkbox/switch customizado
     const handleSpecial = (checked) => setSpecial(checked);
     const handleOnlyUpper = (checked) => setOnlyUpper(checked);

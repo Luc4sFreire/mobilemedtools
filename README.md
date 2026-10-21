@@ -29,7 +29,7 @@ A aplicação é uma SPA React/Vite. O processamento de imagens e a geração de
 
 ### Gerador de senhas
 
-- Gera de 1 a 50 senhas por vez. A parte aleatória tem de 12 a 32 caracteres, sem contar o prefixo opcional de até 24 caracteres.
+- Gera de 1 a 50 senhas por vez. A parte aleatória inicia com 8 caracteres e pode ter de 4 a 32; o prefixo `mobile` vem preenchido por padrão e não entra nessa contagem.
 - Garante ao menos uma letra maiúscula e um número; minúsculas podem ser desativadas e caracteres especiais podem ser ativados.
 - Usa a API Web Crypto do navegador para sortear os caracteres e embaralhá-los.
 - O modo Padrão mostra e permite copiar as senhas geradas.

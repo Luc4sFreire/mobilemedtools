@@ -61,17 +61,17 @@ function PasswordDefault(){
                         <label htmlFor="sizePass">Comprimento aleatório</label>
                         <output className="range-value" htmlFor="sizePass">{pass.size}</output>
                     </div>
-                    {/* Comprimento da trilha preenchida, calculado para a faixa de 12 a 32. */}
+                    {/* Comprimento da trilha preenchida, calculado para a faixa de 4 a 32. */}
                     <input 
                         id="sizePass"
                         type="range" 
                         value={pass.size}
-                        min={12}
+                        min={4}
                         max={32}
                         step={1}
                         onChange={pass.handleSizePass}
                         className="range-slider"
-                        style={{ "--range-progress": `${((pass.size - 12) / 20) * 100}%` }}
+                        style={{ "--range-progress": `${((pass.size - 4) / 28) * 100}%` }}
                     />
                 </div>
                 {/* Opções booleanas ativam caracteres especiais ou removem minúsculas. */}
@@ -81,7 +81,7 @@ function PasswordDefault(){
                 <div className="labels password-config-uppercase" id="upperPass">
                     <Toggle checked={pass.onlyUpper} onChange={pass.handleOnlyUpper} label="Apenas Letras Maiúsculas" />
                 </div>
-                <p className="input-hint password-config-hint">Sem prefixo, a senha contém apenas caracteres aleatórios. Prefixos personalizados são previsíveis.</p>
+                <p className="input-hint password-config-hint">O prefixo padrão é “mobile” e não entra no comprimento aleatório. Prefixos são previsíveis.</p>
                 <button className="password-config-generate" type="button" onClick={generatePasswords}>Gerar Novas Senhas</button>
             </section>
             {/* Resultados são atualizados a cada geração e copiados individualmente. */}
