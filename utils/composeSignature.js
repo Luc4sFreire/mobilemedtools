@@ -1,6 +1,8 @@
-// Dimensões físicas obrigatórias do PNG final.
+// Dimensões lógicas usadas para compor o layout que será exibido a 420 × 120 CSS px.
 const FINAL_WIDTH = 420
 const FINAL_HEIGHT = 120
+// Renderiza três vezes acima do tamanho lógico para melhorar antialiasing e nitidez.
+const OUTPUT_SCALE = 3
 // Margem uniforme entre o conteúdo e as bordas do arquivo final.
 const PADDING = 10
 // Preserva uma área mínima para que a imagem manuscrita não desapareça quando há texto.
@@ -13,27 +15,33 @@ const MIN_TEXT_SCALE = 0.45
  *
  * A função carrega a imagem, mede e quebra os textos, reduz a fonte se necessário,
  * reserva o espaço vertical para assinatura e texto, desenha ambos em um canvas
- * de 420 × 120 px e resolve com um Blob PNG. Lança erro para falhas de leitura,
+ * área lógica de 420 × 120 px, renderiza em 3× e resolve com um PNG de 1260 × 360 px.
+ * Lança erro para falhas de leitura,
  * canvas ou conteúdo que não caiba nem na escala mínima.
  *
  * @param {string} imageUrl URL local do PNG da assinatura processada.
  * @param {{text: string, emphasis?: boolean}[]} details Linhas textuais a compor.
  * @param {{transparente?: boolean, escala?: number}} options Opções do fundo e escala.
- * @returns {Promise<Blob>} PNG final, com as dimensões físicas definidas acima.
+ * @returns {Promise<Blob>} PNG final em resolução 3× (1260 × 360 px).
  */
 export async function composeSignature(imageUrl, details, options = {}) {
     // Decodifica o PNG antes de calcular seu tamanho de exibição.
     const image = await loadImage(imageUrl)
-    // Este é o canvas efetivamente exportado; sua dimensão nunca depende do conteúdo.
+    // A área lógica continua 420 × 120; o bitmap exportado tem três vezes essa resolução.
     const canvas = document.createElement("canvas")
-    canvas.width = FINAL_WIDTH
-    canvas.height = FINAL_HEIGHT
+    canvas.width = FINAL_WIDTH * OUTPUT_SCALE
+    canvas.height = FINAL_HEIGHT * OUTPUT_SCALE
 
     // Um contexto nulo impede qualquer desenho, então reporta o problema ao chamador.
     const context = canvas.getContext("2d")
     if (!context) {
         throw new Error("Não foi possível preparar a imagem final.")
     }
+
+    // Ativa a melhor interpolação disponível para ampliar a assinatura no PNG final.
+    context.imageSmoothingEnabled = true
+    context.imageSmoothingQuality = "high"
+    context.scale(OUTPUT_SCALE, OUTPUT_SCALE)
 
     // O fundo é branco por padrão; quando transparente, deixa-se o canvas sem preenchimento.
     if (!options.transparente) {

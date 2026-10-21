@@ -1,5 +1,6 @@
 @import url('../../../style/index.css');
 
+/* Área clicável do switch e alinhamento opcional do rótulo. */
 .toggle {
   display: inline-flex;
   align-items: center;

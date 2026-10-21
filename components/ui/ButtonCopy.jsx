@@ -1,39 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { useNotifications } from "./useNotifications"
 import './style/buttonCopy.css'
 
+// Botão reutilizável de cópia com confirmação visual temporária.
 function ButtonCopy({ text }){
-    const [copy, setCopy] = useState(false);
-    const [isExiting, setIsExiting] = useState(false);
-    const timeoutRef = useRef(null);
+    const { notifySuccess, notifyError } = useNotifications()
 
-    useEffect(() => {
-        return () => clearTimeout(timeoutRef.current);
-    }, []);
-
+    // Copia o conteúdo recebido e informa o resultado como notificação global.
     async function copyText(){
         try{
             await navigator.clipboard.writeText(text);
-            clearTimeout(timeoutRef.current);
-            setIsExiting(false);
-            setCopy(true);
-
-            timeoutRef.current = setTimeout(() => {
-                setIsExiting(true);
-                timeoutRef.current = setTimeout(() => {
-                    setCopy(false);
-                    setIsExiting(false);
-                }, 250);
-            }, 2000);
+            notifySuccess("Senha copiada!", "O texto já está pronto para colar.")
         }catch(err){
             console.error('Falha ao copiar o texto: ', err);
+            notifyError("Não foi possível copiar.", "Verifique a permissão da área de transferência e tente novamente.")
         }
     }
 
     return(
-        <>
-            <button id="btnCopy" onClick={copyText}><div></div></button>
-            {copy ? <span id="success" className={isExiting ? "exiting" : ""}>Senha copiada com sucesso!</span>:''}
-        </>
+        <button type="button" className="btn-copy" onClick={copyText} aria-label="Copiar senha">
+            <div></div>
+        </button>
     )
 }
 

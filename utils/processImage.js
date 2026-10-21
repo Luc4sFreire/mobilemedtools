@@ -2,30 +2,32 @@
 // permanecem com estes padrões durante a normalização.
 export const PADRAO = {
   /* ---------- Opções principais ---------- */
-  espessura: 0,          // px por lado na imagem final: >0 engrossa, <0 afina, 0 mantém (-10 a 10)
+  espessura: 0,          // pixels graduais na saída processada: >0 engrossa, <0 afina (-10 a 10)
+  largura: 0,            // dimensão final opcional; 0 preserva a largura original
+  altura: 0,             // dimensão final opcional; 0 preserva a altura original
   transparente: false,   // true = fundo transparente | false = fundo branco
   pretoPuro: true,       // true = tinta #000000 | false = usa a cor média da tinta original
-  suavizar: true,       // true = bordas com anti-aliasing (blur)
+  suavizar: true,        // transição gradual de opacidade nas bordas da tinta
 
   /* ---------- Avançado ---------- */
   fundoLargura: 32,      // largura do mapa de iluminação; menor = fundo mais suave
   percentilBaixo: 0.005,  // Percentil usado como início do intervalo de contraste (0 a 1)
   percentilAlto: 0.995,   // Percentil usado como fim do intervalo de contraste (0 a 1)
-  margemForte: -20,      // tinta "certa": Otsu + margemForte
-  margemFraca: 15,       // tinta "provável": Otsu + margemFraca
-  raioFecho: 1,          // fecha lacunas de ~2*raio px (0 = desliga)
-  areaMinima: 20         // remove manchas menores que isso (px, na resolução original)
+  margemForte: -20,      // tinta opaca: Otsu + margemForte
+  margemFraca: 55        // limite superior da transição da tinta para o fundo
 };
 
 // Limita o total de pixels de entrada ou saída para evitar alocações de memória excessivas.
 const MAX_PIXELS = 36_000_000;
+const DENSIDADE_PICOS_MIN_DIRECIONAL = 0.01;
+const DENSIDADE_PICOS_MAX_DIRECIONAL = 0.025;
 
 /**
- * Processa o conteúdo de um canvas e o substitui por uma imagem de assinatura
- * segmentada, redimensionada e opcionalmente transparente.
+ * Processa o conteúdo de um canvas e o substitui por uma imagem com o fundo
+ * removido, preservando os traços por meio de uma máscara de opacidade gradual.
  *
- * Etapas: corrige iluminação, converte para tons de cinza, ajusta contraste,
- * detecta os traços, aplica operações morfológicas e grava o resultado no canvas.
+ * Etapas: corrige iluminação e contraste, calcula a cobertura da tinta e grava
+ * o resultado no canvas sem descartar componentes pequenos ou traços claros.
  * O mesmo canvas é alterado; a função retorna dimensões finais e limiar de Otsu.
  */
 export function processImage(canvas, opcoes = {}) {
@@ -50,20 +52,32 @@ export function processImage(canvas, opcoes = {}) {
   // ImageData armazena cada pixel como quatro bytes RGBA consecutivos.
   const img = ctx.getImageData(0, 0, w, h);
   const px = img.data;
+  // Pixels transparentes podem carregar RGB preto sem representar tinta; mistura-os
+  // sobre branco antes da correção de iluminação e usa essa versão opaca como fundo.
+  let origemOpaca = canvas;
+  if (comporTransparenciaSobreBranco(px)) {
+    origemOpaca = novoCanvas(w, h);
+    origemOpaca.getContext("2d").putImageData(img, 0, 0);
+  }
   // Estima o fundo iluminado em baixa resolução e o amplia para o tamanho original.
-  const fundo = estimarFundo(canvas, w, h, cfg.fundoLargura);
+  const fundo = estimarFundo(origemOpaca, w, h, cfg.fundoLargura);
 
   // Corrige a iluminação dividindo cada canal pela estimativa do fundo,
   // converte para luminância e constrói um histograma de níveis de cinza.
   const gray = new Uint8ClampedArray(n);
-  const hist = new Uint32Array(256);
   for (let i = 0, p = 0; i < n; i++, p += 4) {
     const r = (px[p]     * 255) / (fundo[p]     || 1);
     const g = (px[p + 1] * 255) / (fundo[p + 1] || 1);
     const b = (px[p + 2] * 255) / (fundo[p + 2] || 1);
     gray[i] = 0.299 * r + 0.587 * g + 0.114 * b;
-    hist[gray[i]]++;
   }
+
+  // Corrige picos isolados; a mediana direcional só é ativada em uma faixa
+  // diagnosticada de ruído denso, para evitar apagar linhas de um pixel em fontes limpas.
+  suprimirPicosIsolados(gray, w, h);
+
+  const hist = new Uint32Array(256);
+  for (let i = 0; i < n; i++) hist[gray[i]]++;
 
   // Expande o intervalo tonal definido pelos percentis e atualiza os níveis
   // de cinza e o histograma para que a detecção da tinta tenha mais contraste.
@@ -72,41 +86,50 @@ export function processImage(canvas, opcoes = {}) {
   for (let v = 0; v < 256; v++) histC[lut[v]] += hist[v];
   for (let i = 0; i < n; i++) gray[i] = lut[gray[i]];
 
-  // Otsu separa tinta e fundo; as margens formam os limiares forte/fraco
-  // usados pela histerese para preservar traços conectados de baixa intensidade.
+  // Otsu estima a separação tonal. As margens definem uma faixa gradual, sem
+  // exigir conectividade com um pixel escuro para manter uma parte da assinatura.
   const limiar = otsu(histC, n);
-  const forte = Math.max(0, limiar + cfg.margemForte);
-  const fraco = Math.min(254, limiar + cfg.margemFraca);
+  const forte = Math.min(254, Math.max(0, limiar + cfg.margemForte));
+  const limiteFundo = Math.min(255, Math.max(forte + 1, limiar + cfg.margemFraca));
 
   // Escolhe a tinta preta ou calcula a cor média original dos pixels classificados
   // como tinta forte, antes que qualquer redimensionamento altere esses pixels.
   const corTinta = cfg.pretoPuro ? [0, 0, 0] : corMediaTinta(px, gray, n, forte);
 
-  // Redimensiona os tons de cinza antes da binarização para preservar melhor
-  // os traços finos e evitar serrilhado quando a saída tiver outro tamanho.
+  // Redimensiona o plano tonal antes de criar a opacidade para conservar traços
+  // estreitos e bordas suaves quando a saída tiver outro tamanho.
   const cinza = redimensionarCinza(gray, w, h, W, H);
 
-  // Converte parâmetros expressos na resolução de entrada para a escala de saída.
-  const k = Math.sqrt(N / n);
-  const raioFecho = cfg.raioFecho > 0 ? Math.max(1, Math.round(cfg.raioFecho * k)) : 0;
-  const areaMinima = Math.round(cfg.areaMinima * k * k);
+  // A cobertura gradual retém traços claros e antialias sem os fundir com o
+  // fundo. Não há abertura, fechamento ou remoção por área no fluxo padrão.
+  let cobertura = criarCobertura(cinza, N, forte, limiteFundo, cfg.suavizar);
 
-  // Cria a máscara binária (255 = tinta, 0 = fundo) e fecha pequenas falhas.
-  let mask = histerese(cinza, W, H, forte, fraco);
+  // Espessura opcional: usa morfologia sobre a cobertura contínua e interpola
+  // entre raios inteiros, para que frações pequenas alterem as bordas gradualmente.
+  if (cfg.espessura !== 0) {
+    const magnitude = Math.abs(cfg.espessura) * Math.sqrt(N / n);
+    const passosInteiros = Math.floor(magnitude);
+    const fracao = magnitude - passosInteiros;
+    const dilatar = cfg.espessura > 0;
+    let ajustada = passosInteiros > 0
+      ? morfologia(cobertura, W, H, passosInteiros, dilatar)
+      : cobertura;
 
-  if (raioFecho > 0) {
-    mask = morfologia(mask, W, H, raioFecho, true);    // dilata
-    mask = morfologia(mask, W, H, raioFecho, false);   // erode
+    if (fracao > 0) {
+      const proximoPasso = morfologia(ajustada, W, H, 1, dilatar, passosInteiros);
+      const gradual = new Uint8ClampedArray(N);
+      for (let i = 0; i < N; i++) {
+        gradual[i] = ajustada[i] + (proximoPasso[i] - ajustada[i]) * fracao;
+      }
+      ajustada = gradual;
+    }
+    // A cobertura já contém antialias; aplicar uma segunda média aqui apagava
+    // os incrementos fracionários menores e reintroduzia degraus no controle.
+    cobertura = ajustada;
   }
 
-  removerManchas(mask, W, H, areaMinima);
-
-  if (cfg.espessura > 0) mask = morfologia(mask, W, H, cfg.espessura, true);
-  else if (cfg.espessura < 0) mask = morfologia(mask, W, H, -cfg.espessura, false);
-
-  // Opcionalmente suaviza as bordas da máscara, transforma cobertura em RGBA
-  // e atualiza o canvas. Alterar suas dimensões limpa o conteúdo anterior.
-  const cobertura = cfg.suavizar ? suavizar(mask, W, H) : mask;
+  // Converte a cobertura em RGBA e atualiza o canvas; alterar suas dimensões
+  // limpa o conteúdo anterior antes de inserir a imagem processada.
   const saida = new ImageData(W, H);
   escrever(saida.data, cobertura, N, cfg.transparente, corTinta);
 
@@ -134,15 +157,17 @@ function normalizar(op) {
   const inteiro = (v, min, max, padrao) =>
     Math.min(max, Math.max(min, Math.round(num(v, padrao))));
 
-  // Parâmetros morfológicos e de iluminação são limitados antes de serem usados.
-  c.espessura  = inteiro(c.espessura, -10, 10, 0);
-  c.raioFecho  = inteiro(c.raioFecho, 0, 10, 1);
-  c.areaMinima = inteiro(c.areaMinima, 0, 100000, 20);
+  // Parâmetros de espessura, iluminação e contraste são limitados antes do uso.
+  c.espessura  = Math.min(10, Math.max(-10, num(c.espessura, 0)));
   c.fundoLargura = inteiro(c.fundoLargura, 4, 512, 32);
-  c.margemForte = num(c.margemForte, -20);
-  c.margemFraca = num(c.margemFraca, 15);
-  c.percentilBaixo = num(c.percentilBaixo, 0.005);
-  c.percentilAlto = num(c.percentilAlto, 0.995);
+  c.margemForte = Math.min(255, Math.max(-255, num(c.margemForte, -20)));
+  c.margemFraca = Math.min(255, Math.max(-255, num(c.margemFraca, 55)));
+  c.percentilBaixo = Math.min(0.25, Math.max(0, num(c.percentilBaixo, 0.005)));
+  c.percentilAlto = Math.min(1, Math.max(0.75, num(c.percentilAlto, 0.995)));
+  if (c.percentilAlto <= c.percentilBaixo) {
+    c.percentilBaixo = 0.005;
+    c.percentilAlto = 0.995;
+  }
   c.transparente = !!c.transparente;
   c.pretoPuro = !!c.pretoPuro;
   c.suavizar = !!c.suavizar;
@@ -160,6 +185,165 @@ function calcularTamanho(w, h, largura, altura) {
   else if (!H) H = Math.round((h * W) / w);
   else if (!W) W = Math.round((w * H) / h);
   return [Math.max(1, W), Math.max(1, H)];
+}
+
+/**
+ * Compõe RGBA semitransparente sobre branco nos próprios dados lidos do canvas.
+ * Retorna true quando foi necessário gerar uma fonte opaca para estimar o fundo.
+ */
+function comporTransparenciaSobreBranco(data) {
+  let temTransparencia = false;
+  for (let p = 3; p < data.length; p += 4) {
+    if (data[p] < 255) { temTransparencia = true; break; }
+  }
+  if (!temTransparencia) return false;
+
+  for (let p = 0; p < data.length; p += 4) {
+    const alfa = data[p + 3] / 255;
+    if (alfa < 1) {
+      data[p]     = data[p]     * alfa + 255 * (1 - alfa);
+      data[p + 1] = data[p + 1] * alfa + 255 * (1 - alfa);
+      data[p + 2] = data[p + 2] * alfa + 255 * (1 - alfa);
+      data[p + 3] = 255;
+    }
+  }
+  return true;
+}
+
+/**
+ * Substitui valores muito diferentes dos vizinhos quando nenhum vizinho os
+ * confirma. O teste evita remover linhas finas: um trecho conectado fornece
+ * suporte tonal ao próprio traço, enquanto pontos impulsivos ficam isolados.
+ */
+function suprimirPicosIsolados(gray, w, h, permitirFiltroDirecional = true) {
+  if (w < 3 || h < 3) return 0;
+  const desvioMinimo = 120;
+  const toleranciaSuporte = 90;
+  let totalPicos = 0;
+
+  // Conta primeiro para evitar alocar outra imagem quando a entrada está limpa.
+  for (let y = 1; y < h - 1; y++) {
+    const linha = y * w;
+    for (let x = 1; x < w - 1; x++) {
+      const i = linha + x;
+      const centro = gray[i];
+      let soma = 0, suporta = false;
+
+      for (let dy = -1; dy <= 1; dy++) {
+        const vizinho = (y + dy) * w + x - 1;
+        for (let dx = 0; dx < 3; dx++) {
+          if (dy === 0 && dx === 1) continue;
+          const valor = gray[vizinho + dx];
+          soma += valor;
+          if (Math.abs(valor - centro) <= toleranciaSuporte) suporta = true;
+        }
+      }
+
+      const mediaVizinhos = soma / 8;
+      if (!suporta && Math.abs(centro - mediaVizinhos) >= desvioMinimo) {
+        totalPicos++;
+      }
+    }
+  }
+  const densidade = totalPicos / gray.length;
+  // A quantidade não invalida um pico: um ou dois pontos isolados também podem
+  // ser ruído. A regra de suporte tonal acima protege pixels ligados ao traço.
+  if (totalPicos === 0) return 0;
+
+  // A mediana direcional ajuda quando há ruído impulsivo relevante, mas deixa
+  // de ser confiável quando os candidatos ocupam uma parte extrema da imagem.
+  if (
+    permitirFiltroDirecional &&
+    densidade >= DENSIDADE_PICOS_MIN_DIRECIONAL &&
+    densidade <= DENSIDADE_PICOS_MAX_DIRECIONAL
+  ) {
+    filtrarPicosDirecional(gray, w, h);
+    return suprimirPicosIsolados(gray, w, h, false);
+  }
+
+  const corrigido = new Uint8ClampedArray(gray);
+  for (let y = 1; y < h - 1; y++) {
+    const linha = y * w;
+    for (let x = 1; x < w - 1; x++) {
+      const i = linha + x;
+      const centro = gray[i];
+      let soma = 0, suporta = false;
+
+      for (let dy = -1; dy <= 1; dy++) {
+        const vizinho = (y + dy) * w + x - 1;
+        for (let dx = 0; dx < 3; dx++) {
+          if (dy === 0 && dx === 1) continue;
+          const valor = gray[vizinho + dx];
+          soma += valor;
+          if (Math.abs(valor - centro) <= toleranciaSuporte) suporta = true;
+        }
+      }
+
+      const mediaVizinhos = soma / 8;
+      if (!suporta && Math.abs(centro - mediaVizinhos) >= desvioMinimo) {
+        corrigido[i] = mediaVizinhos;
+      }
+    }
+  }
+  gray.set(corrigido);
+  return densidade;
+}
+
+/**
+ * Em ruído impulsivo denso, escolhe a direção com vizinhos mais coerentes e
+ * substitui extremos locais pela mediana daquele eixo. A mediana direcional
+ * remove pontos que interrompem o traço sem aplicar um desfoque isotrópico.
+ */
+function filtrarPicosDirecional(gray, w, h) {
+  if (w < 3 || h < 3) return;
+
+  const original = new Uint8ClampedArray(gray);
+  const filtrado = new Uint8ClampedArray(gray);
+  const diferencaMinima = 80;
+  const diagonal = w + 1;
+
+  for (let y = 1; y < h - 1; y++) {
+    const linha = y * w;
+    for (let x = 1; x < w - 1; x++) {
+      const i = linha + x;
+      const centro = original[i];
+      let menorVariacao = Infinity;
+      let mediana = centro;
+
+      // Pares opostos aproximam a tangente local; o par mais parecido guia a
+      // mediana para não misturar lados distintos de uma borda.
+      const a = original[i - 1], b = original[i + 1];
+      let variacao = Math.abs(a - b);
+      if (variacao < menorVariacao) {
+        menorVariacao = variacao;
+        mediana = a + centro + b - Math.min(a, centro, b) - Math.max(a, centro, b);
+      }
+
+      const c = original[i - w], d = original[i + w];
+      variacao = Math.abs(c - d);
+      if (variacao < menorVariacao) {
+        menorVariacao = variacao;
+        mediana = c + centro + d - Math.min(c, centro, d) - Math.max(c, centro, d);
+      }
+
+      const e = original[i - diagonal], f = original[i + diagonal];
+      variacao = Math.abs(e - f);
+      if (variacao < menorVariacao) {
+        menorVariacao = variacao;
+        mediana = e + centro + f - Math.min(e, centro, f) - Math.max(e, centro, f);
+      }
+
+      const g = original[i - w + 1], hVizinho = original[i + w - 1];
+      variacao = Math.abs(g - hVizinho);
+      if (variacao < menorVariacao) {
+        mediana = g + centro + hVizinho - Math.min(g, centro, hVizinho) - Math.max(g, centro, hVizinho);
+      }
+
+      if (Math.abs(centro - mediana) >= diferencaMinima) filtrado[i] = mediana;
+    }
+  }
+
+  gray.set(filtrado);
 }
 
 /* =====================  Iluminação  ===================== */
@@ -299,162 +483,68 @@ function redimensionarCinza(gray, w, h, W, H) {
   return out;
 }
 
-/* =====================  Máscara  ===================== */
+/* =====================  Opacidade da tinta  ===================== */
 
 /**
- * Segmenta os pixels por histerese: pixels abaixo de `forte` iniciam a busca;
- * pixels abaixo de `fraco` são incluídos somente se estiverem conectados a
- * um pixel forte. A vizinhança considera os oito pixels ao redor.
+ * Mapeia a faixa entre tinta forte e fundo para uma opacidade contínua.
+ * Assim, marcas claras não dependem de conexão com os trechos escuros e os
+ * pixels próximos ao papel viram fundo transparente sem um corte abrupto.
  */
-function histerese(gray, w, h, forte, fraco) {
-  const n = w * h;
-  const mask = new Uint8Array(n);        // 255 = tinta; 0 = fundo/ainda não visitado
-  const pilha = new Int32Array(n);
-  let topo = 0;
+function criarCobertura(gray, n, limiteTinta, limiteFundo, suavizarBordas) {
+  const cobertura = new Uint8ClampedArray(n);
+  const intervalo = Math.max(1, limiteFundo - limiteTinta);
 
-  // Pixels fortes formam as sementes da busca em profundidade.
   for (let i = 0; i < n; i++) {
-    if (gray[i] <= forte) { mask[i] = 255; pilha[topo++] = i; }
+    const t = Math.min(1, Math.max(0, (limiteFundo - gray[i]) / intervalo));
+    // Smootherstep deixa derivadas e curvatura contínuas nos extremos da borda;
+    // pixels muito próximos do papel perdem menos ruído sem enfraquecer o núcleo.
+    const opacidade = suavizarBordas
+      ? t * t * t * (t * (t * 6 - 15) + 10)
+      : (t >= 0.5 ? 1 : 0);
+    cobertura[i] = opacidade * 255;
   }
-
-  // A pilha propaga a máscara pelos vizinhos fracos conectados às sementes.
-  while (topo > 0) {
-    const i = pilha[--topo];
-    const x = i % w, y = (i - x) / w;
-    for (let dy = -1; dy <= 1; dy++) {
-      const ny = y + dy;
-      if (ny < 0 || ny >= h) continue;
-      for (let dx = -1; dx <= 1; dx++) {
-        const nx = x + dx;
-        if (nx < 0 || nx >= w) continue;
-        const j = ny * w + nx;
-        if (!mask[j] && gray[j] <= fraco) { mask[j] = 255; pilha[topo++] = j; }
-      }
-    }
-  }
-  return mask;
+  return cobertura;
 }
 
 /**
  * Executa dilatação (dilatar=true) ou erosão (false) repetindo o passo
- * morfológico `raio` vezes. Alternar cruz e quadrado aproxima um elemento
- * estruturante arredondado, evitando favorecer traços retos ou diagonais.
+ * morfológico `raio` vezes sobre a cobertura, sem binarizar o antialias.
+ * Alternar cruz e quadrado aproxima um elemento estruturante arredondado.
  */
-function morfologia(src, w, h, raio, dilatar) {
-  const alvo = dilatar ? 255 : 0;
-  const neutro = 255 - alvo;
-  let a = src, b = new Uint8Array(w * h);
+function morfologia(src, w, h, raio, dilatar, inicio = 0) {
+  let a = src, b = new Uint8ClampedArray(w * h);
 
   for (let it = 0; it < raio; it++) {
     // Alterna entre quatro vizinhos e oito vizinhos a cada iteração.
-    passoMorfologico(a, b, w, h, alvo, neutro, it % 2 === 0);
+    passoMorfologico(a, b, w, h, dilatar, (inicio + it) % 2 === 0);
     [a, b] = [b, a];
   }
   return a;
 }
 
 /**
- * Calcula uma iteração morfológica: a dilatação marca tinta se qualquer
- * vizinho for tinta; a erosão remove tinta se qualquer vizinho for fundo.
+ * Calcula o máximo (dilatação) ou mínimo (erosão) da cobertura na vizinhança.
  * `cruz` escolhe se as diagonais também fazem parte da vizinhança.
  */
-function passoMorfologico(src, dst, w, h, alvo, neutro, cruz) {
+function passoMorfologico(src, dst, w, h, dilatar, cruz) {
   // Percorre a imagem e trata bordas verificando a existência de cada vizinho.
   for (let y = 0; y < h; y++) {
     const cima = y > 0, baixo = y < h - 1;
     for (let x = 0; x < w; x++) {
       const i = y * w + x;
-      // O próprio pixel já satisfaz o teste se tiver o valor procurado.
-      let achou = src[i] === alvo;
-
-      if (!achou) {
-        const esq = x > 0, dir = x < w - 1;
-        if (
-          (esq && src[i - 1] === alvo) ||
-          (dir && src[i + 1] === alvo) ||
-          (cima && src[i - w] === alvo) ||
-          (baixo && src[i + w] === alvo) ||
-          (!cruz && (
-            (cima && esq && src[i - w - 1] === alvo) ||
-            (cima && dir && src[i - w + 1] === alvo) ||
-            (baixo && esq && src[i + w - 1] === alvo) ||
-            (baixo && dir && src[i + w + 1] === alvo)
-          ))
-        ) achou = true;
-      }
-      dst[i] = achou ? alvo : neutro;
+      const esq = x > 0, dir = x < w - 1;
+      let valor = src[i];
+      if (esq) valor = dilatar ? Math.max(valor, src[i - 1]) : Math.min(valor, src[i - 1]);
+      if (dir) valor = dilatar ? Math.max(valor, src[i + 1]) : Math.min(valor, src[i + 1]);
+      if (cima) valor = dilatar ? Math.max(valor, src[i - w]) : Math.min(valor, src[i - w]);
+      if (baixo) valor = dilatar ? Math.max(valor, src[i + w]) : Math.min(valor, src[i + w]);
+      if (!cruz && cima && esq) valor = dilatar ? Math.max(valor, src[i - w - 1]) : Math.min(valor, src[i - w - 1]);
+      if (!cruz && cima && dir) valor = dilatar ? Math.max(valor, src[i - w + 1]) : Math.min(valor, src[i - w + 1]);
+      if (!cruz && baixo && esq) valor = dilatar ? Math.max(valor, src[i + w - 1]) : Math.min(valor, src[i + w - 1]);
+      if (!cruz && baixo && dir) valor = dilatar ? Math.max(valor, src[i + w + 1]) : Math.min(valor, src[i + w + 1]);
+      dst[i] = valor;
     }
   }
-}
-
-/**
- * Encontra componentes de tinta conectados por vizinhança de oito pixels
- * e elimina os que têm área inferior a areaMin.
- */
-function removerManchas(mask, w, h, areaMin) {
-  // Não há componentes a remover se o limite for zero ou um pixel.
-  if (areaMin <= 1) return;
-  const n = w * h;
-  // visto impede visitar repetidamente o mesmo pixel; fila armazena o componente.
-  const visto = new Uint8Array(n);
-  const fila = new Int32Array(n);
-
-  // Cada pixel de tinta ainda não visitado inicia uma busca em largura.
-  for (let s = 0; s < n; s++) {
-    if (!mask[s] || visto[s]) continue;
-
-    let ini = 0, fim = 1;
-    fila[0] = s;
-    visto[s] = 1;
-
-    // Reúne todos os pixels conectados ao ponto inicial.
-    while (ini < fim) {
-      const i = fila[ini++];
-      const x = i % w, y = (i - x) / w;
-      for (let dy = -1; dy <= 1; dy++) {
-        const ny = y + dy;
-        if (ny < 0 || ny >= h) continue;
-        for (let dx = -1; dx <= 1; dx++) {
-          const nx = x + dx;
-          if (nx < 0 || nx >= w) continue;
-          const j = ny * w + nx;
-          if (mask[j] && !visto[j]) { visto[j] = 1; fila[fim++] = j; }
-        }
-      }
-    }
-
-    // `fim` é o tamanho do componente; componentes menores são ruído.
-    if (fim < areaMin) for (let q = 0; q < fim; q++) mask[fila[q]] = 0;
-  }
-}
-
-/**
- * Suaviza a máscara com uma média 3x3 separável e aplica uma rampa de contraste.
- * Os valores intermediários nas bordas produzem anti-aliasing sem desfocar
- * excessivamente o interior do traço.
- */
-function suavizar(mask, w, h) {
-  // Primeira passada: média horizontal. Índices repetidos preservam as bordas.
-  const tmp = new Uint8Array(w * h);
-  const dst = new Uint8ClampedArray(w * h);
-
-  // Segunda passada: média vertical e remapeamento para recuperar firmeza.
-  for (let y = 0; y < h; y++) {
-    const l = y * w;
-    for (let x = 0; x < w; x++) {
-      const e = l + Math.max(0, x - 1), d = l + Math.min(w - 1, x + 1);
-      tmp[l + x] = (mask[e] + mask[l + x] + mask[d]) / 3;
-    }
-  }
-
-  for (let y = 0; y < h; y++) {
-    const c = Math.max(0, y - 1) * w, m = y * w, b = Math.min(h - 1, y + 1) * w;
-    for (let x = 0; x < w; x++) {
-      const media = (tmp[c + x] + tmp[m + x] + tmp[b + x]) / 3;
-      dst[m + x] = ((media - 30) * 255) / 90;   // 30 vira 0 e 120 vira 255; o tipo limita outros valores.
-    }
-  }
-  return dst;
 }
 
 /* =====================  Saída  ===================== */

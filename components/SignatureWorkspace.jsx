@@ -15,12 +15,17 @@ const professional_options = [
 function SignatureWorkspace(){
     // O hook centraliza dados, processamento de imagem e geração do PNG composto.
     const signature = useSignature()
+    const thicknessLabel = Number(signature.imageOptions.espessura).toLocaleString('pt-BR', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+    })
 
     return(
-        <main id="signature-workspace">
+        <main id="signature-workspace" className="workspace-main">
             {/* Título e instrução inicial sobre o fluxo de criação da assinatura. */}
-            <section className="signatureIntro">
-                <h1>👨‍⚕️ Gerador de Assinatura</h1>
+            <section className="signatureIntro page-intro">
+                <span className="workspace-kicker">FERRAMENTA · GERADOR DE ASSINATURA</span>
+                <h1>Crie suas assinaturas profissionais</h1>
                 <p>Selecione a imagem e preencha os dados do profissional.</p>
             </section>
 
@@ -31,17 +36,13 @@ function SignatureWorkspace(){
                     <input
                         id="signature-file"
                         type="file"
-                        accept="image/*"
+                        accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/avif"
                         onChange={signature.handleFile}
                     />
                 </div>
                 <p>{signature.file?.name}</p>
+                <p className="helper-text">Formatos: PNG, JPEG, WebP, GIF, BMP ou AVIF. Limite: 12 MB e 12 megapixels.</p>
             </section>
-
-            {/* Erros de arquivo, processamento ou composição são apresentados ao usuário. */}
-            {signature.errorMessage && (
-                <p className="signature-message" role="alert">{signature.errorMessage}</p>
-            )}
 
             {/* Opções que determinam quais metadados adicionais entram na composição. */}
             <section className="configSigt">
@@ -110,14 +111,14 @@ function SignatureWorkspace(){
                     </div>
                     <div className="signature-option-field">
                         <label htmlFor="signature-thickness">
-                            Espessura do traço: {signature.imageOptions.espessura}
+                            Espessura do traço: {thicknessLabel} px
                         </label>
                         <input
                             id="signature-thickness"
                             type="range"
                             min="-10"
                             max="10"
-                            step="1"
+                            step="0.1"
                             value={signature.imageOptions.espessura}
                             onChange={(event) => signature.setImageOption(
                                 "espessura",
@@ -125,7 +126,7 @@ function SignatureWorkspace(){
                             )}
                         />
                         <span className="helper-text">
-                            Valores negativos afinam e positivos engrossam o traço.
+                            Ajuste gradual de 0,1 px: valores negativos afinam e positivos engrossam o traço.
                         </span>
                     </div>
                 </div>
@@ -189,15 +190,21 @@ function SignatureWorkspace(){
                         </div>
                     </div>
 
-                    {/* Campos controlados: cada alteração aciona a atualização da prévia. */}
+                    <p className="helper-text">
+                        As informações são aplicadas à prévia quando você sai do campo.
+                    </p>
+
+                    {/* A prévia confirma os dados de texto apenas quando o campo perde foco. */}
                     <div className="labels">
                         <label htmlFor="professional-name">Nome do Profissional (com título):</label>
                         <input
                             id="professional-name"
                             type="text"
+                            maxLength={100}
                             placeholder="Ex: Dr. João Silva"
                             value={signature.professionalName}
                             onChange={(event) => signature.setProfessionalName(event.target.value)}
+                            onBlur={signature.commitProfessionalInfo}
                         />
                     </div>
 
@@ -206,9 +213,11 @@ function SignatureWorkspace(){
                         <input
                             id="professional-credential"
                             type="text"
+                            maxLength={40}
                             placeholder={`${signature.typeP.credentials} 12345/SP`}
                             value={signature.credentialValue}
                             onChange={(event) => signature.setCredentialValue(event.target.value)}
+                            onBlur={signature.commitProfessionalInfo}
                         />
                         {/* Seleciona a forma textual do CRM/CRMV/CRO na imagem final. */}
                         <div className="typeCrm">
@@ -239,9 +248,11 @@ function SignatureWorkspace(){
                                 <input
                                     id="professional-rqe"
                                     type="text"
+                                    maxLength={40}
                                     placeholder="RQE 40499/SP"
                                     value={signature.rqeValue}
                                     onChange={(event) => signature.setRqeValue(event.target.value)}
+                                    onBlur={signature.commitProfessionalInfo}
                                 />
                                 {/* O formato selecionado também compõe o conteúdo final. */}
                                 <div className="typeRQE">
@@ -270,9 +281,11 @@ function SignatureWorkspace(){
                                 <input
                                     id="specialty"
                                     type="text"
+                                    maxLength={80}
                                     placeholder="Ex: Médico Radiologista"
                                     value={signature.specialty}
                                     onChange={(event) => signature.setSpecialty(event.target.value)}
+                                    onBlur={signature.commitProfessionalInfo}
                                 />
                             </div>
                         )}
@@ -299,9 +312,11 @@ function SignatureWorkspace(){
                                         <textarea
                                             id={`extra-phrase-${phrase.id}`}
                                             rows={2}
+                                            maxLength={120}
                                             placeholder="Digite uma frase adicional"
                                             value={phrase.value}
                                             onChange={(event) => signature.updatePhrase(phrase.id, event.target.value)}
+                                            onBlur={signature.commitProfessionalInfo}
                                         />
                                     </div>
                                 ))}
@@ -309,8 +324,9 @@ function SignatureWorkspace(){
                                     type="button"
                                     className="add-phrase-button"
                                     onClick={signature.addPhrases}
+                                    disabled={signature.phrases.length >= 5}
                                 >
-                                    + Adicionar outra frase
+                                    {signature.phrases.length >= 5 ? "Limite de 5 frases atingido" : "+ Adicionar outra frase"}
                                 </button>
                             </div>
                         )}
@@ -324,7 +340,8 @@ function SignatureWorkspace(){
                 {signature.isComposing && <p role="status">Atualizando prévia final...</p>}
                 {signature.hasCurrentPreview && (
                     <div className="image-preview-container">
-                        <h2>Prévia final da assinatura (420 × 120 px)</h2>
+                        <h2>Prévia final da assinatura (PNG 1260 × 360 px)</h2>
+                        <p className="helper-text">Exibida em 420 × 120 px; arquivo renderizado em resolução 3×.</p>
                         <img
                             src={signature.previewUrl}
                             className="image-preview"

@@ -7,7 +7,7 @@
 main{
     margin: 20px auto;
     padding: 40px;
-    max-width: 70%;
+    max-width: 60%;
     border-radius: 30px;
     border: 1px solid #cacaca46;
     background-color: rgba(249, 249, 249, 0.1);
@@ -210,6 +210,9 @@ main{
 
 /* Ajusta a zona de upload para sua altura acompanhar os elementos internos. */
 .container-file.upload-section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     height: auto;
     min-height: 0;
     margin-top: 20px;
@@ -488,4 +491,443 @@ main{
     .signature-image-options-header > button{
         align-self: stretch;
     }
+}
+
+/* Painel de assinatura com superfícies claras e acentos da marca Mobilemed. */
+#signature-workspace {
+    color: var(--text);
+}
+
+#signature-workspace h1,
+#signature-workspace h2,
+#signature-workspace h3,
+#signature-workspace p {
+    color: inherit;
+}
+
+#signature-workspace .signatureIntro {
+    align-items: flex-start;
+    margin-bottom: 26px;
+}
+
+#signature-workspace .signatureIntro h1 {
+    color: #173c62;
+    font-size: clamp(26px, 3vw, 32px);
+    letter-spacing: -.035em;
+}
+
+#signature-workspace .signatureIntro p {
+    margin: 9px 0 0;
+    color: var(--text-muted);
+    font-size: 15px;
+    letter-spacing: 0;
+}
+
+#signature-workspace .container-file.upload-section,
+#signature-workspace .configSigt,
+#signature-workspace .signature-person,
+#signature-workspace .configImage {
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(22, 62, 99, .035);
+}
+
+#signature-workspace .container-file.upload-section {
+    margin: 0;
+    padding: 24px;
+    border: 1px dashed #9cbdd6;
+    background: #f6fbff;
+}
+
+#signature-workspace .file-input-wrapper {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 10px;
+    background: var(--brand-blue);
+    box-shadow: 0 5px 13px rgba(7, 91, 167, .16);
+}
+
+#signature-workspace .file-input-wrapper:hover {
+    background: #064c8b;
+}
+
+#signature-workspace .file-input-wrapper > label {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 650;
+}
+
+#signature-workspace .container-file.upload-section > p {
+    margin: 10px 0 0;
+    padding: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    letter-spacing: 0;
+    cursor: default;
+}
+
+#signature-workspace .container-file.upload-section > p:first-of-type:empty {
+    display: none;
+}
+
+#signature-workspace .container-file.upload-section > .helper-text {
+    line-height: 1.5;
+}
+
+#signature-workspace .configSigt,
+#signature-workspace .signature-person,
+#signature-workspace .configImage {
+    margin: 18px 0 0;
+    padding: 22px;
+    color: var(--text);
+}
+
+#signature-workspace .configSigt {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+#signature-workspace .configSigt > h2,
+#signature-workspace .signature-person > h2,
+#signature-workspace .configImage h2,
+#signature-workspace .configImage h1 {
+    color: #173c62;
+    font-size: 18px;
+    letter-spacing: -.01em;
+}
+
+#signature-workspace .addInfos h3,
+#signature-workspace .controlsProfessional > h3 {
+    color: #304b66;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+#signature-workspace .checkbox-group {
+    color: #40556a;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+#signature-workspace .checkbox-group input {
+    flex: 0 0 auto;
+    accent-color: var(--brand-blue);
+}
+
+#signature-workspace .helper-text {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    opacity: 1;
+}
+
+#signature-workspace .signature-person > h2 {
+    margin-bottom: 20px;
+}
+
+#signature-workspace .controlsProfessional {
+    gap: 12px;
+    margin: 22px 0;
+}
+
+#signature-workspace .controlsProfessional > div {
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+#signature-workspace .controlsProfessional button,
+#signature-workspace .typeCrm button,
+#signature-workspace .typeRQE button,
+#signature-workspace .configImage button,
+#signature-workspace .signature-extra-phrases > button {
+    padding: 10px 14px;
+    border: 1px solid #cddce9;
+    border-radius: 9px;
+    color: #39536b;
+    background: #f7fafc;
+    box-shadow: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0;
+    transition: background-color .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+#signature-workspace .controlsProfessional button.active,
+#signature-workspace .typeCrm button.active,
+#signature-workspace .typeRQE button.active,
+#signature-workspace .configImage button.active,
+#signature-workspace .signature-extra-phrases > button.active {
+    border-color: var(--brand-blue);
+    color: #fff;
+    background: var(--brand-blue);
+}
+
+#signature-workspace .controlsProfessional button:not(.active):hover,
+#signature-workspace .typeCrm button:not(.active):hover,
+#signature-workspace .typeRQE button:not(.active):hover,
+#signature-workspace .configImage button:not(.active):hover,
+#signature-workspace .signature-extra-phrases > button:not(.active):hover {
+    border-color: #9bbbd4;
+    color: var(--brand-blue);
+    background: #edf6fc;
+    transform: translateY(-1px);
+}
+
+#signature-workspace .labels > h2,
+#signature-workspace .labels > label,
+#signature-workspace .signature-option-field > label {
+    color: #344c64;
+    font-size: 14px;
+    font-weight: 650;
+    letter-spacing: 0;
+}
+
+#signature-workspace .labels input,
+#signature-workspace .labels textarea,
+#signature-workspace .signature-option-field > input[type="number"] {
+    border: 1px solid #cfdae5;
+    border-radius: 9px;
+    background: #fff;
+    color: #24364a;
+    box-shadow: inset 0 1px 2px rgba(23, 60, 98, .025);
+}
+
+#signature-workspace .labels input:focus,
+#signature-workspace .labels textarea:focus,
+#signature-workspace .signature-option-field > input[type="number"]:focus {
+    border-color: var(--brand-cyan);
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+#signature-workspace .typeCrm,
+#signature-workspace .typeRQE {
+    flex-wrap: wrap;
+}
+
+#signature-workspace .configImage {
+    background: #f8fbfe;
+}
+
+#signature-workspace .configImage .helper-text {
+    margin-top: 6px;
+}
+
+#signature-workspace .signature-option-field > input[type="range"] {
+    accent-color: var(--brand-blue);
+}
+
+#signature-workspace .signature-option-field > input[type="range"]:focus-visible {
+    outline: none;
+    border-radius: 10px;
+    box-shadow: var(--focus-ring);
+}
+
+#signature-workspace .signature-image-options-header > button {
+    padding: 9px 12px;
+    border: 1px solid #cddce9;
+    border-radius: 8px;
+    color: var(--brand-blue);
+    background: #fff;
+}
+
+#signature-workspace .signature-image-options-header > button:hover {
+    background: #edf6fc;
+}
+
+#signature-workspace .signature-extra-phrases > button {
+    width: fit-content;
+    max-width: 100%;
+}
+
+#signature-workspace .signature-extra-phrases > button:disabled {
+    cursor: not-allowed;
+    opacity: .6;
+}
+
+#signature-workspace .remove-phrase-button {
+    padding: 6px;
+}
+
+#signature-workspace .signature-message {
+    margin-top: 16px;
+    border-color: #f2b8b8;
+    color: #a52d35;
+    background: #fff4f3;
+}
+
+#signature-workspace .image-preview-container h2 {
+    color: #173c62;
+}
+
+#signature-workspace .image-preview {
+    border: 1px solid var(--border);
+    background: #f7fafc;
+}
+
+#signature-workspace .download-signature-button {
+    border-radius: 9px;
+    background: var(--brand-blue);
+    box-shadow: 0 5px 14px rgba(7, 91, 167, .17);
+    font-weight: 700;
+}
+
+#signature-workspace .download-signature-button:hover:not(:disabled) {
+    background: #064c8b;
+}
+
+@media (max-width: 600px) {
+    #signature-workspace .container-file.upload-section,
+    #signature-workspace .configSigt,
+    #signature-workspace .signature-person,
+    #signature-workspace .configImage {
+        padding: 17px;
+    }
+
+    #signature-workspace .file-input-wrapper {
+        width: 100%;
+        text-align: center;
+    }
+
+    #signature-workspace .signature-image-options-header {
+        gap: 12px;
+    }
+
+    #signature-workspace .signature-extra-phrases > button {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+/* Cores escuras para o fluxo de assinatura, respeitando os mesmos acentos da marca. */
+.app-shell[data-theme="dark"] #signature-workspace .signatureIntro h1,
+.app-shell[data-theme="dark"] #signature-workspace .configSigt > h2,
+.app-shell[data-theme="dark"] #signature-workspace .signature-person > h2,
+.app-shell[data-theme="dark"] #signature-workspace .configImage h2,
+.app-shell[data-theme="dark"] #signature-workspace .configImage h1,
+.app-shell[data-theme="dark"] #signature-workspace .image-preview-container h2 {
+    color: #e4eef6;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signatureIntro p,
+.app-shell[data-theme="dark"] #signature-workspace .helper-text {
+    color: var(--text-muted);
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section,
+.app-shell[data-theme="dark"] #signature-workspace .configSigt,
+.app-shell[data-theme="dark"] #signature-workspace .signature-person,
+.app-shell[data-theme="dark"] #signature-workspace .configImage {
+    border-color: var(--border);
+    background: var(--surface-muted);
+    box-shadow: none;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section {
+    border-color: #3a5c76;
+    background: #13283a;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section > p,
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section > .helper-text {
+    color: var(--text-muted);
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .addInfos h3,
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional > h3,
+.app-shell[data-theme="dark"] #signature-workspace .checkbox-group,
+.app-shell[data-theme="dark"] #signature-workspace .labels > h2,
+.app-shell[data-theme="dark"] #signature-workspace .labels > label,
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field > label {
+    color: #c6d4e1;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .labels input,
+.app-shell[data-theme="dark"] #signature-workspace .labels textarea,
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field > input[type="number"] {
+    border-color: #344a60;
+    color: #e1ebf3;
+    background: #0c1927;
+    box-shadow: none;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .labels input::placeholder,
+.app-shell[data-theme="dark"] #signature-workspace .labels textarea::placeholder {
+    color: #8297aa;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional button,
+.app-shell[data-theme="dark"] #signature-workspace .typeCrm button,
+.app-shell[data-theme="dark"] #signature-workspace .typeRQE button,
+.app-shell[data-theme="dark"] #signature-workspace .configImage button,
+.app-shell[data-theme="dark"] #signature-workspace .signature-extra-phrases > button {
+    border-color: #3a5066;
+    color: #bfd0df;
+    background: #192c40;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional button.active,
+.app-shell[data-theme="dark"] #signature-workspace .typeCrm button.active,
+.app-shell[data-theme="dark"] #signature-workspace .typeRQE button.active,
+.app-shell[data-theme="dark"] #signature-workspace .configImage button.active,
+.app-shell[data-theme="dark"] #signature-workspace .signature-extra-phrases > button.active {
+    border-color: #1681bc;
+    color: #fff;
+    background: #075ba7;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional button:not(.active):hover,
+.app-shell[data-theme="dark"] #signature-workspace .typeCrm button:not(.active):hover,
+.app-shell[data-theme="dark"] #signature-workspace .typeRQE button:not(.active):hover,
+.app-shell[data-theme="dark"] #signature-workspace .configImage button:not(.active):hover,
+.app-shell[data-theme="dark"] #signature-workspace .signature-extra-phrases > button:not(.active):hover {
+    border-color: #1681bc;
+    color: #d7f3f8;
+    background: #1e3a51;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signature-image-options-header > button {
+    border-color: #3a5066;
+    color: #9fdef0;
+    background: #192c40;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signature-image-options-header > button:hover {
+    background: #1e3a51;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field > input[type="range"] {
+    accent-color: var(--brand-cyan);
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .image-preview {
+    border-color: var(--border);
+    background: #0c1927;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signature-message {
+    border-color: #70434b;
+    color: #ffb4ae;
+    background: #35242e;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .icon {
+    filter: invert(.85);
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .download-signature-button {
+    color: #fff;
+    background: #075ba7;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .download-signature-button:hover:not(:disabled) {
+    background: #0b70b1;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .download-signature-button:disabled {
+    color: #d9e3ed;
+    background: #3a5066;
 }

@@ -2,11 +2,10 @@
 
 # 🩺 MobilemedTools
 
-**Ferramentas para assinaturas profissionais e geração de senhas, direto no navegador.**
+**Ferramentas de apoio à equipe Mobilemed, executadas no navegador.**
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
-![Versão](https://img.shields.io/badge/vers%C3%A3o-1.1-blue)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite)
 ![Licença](https://img.shields.io/github/license/Luc4sFreire/mobilemedtools)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
@@ -14,152 +13,182 @@
 
 ## Sobre
 
-O **MobilemedTools** reúne ferramentas de apoio ao trabalho da equipe Mobilemed. A versão **1.1** oferece um gerador de assinaturas profissionais e um gerador de senhas, executados no navegador.
+O MobilemedTools é uma aplicação web em desenvolvimento. O estado atual contém um gerador de imagem de assinatura profissional e um gerador de senhas com fluxos Padrão, Implantação e Avançado.
 
-> 🔒 **Privacidade:** o processamento das imagens e a geração das senhas acontecem localmente no navegador. As imagens selecionadas não são enviadas a um servidor nem armazenadas pela aplicação.
+A aplicação é uma SPA React/Vite. O processamento de imagens e a geração de senhas ocorrem no navegador; o código atual não faz chamadas a uma API de aplicação. No modo Implantação, os usuários salvos ficam no armazenamento local do navegador, conforme a nota de privacidade abaixo.
 
 ## Funcionalidades
 
-- **Assinaturas:** selecione uma foto, remova o fundo e ajuste iluminação, escala, espessura, cor e suavização. Inclua nome, registro profissional (CRM/CRMV/CRO), RQE, especialidade e frases extras; a saída é um PNG de **420 × 120 px**.
-- **Senhas:** gere de 1 a 50 senhas com prefixo configurável, comprimento do sufixo, letras maiúsculas e caracteres especiais. Copie cada resultado pela interface.
+### Gerador de assinatura
+
+- Recebe imagens PNG, JPEG, WebP, GIF, BMP ou AVIF com limite de 12 MB e 12 megapixels. Um GIF animado é processado como imagem estática; o PNG de saída não preserva animação.
+- Corrige variações de iluminação, realça o contraste e segmenta os traços manuscritos.
+- Permite ajustar escala, espessura, cor da tinta, suavização e transparência.
+- Compõe os dados de médico (CRM), veterinário (CRMV) ou dentista (CRO) com nome, registro, RQE, especialidade e até cinco frases adicionais.
+- Exibe a prévia em 420 × 120 px e gera o PNG final em 1260 × 360 px (resolução 3×). O download é liberado quando a prévia corresponde às opções e aos dados atuais.
+
+### Gerador de senhas
+
+- Gera de 1 a 50 senhas por vez. A parte aleatória tem de 12 a 32 caracteres, sem contar o prefixo opcional de até 24 caracteres.
+- Garante ao menos uma letra maiúscula e um número; minúsculas podem ser desativadas e caracteres especiais podem ser ativados.
+- Usa a API Web Crypto do navegador para sortear os caracteres e embaralhá-los.
+- O modo Padrão mostra e permite copiar as senhas geradas.
+- O modo Implantação associa e-mails às senhas, salva usuários localmente, permite excluir registros e copiar/exportar listas de credenciais ou mensagens.
+- O modo Avançado importa a primeira aba de arquivos CSV ou XLSX (até 10 MB e 10.000 linhas), identifica ou permite selecionar a coluna de e-mail, gera senhas para endereços válidos e únicos e sinaliza todas as ocorrências duplicadas sem diferenciar maiúsculas de minúsculas.
+- No modo Avançado, cada senha pode ser copiada ou salva na lista local de usuários; a lista válida pode ser copiada em lote ou baixada como XLSX, CSV ou Markdown. E-mails duplicados e inválidos são excluídos dos downloads.
+
+## Privacidade e armazenamento
+
+- As imagens e os dados profissionais da assinatura são usados em memória no navegador. O código da aplicação não os envia a um servidor nem grava esses dados em armazenamento persistente.
+- Senhas geradas no modo Padrão permanecem no estado da tela enquanto a ferramenta está montada.
+- O modo Implantação grava e-mail e senha em texto legível no localStorage do navegador, sob a chave mobilemedtools.savedUsers. Esses dados permanecem no perfil local até serem removidos e não são criptografados. O acesso ao perfil do navegador ou a um script executado na mesma origem pode expô-los.
+- No modo Avançado, os dados importados e as senhas permanecem em memória enquanto a tela está montada. Ao escolher “Salvar usuário”, e-mail e senha passam ao mesmo localStorage em texto legível usado pelo modo Implantação. Os arquivos exportados contêm credenciais em texto legível; copiar credenciais envia o conteúdo à área de transferência do dispositivo.
+
+Use o armazenamento de credenciais somente em um ambiente apropriado para esses dados. A documentação completa descreve limitações e recomendações de evolução.
 
 ## Estado dos módulos
 
-| Módulo | Estado | Descrição |
+| Módulo ou recurso | Estado | Observação |
 | --- | --- | --- |
-| Gerador de assinaturas | ✅ Implementado | Processamento local de imagem, dados profissionais, prévia e download em PNG |
-| Gerador de senhas — Padrão | ✅ Implementado | Prefixo, quantidade, comprimento, opções de caracteres e cópia |
-| Gerador de senhas — Implantação | ⚠️ Em desenvolvimento | Atualmente reproduz o comportamento do modo Padrão |
-| Gerador de senhas — Avançado | 🚧 Planejado | A opção aparece no menu, mas a geração ainda não foi implementada |
-
-> **Nota sobre senhas:** o gerador atual usa `Math.random()`, que não é uma fonte criptograficamente segura. Não use as senhas produzidas para contas ou sistemas que exijam credenciais de alta segurança.
-
-## Como funciona
-
-```text
-Imagem original
-   │
-   ▼
-Correção de iluminação ──► Tons de cinza ──► Ajuste de contraste (percentis)
-   │
-   ▼
-Limiar de Otsu + histerese (tinta "certa" e "provável")
-   │
-   ▼
-Fechamento de lacunas ──► Remoção de manchas ──► Espessura (dilatar/erodir)
-   │
-   ▼
-Suavização das bordas ──► Aplicação da cor/transparência
-   │
-   ▼
-Composição com os dados profissionais (canvas 420 × 120 px)
-   │
-   ▼
-Download no formato PNG.
-```
-
-A assinatura aparece acima dos dados profissionais. Ela se ajusta ao espaço que sobra conforme o texto cresce; se o texto não couber nem na escala mínima, a interface pede que você reduza as frases.
-
-No gerador de senhas, o modo **Padrão** permite definir prefixo, quantidade, tamanho do sufixo após `@`, uso de caracteres especiais e letras maiúsculas. As senhas são geradas quando você aciona **Gerar Novas Senhas** e podem ser copiadas individualmente.
+| Gerador de assinatura | Implementado | Pré-processamento, formulário, prévia e PNG final |
+| Senhas — modo Padrão | Implementado | Geração e cópia de senhas |
+| Senhas — modo Implantação | Implementado | Associação a e-mail, persistência local, exclusão e exportação |
+| Senhas — modo Avançado | Implementado | Importação CSV/XLSX, validação e duplicatas de e-mail, cópia, gravação local seletiva e exportação XLSX/CSV/MD |
+| Criação de logos | Não presente no código atual | Existia como ideia na documentação do Notion |
+| Testes automatizados | Configurados | Mais de 200 cenários para senhas, credenciais e imagens (`npm test`) |
 
 ## Primeiros passos
 
-### Pré-requisitos
+### Requisitos
 
-- [Node.js](https://nodejs.org/) (versão LTS recente) e npm
+- Node.js 20.19+ ou 22.12+ (requisito do Vite instalado no projeto)
+- npm
 
 ### Instalação e execução
 
-```bash
-git clone https://github.com/Luc4sFreire/mobilemedtools.git
-cd mobilemedtools
-npm install
-npm run dev
-```
+    git clone https://github.com/Luc4sFreire/mobilemedtools.git
+    cd mobilemedtools
+    npm install
+    npm run dev
 
-A aplicação abre em `http://localhost:3000`.
+O Vite inicia em http://localhost:3000.
 
 ### Scripts
 
 | Comando | Descrição |
 | --- | --- |
-| `npm run dev` | Servidor de desenvolvimento (Vite, porta 3000) |
-| `npm run build` | Gera a versão de produção em `dist/` |
-| `npm run preview` | Serve localmente o build de produção |
-| `npm run lint` | Executa o ESLint |
+| npm run dev | Inicia o servidor Vite para desenvolvimento |
+| npm run build | Gera os arquivos de produção em dist/ |
+| npm run preview | Serve localmente o build de produção |
+| npm run lint | Executa o ESLint |
+| npm test | Executa os testes automatizados com o runner nativo do Node.js |
 
-> Ainda não há suíte de testes automatizados configurada. O projeto não define script de testes.
+Os cenários e suas explicações estão em [docs/cenarios-testes.md](docs/cenarios-testes.md).
 
 ## Como usar
 
-### Gerar uma assinatura
+### Assinatura
 
-1. Clique em **Selecionar Imagem da Assinatura** e escolha a foto.
-2. Escolha o tipo de profissional e preencha nome e registro.
-3. Em **Configurações Avançadas**, ative RQE, especialidade ou frases adicionais, se precisar.
-4. Em **Personalização da Imagem**, ajuste escala, espessura, cor e transparência. Use **Restaurar padrão** para voltar às opções iniciais.
-5. Confira a **Prévia final** e faça o download do PNG.
+1. Selecione uma imagem válida.
+2. Escolha a categoria profissional e informe nome e registro.
+3. Ative e preencha RQE, especialidade ou frases adicionais conforme necessário.
+4. Ajuste os controles da imagem e confira a prévia.
+5. Baixe o PNG quando o processamento e a composição terminarem.
 
-💡 **Dica:** fotografe a assinatura em papel branco, com boa luz e sem dobras para obter o melhor resultado.
+Uma foto bem iluminada, em papel claro e sem sombras fortes tende a facilitar a segmentação. O algoritmo não reconhece escrita nem valida registros profissionais.
 
-### Gerar senhas
+### Senhas
 
-1. Selecione **Senha** no menu e mantenha o modo **Padrão**.
-2. Ajuste o prefixo, a quantidade, o comprimento do sufixo e as opções de caracteres.
-3. Clique em **Gerar Novas Senhas** e use o botão de cópia ao lado do resultado desejado.
+1. Abra Senha no menu.
+2. Escolha Padrão, Implantação ou Avançado.
+3. Ajuste tamanho, quantidade, prefixo e grupos de caracteres.
+4. Gere as senhas. No modo Implantação, informe um e-mail para associar e salvar cada usuário. No modo Avançado, envie um CSV ou XLSX com os e-mails e revise a coluna identificada antes de exportar.
 
-## Estrutura do projeto
+O prefixo é fixo e previsível; ele não faz parte dos caracteres aleatórios e reduz a imprevisibilidade total da senha. A opção de exportação de credenciais deve ser tratada com o mesmo cuidado que qualquer arquivo contendo senhas.
 
-```text
-.
-├── components/
-│   ├── SignatureWorkspace.jsx   # Interface do módulo de assinatura
-│   ├── Header.jsx               # Navegação entre módulos
-│   ├── PasswordWorkspace.jsx    # Interface do módulo de senhas
-│   ├── subcomponents/           # Modos do gerador de senhas
-│   └── ui/                      # Componentes reutilizáveis
-├── hooks/
-│   ├── useSignature.js          # Estado, validação e fluxo de processamento
-│   └── usePassword.js           # Configuração e geração de senhas
-├── utils/
-│   ├── processImage.js          # Algoritmo de segmentação no canvas
-│   └── composeSignature.js      # Composição final (texto + assinatura) em 420 × 120 px
-├── style/
-│   ├── index.css                # Estilos globais e variáveis visuais
-│   ├── signature.css            # Estilos da interface de assinatura
-│   └── password.css             # Estilos da interface de senhas
-├── src/
-│   ├── App.jsx                  # Composição da aplicação
-│   └── main.jsx                 # Ponto de entrada
-├── assets/                      # Ícones
-├── index.html
-└── vite.config.js
-```
+## Funcionamento do algoritmo de imagem
+
+O fluxo em alto nível é:
+
+    Imagem RGBA
+      → composição de transparência sobre branco
+      → estimativa e correção de iluminação
+      → tons de cinza e supressão de pontos isolados
+      → contraste por percentis e limiar de Otsu
+      → cobertura de opacidade gradual para preservar traços claros
+      → redimensionamento de alta qualidade e espessura opcional
+      → suavização, cor e remoção do fundo
+      → assinatura PNG
+      → composição lógica de 420 × 120 px renderizada como PNG de 1260 × 360 px
+
+A documentação principal contém a explicação teórica e o fluxo detalhado, preparada para substituir o conteúdo da página principal do Notion. O diagnóstico específico do processador, incluindo as medições registradas, está em docs/diagnostico-algoritmo-imagem.md.
+
+## Arquitetura
+
+    .
+    ├── components/
+    │   ├── SignatureWorkspace.jsx
+    │   ├── PasswordWorkspace.jsx
+    │   ├── subcomponents/
+    │   │   ├── PasswordDefault.jsx
+    │   │   ├── PasswordImplantacao.jsx
+    │   │   └── PasswordAvancado.jsx
+    │   └── ui/
+    ├── hooks/
+    │   ├── useSignature.js
+    │   └── usePassword.js
+    ├── utils/
+    │   ├── credentialFiles.js
+    │   ├── passwordGenerator.js
+    │   ├── processImage.js
+    │   └── composeSignature.js
+    ├── src/
+    │   ├── App.jsx
+    │   └── main.jsx
+    ├── docs/
+    │   ├── documentacao-principal.md
+    │   ├── diagnostico-algoritmo-imagem.md
+    │   └── modelo-changelog.md
+    ├── CHANGELOG.md
+    └── README.md
+
+- components contém as telas e componentes reutilizáveis.
+- hooks concentra estado, validação e regras de interface.
+- utils contém o gerador comum de senhas, os fluxos de leitura/exportação de credenciais, o processador de imagem e o compositor do PNG.
+- src monta a aplicação e alterna entre os módulos.
 
 ## Tecnologias
 
-- [React 19](https://react.dev/)
-- [Vite 8](https://vite.dev/)
-- JavaScript (ES Modules) e Canvas API, sem bibliotecas de processamento de imagem
-- Web Crypto API não é usada atualmente pelo gerador de senhas; veja a nota de segurança acima
-- ESLint com plugins de React Hooks e React Refresh
-- Hospedagem na [Vercel](https://vercel.com/)
+- React 19 e React DOM
+- Vite 8
+- SheetJS XLSX 0.20.3 para leitura e exportação de planilhas (carregado sob demanda)
+- JavaScript ES Modules e Canvas API
+- Web Crypto API para sorteio de senhas
+- ESLint com plugins para React Hooks e React Refresh
+- Destino de hospedagem citado no projeto: Vercel
+
+## Documentação e changelog
+
+- [Documentação principal proposta para o Notion](docs/documentacao-principal.md)
+- [Diagnóstico detalhado do algoritmo de imagem](docs/diagnostico-algoritmo-imagem.md)
+- [Modelo reutilizável de changelog](docs/modelo-changelog.md)
+- [Changelog do projeto](CHANGELOG.md)
+
+A página do Notion não foi alterada. O primeiro arquivo é uma proposta em Markdown pronta para revisão e cópia.
 
 ## Contribuindo
 
-Sugestões e correções são bem-vindas. Abra uma [issue](https://github.com/Luc4sFreire/mobilemedtools/issues) ou envie um pull request:
+Sugestões e correções são bem-vindas. Abra uma issue ou envie um pull request:
 
-1. Faça um fork do projeto
-2. Crie uma branch (`git checkout -b feature/minha-feature`)
-3. Faça o commit (`git commit -m "feat: minha feature"`)
-4. Envie a branch (`git push origin feature/minha-feature`)
-5. Abra um Pull Request
-
-Antes de enviar, rode `npm run lint` e `npm run build`.
+1. Faça um fork do projeto.
+2. Crie uma branch, por exemplo feature/minha-feature.
+3. Faça o commit da alteração.
+4. Envie a branch e abra um Pull Request.
+5. Antes de enviar, execute npm run lint e npm run build.
 
 ## Licença
 
-Distribuído sob a licença MIT. Veja [LICENSE](LICENSE).
+Distribuído sob a licença MIT. Consulte LICENSE.
 
 ---
 

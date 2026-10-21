@@ -1,5 +1,6 @@
 import "./style/toggle.css";
 
+// Switch controlado: o estado pertence ao componente chamador.
 export default function Toggle({ checked, onChange, label, disabled = false }) {
   return (
     <label className={`toggle ${disabled ? "toggle--disabled" : ""}`}>
@@ -11,6 +12,7 @@ export default function Toggle({ checked, onChange, label, disabled = false }) {
         onChange={(e) => onChange(e.target.checked)}
         disabled={disabled}
       />
+      {/* Elementos visuais separados preservam o input acessível e focável. */}
       <span className="toggle__track">
         <span className="toggle__thumb" />
       </span>

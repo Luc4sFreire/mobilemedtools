@@ -1,0 +1,203 @@
+.notification-viewport {
+    position: fixed;
+    right: max(20px, env(safe-area-inset-right));
+    bottom: max(20px, env(safe-area-inset-bottom));
+    z-index: 2000;
+    display: flex;
+    width: min(352px, calc(100vw - 32px));
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.app-notification {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-height: 40px;
+    padding: 6px 10px 6px 13px;
+    border-left: 5px solid #08bf20;
+    color: #17241b;
+    background: #baf2c4;
+    pointer-events: auto;
+    transform-origin: right top;
+    animation: notification-enter 380ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.app-notification--dismissing {
+    pointer-events: none;
+    animation: notification-exit var(--notification-exit-duration) cubic-bezier(.4, 0, 1, 1) both;
+}
+
+.app-notification--success {
+    border-left-color: #00bd18;
+    background: #b9f0c2;
+}
+
+.app-notification--error {
+    border-left-color: #ff3441;
+    background: #ff9da2;
+}
+
+.app-notification__icon {
+    display: grid;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: #00c51a;
+    box-shadow: 0 2px 7px rgb(20 53 34 / 28%);
+}
+
+.app-notification--error .app-notification__icon {
+    background: #fa303d;
+}
+
+.app-notification__icon svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2.3;
+}
+
+.app-notification__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.app-notification__content p {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.app-notification__title {
+    color: #17241b;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .01em;
+    line-height: 1.3;
+}
+
+.app-notification__message {
+    margin-top: 3px !important;
+    color: #006d32;
+    font-size: 10px;
+    letter-spacing: .03em;
+    line-height: 1.35;
+}
+
+.app-notification--error .app-notification__message {
+    color: #a7222c;
+}
+
+.app-notification__close {
+    display: grid;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    color: #5d6660;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.app-notification__close:hover {
+    color: #262c28;
+    background: rgb(0 0 0 / 6%);
+}
+
+.app-notification__close:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.app-notification__timer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: -5px;
+    height: 3px;
+    background: #00a817;
+    transform: scaleX(1);
+    transform-origin: left center;
+    animation: notification-countdown var(--notification-duration) linear forwards;
+}
+
+.app-notification--error .app-notification__timer {
+    background: #e12834;
+}
+
+.app-shell[data-theme="dark"] .app-notification--success {
+    border-left-color: #00c51a;
+    background: #b9f0c2;
+}
+
+.app-shell[data-theme="dark"] .app-notification--error {
+    border-left-color: #ff3441;
+    background: #ff9da2;
+}
+
+.app-shell[data-theme="dark"] .app-notification__close:hover {
+    background: rgb(0 0 0 / 8%);
+}
+
+@keyframes notification-enter {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(.985);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes notification-exit {
+    to {
+        opacity: 0;
+        transform: translateY(8px) scale(.985);
+    }
+}
+
+@keyframes notification-countdown {
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@media (max-width: 520px) {
+    .notification-viewport {
+        right: max(12px, env(safe-area-inset-right));
+        width: min(352px, calc(100vw - 24px));
+    }
+
+    .app-notification {
+        gap: 10px;
+        padding-left: 10px;
+    }
+
+    .app-notification__title {
+        font-size: 12px;
+    }
+
+    .app-notification__message {
+        font-size: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-notification {
+        animation: none;
+    }
+}
