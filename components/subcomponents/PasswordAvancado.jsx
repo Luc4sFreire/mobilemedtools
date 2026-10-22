@@ -21,7 +21,7 @@ function PasswordAvancado() {
     const [sheet, setSheet] = useState(null);
     const [emailColumn, setEmailColumn] = useState(0);
     const [credentialRows, setCredentialRows] = useState([]);
-    const [prefix, setPrefix] = useState("mobile");
+    const [prefix, setPrefix] = useState("Mobile");
     const [size, setSize] = useState(8);
     const [special, setSpecial] = useState(false);
     const [onlyUpper, setOnlyUpper] = useState(false);
