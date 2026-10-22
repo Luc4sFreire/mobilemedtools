@@ -8,6 +8,8 @@ import App from './App.jsx'
 import './style/refresh.css'
 // Aplica ajustes visuais e variantes complementares sobre a fundação.
 import './style/modern.css'
+// Carrega a família Flaticon usada pelo ícone do módulo de logos.
+import '@flaticon/flaticon-uicons/css/bold/straight.css'
 
 // Encontra o elemento de montagem declarado em index.html.
 // A raiz React atualiza esse elemento com App e todos os seus componentes descendentes.

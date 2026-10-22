@@ -23,6 +23,13 @@ const navigation = [
             </svg>
         ),
     },
+    {
+        id: "logo",
+        label: "Logo",
+        icon: (
+            <i className="fi fi-bs-drafting-compass" aria-hidden="true" />
+        ),
+    },
 ];
 
 // Renderiza o menu lateral e delega à raiz da aplicação as mudanças de tela/tema.

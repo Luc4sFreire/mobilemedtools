@@ -24,8 +24,8 @@ function PasswordWorspace(){
         <>
             <main className="workspace-main password-workspace">
                 <section className="page-intro">
-                    <span className="workspace-kicker">FERRAMENTA 02 · ACESSOS</span>
-                    <h1>Gerador de senhas</h1>
+                    <span className="workspace-kicker">FERRAMENTA · GERADOR DE SENHA</span>
+                    <h1>Gere suas senhas de forma segura.</h1>
                     <p>Configure e gere acessos com as opções necessárias para cada equipe.</p>
                 </section>
                 {/* Botões de modo informam visualmente e via aria-pressed a seleção atual. */}

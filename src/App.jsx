@@ -1,6 +1,7 @@
 // Raiz da interface: mantém a ferramenta selecionada, o tema e os provedores globais.
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
+import LogoWorkspace from "../components/LogoWorkspace";
 import PasswordWorspace from "../components/PasswordWorkspace";
 import SignatureWorkspace from "../components/SignatureWorkspace";
 import { NotificationProvider } from "../components/ui/NotificationProvider";
@@ -29,7 +30,11 @@ function App() {
   }, [theme]);
 
   // Mantém o título do breadcrumb alinhado à ferramenta atualmente exibida.
-  const activeToolLabel = activeComponent === "signature" ? "Gerador de assinatura" : "Gerador de senhas";
+  const activeToolLabel = activeComponent === "signature"
+    ? "Gerador de assinatura"
+    : activeComponent === "password"
+      ? "Gerador de senhas"
+      : "Gerador de logos";
 
   return (
     <div className="app-shell" data-theme={theme}>
@@ -54,9 +59,9 @@ function App() {
             </div> */}
           </div>
           <div className="app-content">
-            {/* Renderiza o fluxo completo de criação e exportação da assinatura. */}
-            {/* Neste ponto apenas assinatura e senhas estão conectadas à navegação. */}
-            {activeComponent === "signature" ? <SignatureWorkspace /> : <PasswordWorspace />}
+            {activeComponent === "signature" ? <SignatureWorkspace /> : null}
+            {activeComponent === "password" ? <PasswordWorspace /> : null}
+            {activeComponent === "logo" ? <LogoWorkspace /> : null}
           </div>
         </div>
       </NotificationProvider>

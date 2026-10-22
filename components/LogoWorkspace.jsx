@@ -375,8 +375,8 @@ function LogoWorkspace() {
         <main className="workspace-main logo-workspace">
             {/* Os formulários alternam entre criação a partir de texto e tratamento de imagens. */}
             <section className="page-intro">
-                <span className="workspace-kicker">FERRAMENTA 03 · IDENTIDADE VISUAL</span>
-                <h1>Gerador de logos</h1>
+                <span className="workspace-kicker">FERRAMENTA · GERADOR DE LOGOS</span>
+                <h1>Personalize a identidade da unidade</h1>
                 <p>Crie identidades visuais em lote ou padronize imagens existentes em PNG quadrado.</p>
             </section>
 
