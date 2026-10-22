@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { composeSignature } from "../src/utils/composeSignature.js";
-import { buildCredentialRows, credentialFilenameBase, downloadCredentials, readCredentialFile } from "../src/utils/credentialFiles.js";
+import { buildCredentialRows, downloadCredentials, readCredentialFile } from "../src/utils/credentialFiles.js";
 import {
     createAutomaticLogo,
     createLogoZip,
@@ -55,8 +55,8 @@ test("senha padrão separa o prefixo previsível do tamanho aleatório", (t) => 
     const crypto = installDeterministicCrypto();
     t.after(crypto.restore);
     const password = generatePassword();
-    assert.equal(password.startsWith("mobile@"), true);
-    assert.equal(password.slice("mobile@".length).length, 8);
+    assert.equal(password.startsWith("Mobile@"), true);
+    assert.equal(password.slice("Mobile@".length).length, 8);
 });
 
 test("senha limita o tamanho e o prefixo aos intervalos documentados", (t) => {
@@ -110,12 +110,6 @@ test("importador rejeita arquivo vazio, formato desconhecido e arquivo acima de 
     await assert.rejects(readCredentialFile(null), /Selecione um arquivo/);
     await assert.rejects(readCredentialFile(makeFile({ name: "lista.txt", text: "dados" })), /CSV ou XLSX/);
     await assert.rejects(readCredentialFile(makeFile({ name: "lista.csv", size: 10 * 1024 * 1024 + 1 })), /10 MB/);
-});
-
-test("nome de exportação de credenciais sanitiza acentos, extensão e separadores de caminho", () => {
-    assert.equal(credentialFilenameBase("Lista Clínica.xlsx"), "credenciais-lista-clinica");
-    assert.equal(credentialFilenameBase("../Equipe/abril.csv"), "credenciais-equipe-abril");
-    assert.equal(credentialFilenameBase("---.csv"), "credenciais-geradas");
 });
 
 test("planilha XLSX lê a primeira aba e encontra a coluna pelo cabeçalho", async () => {

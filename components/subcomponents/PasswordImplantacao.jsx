@@ -4,7 +4,18 @@ import { usePassword } from "../../src/hooks/usePassword";
 import Toggle from "../ui/Toggle";
 import ButtonCopy from "../ui/ButtonCopy";
 import { useNotifications } from "../../src/hooks/useNotifications";
-import { formatCredentialList, formatCredentialMessages } from "../../src/utils/credentialMessages.js";
+
+// Converte a coleção de usuários em texto legível para cópia ou exportação.
+function getCredentialText(users) {
+    return users.map(({ email, password }) => `E-mail: ${email}\nSenha: ${password}`).join("\n\n");
+}
+
+// Monta mensagens individuais de entrega; o texto contém credenciais em claro.
+function getMessageText(users) {
+    return users
+        .map(({ email, password }) => `Olá! Seguem os dados do seu acesso:\nE-mail: ${email}\nSenha: ${password}`)
+        .join("\n\n");
+}
 
 // Modo de implantação: associa senhas a e-mails e gerencia a lista local persistida.
 function PasswordImplantacao() {
@@ -361,7 +372,7 @@ function PasswordImplantacao() {
                                     className="saved-users-action"
                                     type="button"
                                     disabled={!pass.users.length}
-                                    onClick={() => exportText(formatCredentialList(pass.users), "credenciais.txt")}
+                                    onClick={() => exportText(getCredentialText(pass.users), "credenciais.txt")}
                                 >
                                     <span className="saved-users-action__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M5 17v3h14v-3" /></svg></span>
                                     <span>Exportar credenciais</span>
@@ -370,7 +381,7 @@ function PasswordImplantacao() {
                                     className="saved-users-action"
                                     type="button"
                                     disabled={!pass.users.length}
-                                    onClick={() => copyText(formatCredentialList(pass.users), "Credenciais")}
+                                    onClick={() => copyText(getCredentialText(pass.users), "Credenciais")}
                                 >
                                     <span className="saved-users-action__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h2" /></svg></span>
                                     <span>Copiar credenciais</span>
@@ -379,7 +390,7 @@ function PasswordImplantacao() {
                                     className="saved-users-action"
                                     type="button"
                                     disabled={!pass.users.length}
-                                    onClick={() => exportText(formatCredentialMessages(pass.users), "mensagens.txt")}
+                                    onClick={() => exportText(getMessageText(pass.users), "mensagens.txt")}
                                 >
                                     <span className="saved-users-action__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 4V5Z" /><path d="M8 9h8M8 13h5" /></svg></span>
                                     <span>Exportar mensagens</span>
@@ -388,7 +399,7 @@ function PasswordImplantacao() {
                                     className="saved-users-action"
                                     type="button"
                                     disabled={!pass.users.length}
-                                    onClick={() => copyText(formatCredentialMessages(pass.users), "Mensagens")}
+                                    onClick={() => copyText(getMessageText(pass.users), "Mensagens")}
                                 >
                                     <span className="saved-users-action__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h2" /></svg></span>
                                     <span>Copiar mensagens</span>

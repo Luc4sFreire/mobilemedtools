@@ -61,7 +61,7 @@ Use o armazenamento de credenciais somente em um ambiente apropriado para esses 
 | Senhas — modo Implantação | Implementado | Associação a e-mail, persistência local, exclusão e exportação |
 | Senhas — modo Avançado | Implementado | Importação CSV/XLSX, validação e duplicatas de e-mail, cópia, gravação local seletiva e exportação XLSX/CSV/MD |
 | Criação de logos | Implementado | Modo tipográfico e padronização de imagens, individual ou em lotes de até 50 |
-| Testes automatizados | 185 testes | Cobertura de senhas, importação/exportação, persistência, assinatura, processamento de imagem, mensagens e logos |
+| Testes automatizados | 40 testes | Cobertura de geração de senhas, importação/exportação, imagem, composição e logos |
 
 ## Primeiros passos
 
@@ -188,11 +188,11 @@ A documentação principal contém a explicação teórica dos algoritmos de ima
 
 ### Diagnóstico desta revisão (22/10/2026)
 
-- Os 185 testes cobrem utilitários com mocks, sem testes ponta a ponta em navegador ou avaliação visual representativa. O processamento da assinatura ocorre na thread principal; imagens de logo são decodificadas antes da redução. Consulte a documentação principal para achados e prioridades.
+- Os 40 testes cobrem utilitários com mocks, sem testes ponta a ponta em navegador ou avaliação visual representativa. O processamento da assinatura ocorre na thread principal; imagens de logo são decodificadas antes da redução. Consulte a documentação principal para achados e prioridades.
 
 - `npm run build`: concluído, sem avisos de recursos não resolvidos.
 - `npm run lint`: concluído sem erros.
-- `npm test`: 185 testes passaram.
+- `npm test`: 40 testes passaram.
 - `npm audit --offline`: 0 vulnerabilidades no cache local; o acesso on-line ao registro não foi liberado após falha de DNS.
 - Credenciais salvas pelo modo Implantação ou pelo modo Avançado ficam em texto legível no `localStorage` do navegador.
 

@@ -1,4 +1,4 @@
-import { generatePassword } from "./passwordGenerator.js";
+import { generatePassword } from "./passwordGenerator";
 
 // Limites para manter importação em memória previsível e evitar planilhas enormes.
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -54,9 +54,8 @@ function inspectRows(rows, fileName, sheetName) {
         .slice(0, 20)
         .findIndex((row) => row.some(isEmailHeader));
     const hasEmailHeader = headerRowIndex >= 0;
-    // Um valor com "@" pode ser um endereço malformado; preserve-o como dado para classificá-lo.
-    const firstRowLooksLikeEmail = (rows[0] ?? []).some((value) => String(value ?? "").includes("@"));
-    const hasUnlabeledHeader = !hasEmailHeader && rows.length > 1 && !firstRowLooksLikeEmail;
+    const firstRowContainsEmail = (rows[0] ?? []).some(isEmail);
+    const hasUnlabeledHeader = !hasEmailHeader && rows.length > 1 && !firstRowContainsEmail;
     const columnHeaderRow = hasEmailHeader ? headerRowIndex : hasUnlabeledHeader ? 0 : -1;
     const dataStartIndex = hasEmailHeader ? headerRowIndex + 1 : hasUnlabeledHeader ? 1 : 0;
     if (rows.length - dataStartIndex > MAX_ROWS) {
@@ -65,9 +64,6 @@ function inspectRows(rows, fileName, sheetName) {
     const width = Math.max(1, ...rows.slice(0, Math.min(rows.length, MAX_ROWS + 1)).map((row) => row.length));
     const columnCount = Math.min(width, 100);
     const rawHeaders = columnHeaderRow >= 0 ? rows[columnHeaderRow] : [];
-    if (rawHeaders.findIndex(isEmailHeader) >= 100) {
-        throw new Error("O cabeçalho de e-mail está após o limite de 100 colunas.");
-    }
     const headers = Array.from({ length: columnCount }, (_, index) =>
         cellToString(rawHeaders[index]) || columnLabel(index)
     );
@@ -109,6 +105,7 @@ export async function readCredentialFile(file) {
     const XLSX = await import("xlsx");
     const workbook = XLSX.read(contents, {
         type: extension === "csv" ? "string" : "array",
+        codepage: 65001,
         cellDates: false,
         dense: true,
     });

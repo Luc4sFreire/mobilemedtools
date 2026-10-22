@@ -1,13 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { composeSignature } from "../utils/composeSignature"
 import { PADRAO, processImage } from "../utils/processImage"
-import {
-    addSignaturePhrase,
-    buildSignatureDetails,
-    removeSignaturePhrase,
-    updateSignaturePhrase,
-    validateSignatureFile,
-} from "../utils/signatureDetails.js"
 import { useNotifications } from "./useNotifications"
 
 // Relaciona cada tipo de profissional com a sigla que será usada no registro.
@@ -29,7 +22,23 @@ const defaultImageOptions = {
 
 // Escala inicial relativa ao tamanho máximo que cabe no layout final.
 const DEFAULT_IMAGE_SCALE = 100
+const MAX_IMAGE_BYTES = 12 * 1024 * 1024
 const MAX_IMAGE_PIXELS = 12_000_000
+const MAX_PHRASES = 5
+
+/**
+ * Normaliza o texto de um registro e formata-o conforme a apresentação escolhida.
+ * O formato compacto acrescenta o estado informado ou usa RS como estado padrão.
+ */
+function formatCredential(value, label, format) {
+    const normalizedValue = value.trim().replace(new RegExp(`^${label}\\s*[:/]?\\s*`, "i"), "")
+    if (!normalizedValue) return ""
+    if (format === "default") return `${label}: ${normalizedValue}`
+
+    const state = normalizedValue.match(/(?:\/|\s)([A-Z]{2})$/i)?.[1]?.toUpperCase() || "RS"
+    const number = normalizedValue.replace(/(?:\/|\s)[A-Z]{2}$/i, "").trim()
+    return `${label}/${state} ${number || normalizedValue}`
+}
 
 /**
  * Hook que controla seleção e processamento da imagem, formulário profissional,
@@ -213,19 +222,24 @@ export function useSignature(){
 
         let isCurrent = true
         // Esta lista determina a ordem visual das linhas no PNG composto.
-        const details = buildSignatureDetails({
-            professionalName: previewInfo.professionalName,
-            credentialValue: previewInfo.credentialValue,
-            credentialLabel: typeP.credentials,
-            credentialFormat: formatCredentials,
-            includeRqe: addRQE,
-            rqeValue: previewInfo.rqeValue,
-            rqeFormat: formatCredentialsRQE,
-            includeSpecialty: addSpecialty,
-            specialty: previewInfo.specialty,
-            includeExtraPhrases: addExtraPhrase,
-            phrases: previewInfo.phrases,
-        })
+        const details = []
+        const name = previewInfo.professionalName.trim()
+        const credential = formatCredential(previewInfo.credentialValue, typeP.credentials, formatCredentials)
+
+        if (name) details.push({ text: name, emphasis: true })
+        if (credential) details.push({ text: credential })
+        if (addRQE) {
+            const rqe = formatCredential(previewInfo.rqeValue, "RQE", formatCredentialsRQE)
+            if (rqe) details.push({ text: rqe })
+        }
+        if (addSpecialty && previewInfo.specialty.trim()) {
+            details.push({ text: previewInfo.specialty.trim() })
+        }
+        if (addExtraPhrase) {
+            previewInfo.phrases.forEach((phrase) => {
+                if (phrase.value?.trim()) details.push({ text: phrase.value.trim() })
+            })
+        }
 
         // A composição desenha texto e imagem e retorna um Blob PNG local.
         composeSignature(fileUrl, details, {
@@ -287,8 +301,15 @@ export function useSignature(){
         const selectedFile = event.currentTarget.files?.[0]
         if(!selectedFile) return
 
-        const validation = validateSignatureFile(selectedFile)
-        if (!validation.valid) {
+        const acceptedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/bmp", "image/avif"]
+        let validationMessage = ""
+        if (!acceptedTypes.includes(selectedFile.type)) {
+            validationMessage = "Selecione uma imagem PNG, JPEG, WebP, GIF, BMP ou AVIF válida."
+        } else if (selectedFile.size > MAX_IMAGE_BYTES) {
+            validationMessage = "O arquivo excede o limite de 12 MB. Escolha uma imagem menor."
+        }
+
+        if (validationMessage) {
             // Invalida imediatamente qualquer processamento e prévia anteriores.
             processingIdRef.current += 1
             if (fileUrlRef.current) URL.revokeObjectURL(fileUrlRef.current)
@@ -302,7 +323,12 @@ export function useSignature(){
             setPreviewCompositionKey("")
             setProcessingErrorKey("")
             setCompositionErrorKey("")
-            notifyError(validation.title, validation.message)
+            notifyError(
+                validationMessage.startsWith("O arquivo")
+                    ? "Imagem acima do limite."
+                    : "Formato de imagem inválido.",
+                validationMessage
+            )
             event.currentTarget.value = ""
             return
         }
@@ -406,17 +432,31 @@ export function useSignature(){
 
     // Acrescenta campo vazio com ID não reutilizado após remoções.
     function addPhrases(){
-        setPhrases((currentPhrases) => addSignaturePhrase(currentPhrases))
+        setPhrases((currentPhrases) => {
+            if (currentPhrases.length >= MAX_PHRASES) return currentPhrases
+            const nextId = currentPhrases.length > 0
+                ? Math.max(...currentPhrases.map((phrase) => phrase.id)) + 1
+                : 1
+
+            return [
+                ...currentPhrases,
+                { id: nextId, value: "" },
+            ]
+        })
     }
 
     // Atualiza o texto da frase identificada sem substituir as outras frases.
     function updatePhrase(id, value){
-        setPhrases((currentPhrases) => updateSignaturePhrase(currentPhrases, id, value))
+        setPhrases((currentPhrases) => currentPhrases.map((phrase) =>
+            phrase.id === id ? { ...phrase, value: value.slice(0, 120) } : phrase
+        ))
     }
 
     // Remove a frase indicada, mantendo um campo vazio como mínimo da interface.
     function removePhrase(id){
-        const nextPhrases = removeSignaturePhrase(phrases, id)
+        const nextPhrases = phrases.length > 1
+            ? phrases.filter((phrase) => phrase.id !== id)
+            : phrases.map((phrase) => ({ ...phrase, value: "" }))
         setPhrases(nextPhrases)
         setPreviewInfo((currentInfo) => ({
             ...currentInfo,
