@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildCredentialRows, credentialFilenameBase, downloadCredentials, readCredentialFile } from "../utils/credentialFiles.js";
+import { buildCredentialRows, credentialFilenameBase, downloadCredentials, readCredentialFile } from "../src/utils/credentialFiles.js";
 import { installDeterministicCrypto, installDownloadMocks, makeFile } from "./helpers/browserMocks.js";
 
 const headerAliases = [
@@ -13,7 +13,7 @@ for (const [header, expectedColumn] of headerAliases) {
         const file = makeFile({ text: `${header},Nome\npessoa@example.com,Ana` });
         const sheet = await readCredentialFile(file);
         assert.equal(sheet.emailColumn, expectedColumn);
-        assert.deepEqual(sheet.headers, [header, "Nome"]);
+        assert.deepEqual(sheet.headers, [header.trim(), "Nome"]);
         assert.equal(sheet.rows[0].values[0], "pessoa@example.com");
     });
 }
@@ -76,7 +76,7 @@ for (const scenario of importCases) {
     test(`${scenario.id}: importa CSV e classifica a estrutura`, async () => {
         const sheet = await readCredentialFile(makeFile({ text: scenario.text, size: scenario.size }));
         assert.equal(sheet.fileName, "usuarios.csv");
-        assert.equal(sheet.sheetName, "usuarios");
+        assert.equal(sheet.sheetName, "Sheet1");
         scenario.check(sheet);
     });
 }
@@ -143,7 +143,7 @@ for (const [id, email, expectedStatus] of buildRowsCases) {
         assert.equal(result[0].status, expectedStatus);
         assert.equal(result[0].sourceRow, 7);
         assert.equal(result[0].email, email.trim());
-        if (expectedStatus === "generated") assert.equal(result[0].password.length, 12);
+        if (expectedStatus === "generated") assert.equal(result[0].password.slice("mobile@".length).length, 12);
         else assert.equal(result[0].password, "");
     });
 }
@@ -157,7 +157,7 @@ const emailValidationCases = [
     ["CF-EMAIL-06", " A@B.COM ", "generated"],
     ["CF-EMAIL-07", "ana@localhost", "invalid"],
     ["CF-EMAIL-08", "ana@example.com.br extra", "invalid"],
-    ["CF-EMAIL-09", "ana@.com", "generated"],
+    ["CF-EMAIL-09", "ana@.com", "invalid"],
     ["CF-EMAIL-10", "ana@example..com", "generated"],
     ["CF-EMAIL-11", "ana b@example.com", "invalid"],
     ["CF-EMAIL-12", "ana@example.com\n", "generated"],
@@ -183,7 +183,8 @@ test("CF-ROWS-13: marca e-mails repetidos ignorando maiúsculas e minúsculas", 
         { sourceRow: 3, values: ["ANA@EXAMPLE.COM"] },
         { sourceRow: 4, values: ["bia@example.com"] },
     ] }, 0, {});
-    assert.deepEqual(result.map((row) => row.status), ["generated", "duplicate", "generated"]);
+    assert.deepEqual(result.map((row) => row.status), ["duplicate", "duplicate", "generated"]);
+    assert.equal(result[0].password, "");
     assert.equal(result[1].password, "");
 });
 
@@ -195,7 +196,7 @@ test("CF-ROWS-14: inválidos não ocupam a chave de deduplicação e linhas vál
         { sourceRow: 3, values: ["ana@example.com"] },
         { sourceRow: 4, values: ["ana@example.com"] },
     ] }, 0, {});
-    assert.deepEqual(result.map((row) => row.status), ["invalid", "generated", "duplicate"]);
+    assert.deepEqual(result.map((row) => row.status), ["invalid", "duplicate", "duplicate"]);
 });
 
 test("CF-ROWS-15: lê a coluna selecionada e preserva linhas de origem", (t) => {
@@ -239,9 +240,9 @@ test("CF-EXPORT-CSV-01: exporta UTF-8 com BOM, aspas, vírgulas e proteção de 
     assert.deepEqual(browser.clicks.map((click) => click.download), ["credenciais-equipe.csv"]);
     const blob = browser.blobs.get(browser.clicks[0].href);
     assert.equal(blob.type, "text/csv;charset=utf-8");
-    assert.equal((await blob.text()).startsWith("\uFEFF"), true);
+    assert.deepEqual([...new Uint8Array(await blob.arrayBuffer()).slice(0, 3)], [0xef, 0xbb, 0xbf]);
     assert.match(await blob.text(), /'=cmd@example\.com/);
-    assert.match(await blob.text(), /"\+pass,""1"""/);
+    assert.match(await blob.text(), /"'\+pass,""1"""/);
     assert.match(await blob.text(), /"'-começo"/);
     assert.match(await blob.text(), /"'@comando"/);
 });

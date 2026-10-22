@@ -6,18 +6,21 @@ const NOTIFICATION_DURATION = 2000
 const NOTIFICATION_EXIT_DURATION = 320
 const MAX_VISIBLE_NOTIFICATIONS = 4
 
+// Respeita a preferência do sistema por movimento reduzido na animação de saída.
 function getNotificationExitDuration() {
     const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
     return prefersReducedMotion ? 0 : NOTIFICATION_EXIT_DURATION
 }
 
 export function NotificationProvider({ children }) {
+    // O estado atual alimenta a renderização; refs permitem coordenar timers sem atraso.
     const [notifications, setNotifications] = useState([])
     const notificationsRef = useRef([])
     const timeoutsRef = useRef(new Map())
     const removalTimeoutsRef = useRef(new Map())
     const nextIdRef = useRef(0)
 
+    // Marca a notificação para saída animada e remove-a após o tempo correspondente.
     const dismissNotification = useCallback((id) => {
         const notification = notificationsRef.current.find((item) => item.id === id)
         if (!notification || notification.isDismissing) return
@@ -40,6 +43,7 @@ export function NotificationProvider({ children }) {
         }, exitDuration))
     }, [])
 
+    // Adiciona uma notificação, limita a fila visível e agenda sua remoção automática.
     const notify = useCallback((title, message, type = "success") => {
         const id = ++nextIdRef.current
         const nextNotifications = [
@@ -65,10 +69,12 @@ export function NotificationProvider({ children }) {
         ))
     }, [dismissNotification])
 
+    // Expõe ações tipadas estáveis para que os componentes reportem sucesso e erro.
     const notifySuccess = useCallback((title, message) => notify(title, message, "success"), [notify])
     const notifyError = useCallback((title, message) => notify(title, message, "error"), [notify])
     const contextValue = useMemo(() => ({ notifySuccess, notifyError }), [notifySuccess, notifyError])
 
+    // Cancela timers pendentes ao desmontar o provedor para evitar atualizações tardias.
     useEffect(() => () => {
         for (const timeout of timeoutsRef.current.values()) {
             window.clearTimeout(timeout)
@@ -83,6 +89,7 @@ export function NotificationProvider({ children }) {
     return (
         <NotificationContext.Provider value={contextValue}>
             {children}
+            {/* Região global que apresenta feedback acessível por leitor de tela. */}
             <div className="notification-viewport" aria-label="Notificações">
                 {notifications.map((notification) => (
                     <div

@@ -1,7 +1,7 @@
-import { useNotifications } from "./useNotifications"
+import { useNotifications } from "../../src/hooks/useNotifications"
 import './style/buttonCopy.css'
 
-// Botão reutilizável de cópia com confirmação visual temporária.
+// Botão de cópia compartilhado; usa a API Clipboard e feedback global.
 function ButtonCopy({ text }){
     const { notifySuccess, notifyError } = useNotifications()
 

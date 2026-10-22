@@ -1,6 +1,7 @@
-@import url('../../../style/index.css');
+@import url('../../../src/style/index.css');
 
 /* Área clicável do switch e alinhamento opcional do rótulo. */
+/* Switch acessível: esconde visualmente o input sem removê-lo do teclado/leitor de tela. */
 .toggle {
   display: inline-flex;
   align-items: center;

@@ -1,18 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import "../../style/password.css";
-import { useNotifications } from "../ui/useNotifications";
-import ButtonCopy from "../ui/ButtonCopy";
+import "../../src/style/password.css";
+import { usePassword } from "../../src/hooks/usePassword";
 import Toggle from "../ui/Toggle";
-import { usePassword } from "../../hooks/usePassword";
+import ButtonCopy from "../ui/ButtonCopy";
+import { useNotifications } from "../../src/hooks/useNotifications";
 import {
     buildCredentialRows,
     credentialFilenameBase,
     downloadCredentials,
     readCredentialFile,
-} from "../../utils/credentialFiles";
+} from "../../src/utils/credentialFiles";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
+// Importa uma tabela, gera credenciais para endereços únicos e permite exportá-las.
 function PasswordAvancado() {
     const fileInputRef = useRef(null);
     const { notifySuccess, notifyError } = useNotifications();
@@ -28,6 +29,7 @@ function PasswordAvancado() {
     const [isDragging, setIsDragging] = useState(false);
     const reportedStorageErrorRef = useRef("");
 
+    // Separa os registros que podem ser copiados/exportados dos que precisam de revisão.
     const credentials = credentialRows.filter((row) => row.status === "generated");
     const duplicateCount = credentialRows.filter((row) => row.status === "duplicate").length;
     const invalidCount = credentialRows.filter((row) => row.status === "invalid").length;
@@ -40,6 +42,7 @@ function PasswordAvancado() {
         }
     }, [savedUsers.storageLoadError, notifyError]);
 
+    // Recalcula a tabela e guarda a planilha/coluna que servirão de fonte para nova geração.
     function makeCredentials(nextSheet, nextEmailColumn) {
         const generatedRows = buildCredentialRows(nextSheet, nextEmailColumn, options);
         if (!generatedRows.length) {
@@ -51,6 +54,7 @@ function PasswordAvancado() {
         return generatedRows;
     }
 
+    // Lê o arquivo selecionado e expõe contagens de linhas válidas, duplicadas e inválidas.
     async function importFile(file) {
         if (!file) return;
         setIsLoading(true);
@@ -77,6 +81,7 @@ function PasswordAvancado() {
         }
     }
 
+    // Regenera o lote a partir da planilha em memória, usando as opções atuais do formulário.
     function regeneratePasswords() {
         if (!sheet) return;
         try {
@@ -89,6 +94,7 @@ function PasswordAvancado() {
         }
     }
 
+    // Trocar a coluna invalida e reconstrói a classificação das credenciais.
     function changeEmailColumn(event) {
         const nextEmailColumn = Number(event.target.value);
         setEmailColumn(nextEmailColumn);
@@ -101,6 +107,7 @@ function PasswordAvancado() {
         }
     }
 
+    // Copia apenas as linhas classificadas como válidas em formato tabulado.
     async function copyAllCredentials() {
         try {
             const text = credentials.map(({ email, password }) => `${email}\t${password}`).join("\n");
@@ -112,12 +119,14 @@ function PasswordAvancado() {
         }
     }
 
+    // Persiste uma linha válida na coleção compartilhada com o modo Implantação.
     function saveCredential(row) {
         const result = savedUsers.saveCredential(row.email, row.password);
         if (result.success) notifySuccess(result.title, result.message);
         else notifyError(result.title, result.message);
     }
 
+    // Delega a codificação do arquivo ao utilitário e informa erros de exportação.
     async function exportCredentials(format) {
         try {
             await downloadCredentials(credentials, format, credentialFilenameBase(sheet?.fileName));
@@ -128,6 +137,7 @@ function PasswordAvancado() {
         }
     }
 
+    // Integra o arrastar-e-soltar ao mesmo caminho de validação do seletor de arquivos.
     function handleDrop(event) {
         event.preventDefault();
         setIsDragging(false);
@@ -204,6 +214,7 @@ function PasswordAvancado() {
                         <Toggle checked={onlyUpper} onChange={setOnlyUpper} label="Apenas letras maiúsculas" />
                     </div>
                     <p className="input-hint">Maiúsculas e números são obrigatórios. O prefixo padrão é “mobile” e fica fora do comprimento aleatório.</p>
+                    {/* Só mostra tabela e ações de exportação depois de importar uma fonte válida. */}
                     {sheet && (
                         <div className="advanced-column-select">
                             <label htmlFor="advanced-email-column">Coluna de e-mail em {sheet.fileName}</label>

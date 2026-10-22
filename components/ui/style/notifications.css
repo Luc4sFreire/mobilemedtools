@@ -1,3 +1,4 @@
+/* Área fixa e não intrusiva que empilha os avisos globais no canto da tela. */
 .notification-viewport {
     position: fixed;
     right: max(20px, env(safe-area-inset-right));
@@ -176,6 +177,7 @@
     }
 }
 
+/* Ajusta dimensões e alinhamento dos avisos para telas estreitas. */
 @media (max-width: 520px) {
     .notification-viewport {
         right: max(12px, env(safe-area-inset-right));
@@ -196,6 +198,7 @@
     }
 }
 
+/* Desativa movimentos decorativos quando essa preferência está ativa no sistema. */
 @media (prefers-reduced-motion: reduce) {
     .app-notification {
         animation: none;

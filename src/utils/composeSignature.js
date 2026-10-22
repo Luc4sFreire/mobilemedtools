@@ -134,6 +134,7 @@ export async function composeSignature(imageUrl, details, options = {}) {
  * @param {number} scale Fator aplicado ao tamanho tipográfico padrão.
  * @returns {{lines: {text: string, fontSize: number, lineHeight: number, emphasis?: boolean}[], height: number}}
  */
+// Mede, quebra e dimensiona os dados tipográficos antes de desenhar a composição.
 function buildTextLayout(context, details, maxWidth, scale) {
     // flatMap permite expandir um único detalhe para várias linhas quando necessário.
     const lines = details.flatMap((detail) => {
@@ -164,6 +165,7 @@ function buildTextLayout(context, details, maxWidth, scale) {
  * @param {string} src URL ou fonte local compreendida pelo navegador.
  * @returns {Promise<HTMLImageElement>} Imagem carregada.
  */
+// Carrega a imagem e rejeita a promessa quando a decodificação falha.
 function loadImage(src) {
     return new Promise((resolve, reject) => {
         const image = new Image()

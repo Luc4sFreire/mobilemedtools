@@ -1,3 +1,4 @@
+// Conjuntos permitidos em cada política; maiúsculas e números são sempre exigidos.
 const CHARACTER_GROUPS = {
     uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     lowercase: "abcdefghijklmnopqrstuvwxyz",
@@ -5,8 +6,10 @@ const CHARACTER_GROUPS = {
     special: "!@#$&",
 };
 
+// Buffer reutilizado para obter números aleatórios da API criptográfica do navegador.
 const randomBuffer = new Uint32Array(1);
 
+// Sorteia um inteiro no intervalo [0, max) rejeitando a faixa que causaria viés.
 function randomInteger(max) {
     if (!globalThis.crypto?.getRandomValues || max < 1) {
         throw new Error("A geração aleatória segura não está disponível neste navegador.");
@@ -24,10 +27,12 @@ function randomInteger(max) {
     return value % max;
 }
 
+// Escolhe um caractere uniformemente dentro do conjunto informado.
 function pickCharacter(characters) {
     return characters[randomInteger(characters.length)];
 }
 
+// Embaralha a sequência pelo algoritmo Fisher–Yates usando o mesmo sorteio seguro.
 function shuffle(characters) {
     for (let index = characters.length - 1; index > 0; index -= 1) {
         const swapIndex = randomInteger(index + 1);
@@ -36,7 +41,10 @@ function shuffle(characters) {
     return characters;
 }
 
-// Mantém as mesmas regras nos modos Padrão, Implantação e Avançado.
+/**
+ * Gera a parte imprevisível da senha e acrescenta um prefixo opcional previsível.
+ * O comprimento limita apenas os caracteres aleatórios, não o prefixo.
+ */
 export function generatePassword({ prefix = "mobile", size = 8, special = false, onlyUpper = false } = {}) {
     const groups = [CHARACTER_GROUPS.uppercase];
     if (!onlyUpper) groups.push(CHARACTER_GROUPS.lowercase);

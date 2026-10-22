@@ -1,13 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { processImage } from "../utils/processImage.js";
+import { processImage } from "../src/utils/processImage.js";
 import { installCanvasMocks, makeRgbaCanvas, MockCanvas } from "./helpers/browserMocks.js";
 
 function whiteImage(width = 7, height = 7, pixelAt = () => [255, 255, 255, 255]) {
     return makeRgbaCanvas(width, height, pixelAt);
 }
 
-function squareInk(size = 3, options = {}) {
+function squareInk(size = 3) {
     const offset = Math.floor((7 - size) / 2);
     return whiteImage(7, 7, (x, y) => x >= offset && x < offset + size && y >= offset && y < offset + size
         ? [0, 0, 0, 255]
@@ -75,7 +75,7 @@ test("IM-06: fallback de largura ou altura não positiva mantém proporção da 
 
 test("IM-07: conserva tinta escura e substitui o fundo por branco", (t) => {
     withCanvasMocks(t);
-    const canvas = squareInk(1);
+    const canvas = squareInk(3);
     processImage(canvas);
     const center = (3 * 7 + 3) * 4;
     const corner = 0;
@@ -85,7 +85,7 @@ test("IM-07: conserva tinta escura e substitui o fundo por branco", (t) => {
 
 test("IM-08: gera fundo transparente quando essa opção está ativada", (t) => {
     withCanvasMocks(t);
-    const canvas = squareInk(1);
+    const canvas = squareInk(3);
     processImage(canvas, { transparente: true });
     const center = (3 * 7 + 3) * 4;
     assert.equal(canvas.pixels[3], 0);
@@ -159,9 +159,11 @@ test("IM-15: suavização mantém tons intermediários de borda em vez de saída
 
 test("IM-16: preto puro substitui a cor original da tinta", (t) => {
     withCanvasMocks(t);
-    const canvas = whiteImage(3, 3, (x, y) => x === 1 && y === 1 ? [120, 20, 20, 255] : [255, 255, 255, 255]);
+    const canvas = whiteImage(7, 7, (x, y) => x >= 2 && x <= 4 && y >= 2 && y <= 4
+        ? [0, 80, 180, 255]
+        : [255, 255, 255, 255]);
     processImage(canvas, { pretoPuro: true });
-    const center = (1 * 3 + 1) * 4;
+    const center = (3 * 7 + 3) * 4;
     assert.deepEqual([...canvas.pixels.slice(center, center + 3)], [0, 0, 0]);
 });
 

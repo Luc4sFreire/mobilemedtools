@@ -1,14 +1,15 @@
-import "../../style/password.css"
-import { usePassword } from "../../hooks/usePassword";
+import "../../src/style/password.css";
+import { usePassword } from "../../src/hooks/usePassword";
 import Toggle from "../ui/Toggle";
 import ButtonCopy from "../ui/ButtonCopy";
-import { useNotifications } from "../ui/useNotifications";
+import { useNotifications } from "../../src/hooks/useNotifications";
 
-// Tela de geração individual sem associação de senhas a usuários.
+// Modo independente: gera lotes temporários e oferece cópia sem persistir credenciais.
 function PasswordDefault(){
     const pass = usePassword({ loadSavedUsersOnMount: false });
     const { notifySuccess, notifyError } = useNotifications();
 
+    // Converte o resultado estruturado do hook em feedback visual para a pessoa usuária.
     function generatePasswords() {
         const result = pass.generatePass();
         if (result.success) notifySuccess(result.title, result.message);
@@ -33,7 +34,7 @@ function PasswordDefault(){
                         <button 
                             type="button"
                             aria-label="Limpar prefixo personalizado"
-                            onClick={() => pass.setPrefix("")}
+                            onClick={() => pass.setPrefix("Mobile")}
                             id="reload"
                         ><div></div></button>
                     </div>
@@ -84,7 +85,7 @@ function PasswordDefault(){
                 <p className="input-hint password-config-hint">O prefixo padrão é “mobile” e não entra no comprimento aleatório. Prefixos são previsíveis.</p>
                 <button className="password-config-generate" type="button" onClick={generatePasswords}>Gerar Novas Senhas</button>
             </section>
-            {/* Resultados são atualizados a cada geração e copiados individualmente. */}
+            {/* Cada item mantém a senha no estado do módulo até ser substituída/desmontada. */}
             <section className="result">
                 <h2>Suas senhas geradas</h2>
                 {pass.pass.map((password, index) => (

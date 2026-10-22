@@ -7,7 +7,7 @@ import {
     removeSignaturePhrase,
     updateSignaturePhrase,
     validateSignatureFile,
-} from "../utils/signatureDetails.js";
+} from "../src/utils/signatureDetails.js";
 
 test("SD-01: aceita cada formato de imagem documentado", () => {
     for (const type of ["image/png", "image/jpeg", "image/webp", "image/gif", "image/bmp", "image/avif"]) {

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import PasswordDefault from './subcomponents/PasswordDefault';
-import "../style/password.css";
+import "../src/style/password.css";
 import PasswordImplantacao from './subcomponents/PasswordImplantacao';
 import PasswordAvancado from './subcomponents/PasswordAvancado';
 
-// Reúne os modos do gerador e renderiza o formulário selecionado.
+// Controla a seleção entre os três fluxos e apresenta somente o modo ativo.
 function PasswordWorspace(){
     const [activeMode, setActiveMode] = useState("padrao");
     // Os identificadores também são usados como chaves de seleção e renderização.
@@ -13,6 +13,7 @@ function PasswordWorspace(){
         { id: "implantacao", label: "Implantação" },
         { id: "avancado", label: "Avançado" },
     ];
+    // Relaciona cada identificador de modo ao componente que implementa seu fluxo.
     const modeComponents = {
         padrao: <PasswordDefault />,
         implantacao: <PasswordImplantacao />,

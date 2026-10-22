@@ -13,7 +13,7 @@
 
 ## Sobre
 
-O MobilemedTools é uma aplicação web em desenvolvimento. O estado atual contém um gerador de imagem de assinatura profissional e um gerador de senhas com fluxos Padrão, Implantação e Avançado.
+O MobilemedTools é uma aplicação web em desenvolvimento. O estado atual contém geradores de assinatura, senhas (modos Padrão, Implantação e Avançado) e logos.
 
 A aplicação é uma SPA React/Vite. O processamento de imagens e a geração de senhas ocorrem no navegador; o código atual não faz chamadas a uma API de aplicação. No modo Implantação, os usuários salvos ficam no armazenamento local do navegador, conforme a nota de privacidade abaixo.
 
@@ -27,9 +27,15 @@ A aplicação é uma SPA React/Vite. O processamento de imagens e a geração de
 - Compõe os dados de médico (CRM), veterinário (CRMV) ou dentista (CRO) com nome, registro, RQE, especialidade e até cinco frases adicionais.
 - Exibe a prévia em 420 × 120 px e gera o PNG final em 1260 × 360 px (resolução 3×). O download é liberado quando a prévia corresponde às opções e aos dados atuais.
 
+### Gerador de logos
+
+- Cria logos tipográficos em cadastro simples ou em lotes de até 50 nomes, com nome completo ou abreviação, uma de cinco paletas e exportação PNG de 200 × 200 px.
+- Padroniza imagens PNG, JPEG, WebP ou BMP de até 12 MB cada, removendo regiões de fundo conectadas à borda e centralizando o conteúdo. O fundo final pode ser transparente ou preenchido manualmente.
+- Permite visualizar e baixar cada logo separadamente ou reunir o lote em um arquivo ZIP. O processamento ocorre no navegador.
+
 ### Gerador de senhas
 
-- Gera de 1 a 50 senhas por vez. A parte aleatória inicia com 8 caracteres e pode ter de 4 a 32; o prefixo `mobile` vem preenchido por padrão e não entra nessa contagem.
+- Gera de 1 a 50 senhas por vez. A parte aleatória inicia com 8 caracteres e pode ter de 4 a 32; o prefixo `Mobile` vem preenchido por padrão e não entra nessa contagem. Ele pode ser removido ou alterado e tem limite de 24 caracteres.
 - Garante ao menos uma letra maiúscula e um número; minúsculas podem ser desativadas e caracteres especiais podem ser ativados.
 - Usa a API Web Crypto do navegador para sortear os caracteres e embaralhá-los.
 - O modo Padrão mostra e permite copiar as senhas geradas.
@@ -54,8 +60,8 @@ Use o armazenamento de credenciais somente em um ambiente apropriado para esses 
 | Senhas — modo Padrão | Implementado | Geração e cópia de senhas |
 | Senhas — modo Implantação | Implementado | Associação a e-mail, persistência local, exclusão e exportação |
 | Senhas — modo Avançado | Implementado | Importação CSV/XLSX, validação e duplicatas de e-mail, cópia, gravação local seletiva e exportação XLSX/CSV/MD |
-| Criação de logos | Não presente no código atual | Existia como ideia na documentação do Notion |
-| Testes automatizados | Configurados | Mais de 200 cenários para senhas, credenciais e imagens (`npm test`) |
+| Criação de logos | Implementado | Modo tipográfico e padronização de imagens, individual ou em lotes de até 50 |
+| Testes automatizados | 185 testes | Cobertura de senhas, importação/exportação, persistência, assinatura, processamento de imagem, mensagens e logos |
 
 ## Primeiros passos
 
@@ -81,9 +87,9 @@ O Vite inicia em http://localhost:3000.
 | npm run build | Gera os arquivos de produção em dist/ |
 | npm run preview | Serve localmente o build de produção |
 | npm run lint | Executa o ESLint |
-| npm test | Executa os testes automatizados com o runner nativo do Node.js |
+| npm test | Executa os testes da pasta `tests/`; falha se não houver arquivos de teste |
 
-Os cenários e suas explicações estão em [docs/cenarios-testes.md](docs/cenarios-testes.md).
+Consulte [docs/documentacao-principal.md](docs/documentacao-principal.md) para o diagnóstico mais recente de lint, build, testes e auditoria de dependências.
 
 ## Como usar
 
@@ -121,30 +127,35 @@ O fluxo em alto nível é:
       → assinatura PNG
       → composição lógica de 420 × 120 px renderizada como PNG de 1260 × 360 px
 
-A documentação principal contém a explicação teórica e o fluxo detalhado, preparada para substituir o conteúdo da página principal do Notion. O diagnóstico específico do processador, incluindo as medições registradas, está em docs/diagnostico-algoritmo-imagem.md.
+A documentação principal contém a explicação teórica dos algoritmos de imagem, senhas e logos, além do diagnóstico do sistema. O processador de assinatura também está descrito em [docs/diagnostico-algoritmo-imagem.md](docs/diagnostico-algoritmo-imagem.md).
 
 ## Arquitetura
 
     .
     ├── components/
+    │   ├── Header.jsx
     │   ├── SignatureWorkspace.jsx
     │   ├── PasswordWorkspace.jsx
+    │   ├── LogoWorkspace.jsx
     │   ├── subcomponents/
     │   │   ├── PasswordDefault.jsx
     │   │   ├── PasswordImplantacao.jsx
     │   │   └── PasswordAvancado.jsx
     │   └── ui/
-    ├── hooks/
-    │   ├── useSignature.js
-    │   └── usePassword.js
-    ├── utils/
-    │   ├── credentialFiles.js
-    │   ├── passwordGenerator.js
-    │   ├── processImage.js
-    │   └── composeSignature.js
     ├── src/
     │   ├── App.jsx
-    │   └── main.jsx
+    │   ├── main.jsx
+    │   ├── hooks/
+    │   │   ├── useSignature.js
+    │   │   ├── usePassword.js
+    │   │   └── useNotifications.js
+    │   ├── utils/
+    │   │   ├── credentialFiles.js
+    │   │   ├── passwordGenerator.js
+    │   │   ├── processImage.js
+    │   │   ├── composeSignature.js
+    │   │   └── logoGenerator.js
+    │   └── style/
     ├── docs/
     │   ├── documentacao-principal.md
     │   ├── diagnostico-algoritmo-imagem.md
@@ -153,9 +164,10 @@ A documentação principal contém a explicação teórica e o fluxo detalhado, 
     └── README.md
 
 - components contém as telas e componentes reutilizáveis.
-- hooks concentra estado, validação e regras de interface.
-- utils contém o gerador comum de senhas, os fluxos de leitura/exportação de credenciais, o processador de imagem e o compositor do PNG.
-- src monta a aplicação e alterna entre os módulos.
+- src/hooks concentra estado, validação e coordenação dos fluxos.
+- src/utils contém os algoritmos e fluxos de leitura/exportação.
+- src/style e components/ui/style contêm os estilos da aplicação e dos componentes.
+- src monta a aplicação e alterna entre os módulos; components contém as telas e componentes reutilizáveis.
 
 ## Tecnologias
 
@@ -169,12 +181,20 @@ A documentação principal contém a explicação teórica e o fluxo detalhado, 
 
 ## Documentação e changelog
 
-- [Documentação principal proposta para o Notion](docs/documentacao-principal.md)
+- [Documentação principal do projeto, organizada para o Notion](docs/documentacao-principal.md)
 - [Diagnóstico detalhado do algoritmo de imagem](docs/diagnostico-algoritmo-imagem.md)
 - [Modelo reutilizável de changelog](docs/modelo-changelog.md)
 - [Changelog do projeto](CHANGELOG.md)
 
-A página do Notion não foi alterada. O primeiro arquivo é uma proposta em Markdown pronta para revisão e cópia.
+### Diagnóstico desta revisão (22/10/2026)
+
+- Os 185 testes cobrem utilitários com mocks, sem testes ponta a ponta em navegador ou avaliação visual representativa. O processamento da assinatura ocorre na thread principal; imagens de logo são decodificadas antes da redução. Consulte a documentação principal para achados e prioridades.
+
+- `npm run build`: concluído, sem avisos de recursos não resolvidos.
+- `npm run lint`: concluído sem erros.
+- `npm test`: 185 testes passaram.
+- `npm audit --offline`: 0 vulnerabilidades no cache local; o acesso on-line ao registro não foi liberado após falha de DNS.
+- Credenciais salvas pelo modo Implantação ou pelo modo Avançado ficam em texto legível no `localStorage` do navegador.
 
 ## Contribuindo
 

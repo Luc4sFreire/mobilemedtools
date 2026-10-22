@@ -1,0 +1,974 @@
+/* Estilos-base atuais: tokens claros, navegação, superfícies e layout compartilhado. */
+:root {
+    --font-title: Inter, "Aptos", "Segoe UI", system-ui, sans-serif;
+    --font-text: Inter, "Aptos", "Segoe UI", system-ui, sans-serif;
+    --font-Arial: Inter, "Aptos", "Segoe UI", system-ui, sans-serif;
+    --color-1: #e6f2ff;
+    --color-2: #b9dcff;
+    --color-3: #3289e8;
+    --color-3b: #1769bd;
+    --color-3c: #0e549d;
+    --color-4: #f3f7fc;
+    --color-5: #124d86;
+    --color-6: #18324d;
+    --background-gradiente-1: linear-gradient(125deg, #145da8 0%, #3289e8 100%);
+    --background-gradiente-invert-1: linear-gradient(125deg, #3289e8 0%, #145da8 100%);
+    --surface: #ffffff;
+    --surface-muted: #f5f8fc;
+    --border: #d9e4f0;
+    --text: #1c344e;
+    --text-muted: #647b94;
+    --brand-blue: #1769bd;
+    --brand-cyan: #3289e8;
+    --focus-ring: 0 0 0 3px rgb(50 137 232 / 22%);
+    color-scheme: light;
+}
+
+html,
+body {
+    background: #f3f7fc;
+}
+
+body {
+    color: var(--text);
+    background:
+        radial-gradient(ellipse at 84% -10%, rgb(50 137 232 / 10%), transparent 34rem),
+        #f3f7fc;
+    font-family: var(--font-text);
+    letter-spacing: 0;
+}
+
+button,
+input,
+textarea,
+select {
+    font-family: var(--font-text);
+}
+
+button {
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease,
+        box-shadow .18s ease, transform .18s ease;
+}
+
+.app-shell {
+    background: #f3f7fc;
+}
+
+.app-sidebar {
+    border-right-color: #dbe6f1;
+    background: #fff;
+    box-shadow: 5px 0 24px rgb(27 66 107 / 3%);
+}
+
+.app-brand__logo {
+    border-color: #e3edf7;
+    border-radius: 15px;
+    background: #f7faff;
+}
+
+.app-brand__copy > span {
+    color: #163c65;
+    font-family: var(--font-title);
+    font-weight: 750;
+}
+
+.app-brand__copy > small,
+.app-sidebar__section-label {
+    letter-spacing: .1em;
+}
+
+.app-nav {
+    gap: 6px;
+}
+
+.app-nav__item {
+    min-height: 48px;
+    border-radius: 12px;
+    color: #536d87;
+    font-weight: 620;
+}
+
+.app-nav__item:hover:not(.active) {
+    color: #145da8;
+    background: #eff6fd;
+}
+
+.app-nav__item.active {
+    background: linear-gradient(120deg, #145da8, #2478cb);
+    box-shadow: 0 7px 16px rgb(23 105 189 / 20%);
+}
+
+.app-sidebar__footer {
+    border-top-color: #e6edf5;
+}
+
+.theme-toggle {
+    border-radius: 11px;
+}
+
+.theme-toggle:hover {
+    border-color: #d5e4f2;
+    background: #f5f9fe;
+}
+
+.theme-toggle__icon {
+    color: var(--brand-blue);
+}
+
+.app-main {
+    background:
+        radial-gradient(ellipse at 100% 0%, rgb(50 137 232 / 5%), transparent 38rem),
+        transparent;
+}
+
+.app-topbar {
+    border-bottom-color: #dce6f1;
+}
+
+.app-breadcrumb {
+    font-size: 12px;
+}
+
+.app-breadcrumb strong {
+    color: #244b72;
+    font-weight: 700;
+}
+
+.workspace-main {
+    position: relative;
+    margin-top: 24px;
+    padding: clamp(24px, 3vw, 38px);
+    border: 1px solid #dce6f1;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 16px 44px rgb(24 60 98 / 7%);
+}
+
+.workspace-main::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #145da8, #3289e8 65%, #a9d4ff);
+    content: "";
+}
+
+.page-intro {
+    margin-bottom: 28px;
+}
+
+.workspace-kicker {
+    color: #1769bd;
+    font-size: 10px;
+    letter-spacing: .13em;
+}
+
+.workspace-kicker::before {
+    background: #3289e8;
+    box-shadow: 0 0 0 4px rgb(50 137 232 / 12%);
+}
+
+.page-intro h1,
+#signature-workspace .signatureIntro h1 {
+    color: #173b60;
+    font-family: var(--font-title);
+    font-size: clamp(27px, 3vw, 34px);
+    font-weight: 740;
+    letter-spacing: -.04em;
+    line-height: 1.16;
+}
+
+.page-intro p,
+#signature-workspace .signatureIntro p {
+    color: #647b94;
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+.workspace-main :focus-visible,
+.app-nav__item:focus-visible,
+.theme-toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+/* Assinatura: upload, opções, dados profissionais e prévia. */
+#signature-workspace .container-file.upload-section,
+#signature-workspace .configSigt,
+#signature-workspace .signature-person,
+#signature-workspace .configImage {
+    border-color: #dbe6f1;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 5px 18px rgb(28 67 109 / 4%);
+}
+
+#signature-workspace .container-file.upload-section {
+    border: 1px dashed #9bbbe0;
+    background: linear-gradient(135deg, #f4f9ff, #fbfdff);
+    transition: border-color .18s ease, background-color .18s ease;
+}
+
+#signature-workspace .container-file.upload-section:hover {
+    border-color: #3289e8;
+    background: #f1f7ff;
+}
+
+#signature-workspace .file-input-wrapper {
+    border-radius: 10px;
+    background: linear-gradient(120deg, #145da8, #287acb);
+    box-shadow: 0 6px 14px rgb(23 105 189 / 18%);
+}
+
+#signature-workspace .file-input-wrapper:hover,
+#signature-workspace .download-signature-button:hover:not(:disabled) {
+    background: #0e549d;
+}
+
+#signature-workspace .file-input-wrapper > label {
+    font-size: 14px;
+    font-weight: 650;
+}
+
+#signature-workspace .container-file.upload-section > p {
+    color: #526b85;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+#signature-workspace .configSigt,
+#signature-workspace .signature-person,
+#signature-workspace .configImage {
+    background: #fff;
+}
+
+#signature-workspace .configSigt > h2,
+#signature-workspace .signature-person > h2,
+#signature-workspace .configImage h2,
+#signature-workspace .configImage h1,
+#signature-workspace .image-preview-container h2 {
+    color: #1c426a;
+    font-family: var(--font-title);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -.025em;
+}
+
+#signature-workspace .addInfos h3,
+#signature-workspace .controlsProfessional > h3 {
+    color: #365471;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#signature-workspace .checkbox-group {
+    color: #405a74;
+    font-size: 13px;
+}
+
+#signature-workspace .checkbox-group input {
+    accent-color: #1769bd;
+}
+
+#signature-workspace .helper-text {
+    color: #6a8097;
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+#signature-workspace .controlsProfessional button,
+#signature-workspace .typeCrm button,
+#signature-workspace .typeRQE button,
+#signature-workspace .configImage button,
+#signature-workspace .signature-extra-phrases > button,
+#signature-workspace .signature-image-options-header > button {
+    border-color: #d5e2ef;
+    border-radius: 9px;
+    color: #3c5874;
+    background: #f7faff;
+    font-size: 12px;
+    font-weight: 620;
+}
+
+#signature-workspace .controlsProfessional button.active,
+#signature-workspace .typeCrm button.active,
+#signature-workspace .typeRQE button.active,
+#signature-workspace .configImage button.active,
+#signature-workspace .signature-extra-phrases > button.active {
+    border-color: #1769bd;
+    color: #fff;
+    background: #1769bd;
+}
+
+#signature-workspace .labels > h2,
+#signature-workspace .labels > label,
+#signature-workspace .signature-option-field > label {
+    color: #344f6b;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+#signature-workspace .labels input,
+#signature-workspace .labels textarea,
+#signature-workspace .signature-option-field > input[type="number"] {
+    min-height: 43px;
+    border-color: #d2dfec;
+    border-radius: 9px;
+    color: #203a54;
+    background: #fff;
+    font-size: 13px;
+}
+
+#signature-workspace .labels textarea {
+    min-height: auto;
+}
+
+#signature-workspace .labels input:focus,
+#signature-workspace .labels textarea:focus,
+#signature-workspace .signature-option-field > input[type="number"]:focus {
+    border-color: #3289e8;
+    box-shadow: var(--focus-ring);
+}
+
+#signature-workspace .configImage {
+    background: #f8fbff;
+}
+
+#signature-workspace .signature-option-field > input[type="range"] {
+    accent-color: #1769bd;
+}
+
+#signature-workspace .signature-image-options-header > button:hover,
+#signature-workspace .controlsProfessional button:not(.active):hover,
+#signature-workspace .typeCrm button:not(.active):hover,
+#signature-workspace .typeRQE button:not(.active):hover,
+#signature-workspace .configImage button:not(.active):hover,
+#signature-workspace .signature-extra-phrases > button:not(.active):hover {
+    border-color: #a8c5e3;
+    color: #145da8;
+    background: #edf5ff;
+}
+
+#signature-workspace .image-preview-container {
+    padding: 20px;
+    border: 1px solid #dbe6f1;
+    border-radius: 15px;
+    background: #f8fbff;
+}
+
+#signature-workspace .image-preview {
+    border-color: #d5e1ed;
+    border-radius: 10px;
+    background: #fff;
+}
+
+#signature-workspace .signature-message {
+    border-radius: 10px;
+}
+
+#signature-workspace .download-signature-button {
+    min-height: 46px;
+    border-radius: 10px;
+    background: linear-gradient(120deg, #145da8, #287acb);
+    box-shadow: 0 7px 16px rgb(23 105 189 / 19%);
+    font-size: 14px;
+}
+
+/* Senhas: alternância de modos, formulários, resultados e dados salvos. */
+.passwordModes {
+    gap: 6px;
+    margin-bottom: 20px;
+    padding: 5px;
+    border: 1px solid #e1eaf4;
+    border-radius: 12px;
+    background: #f5f8fc;
+}
+
+.passwordModes button {
+    min-height: 38px;
+    padding-inline: 16px;
+    border-radius: 9px;
+    color: #5d748c;
+    font-size: 12px;
+}
+
+.passwordModes button.active {
+    border-color: #fff;
+    color: #145da8;
+    background: #fff;
+    box-shadow: 0 2px 7px rgb(24 60 98 / 10%);
+}
+
+.passwordModes button:not(.active):hover {
+    color: #145da8;
+    background: #eaf3fd;
+}
+
+.password-workspace .default,
+.password-workspace .implantacao,
+.password-workspace .advanced,
+.password-workspace .advanced-results {
+    border-color: #dce6f1;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 5px 18px rgb(28 67 109 / 4%);
+}
+
+.password-workspace .default,
+.password-workspace .implantacao {
+    padding: 24px;
+}
+
+.password-workspace .labels > label,
+.password-workspace .range-heading > label,
+.password-workspace .labelEmail label,
+.advanced-column-select label {
+    color: #344f6b;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.password-workspace .input-hint {
+    color: #6a8097;
+    font-size: 11px;
+}
+
+.password-workspace .labels input:not([type="range"]),
+.password-workspace .labelEmail input,
+.advanced-column-select select {
+    border-color: #d2dfec;
+    border-radius: 9px;
+    color: #203a54;
+    background: #fff;
+    font-size: 13px;
+}
+
+.password-workspace .labels input:not([type="range"]):focus,
+.password-workspace .labelEmail input:focus,
+.advanced-column-select select:focus-visible {
+    border-color: #3289e8;
+    box-shadow: var(--focus-ring);
+}
+
+.password-workspace #caracPass,
+.password-workspace #upperPass {
+    border-color: #e1eaf3;
+    border-radius: 10px;
+    background: #f8fbff;
+}
+
+.password-workspace .default > button,
+.password-workspace .implantacao > button:not(.saveUsers),
+.advanced-options .password-config-generate {
+    min-height: 46px;
+    border-radius: 10px;
+    background: linear-gradient(120deg, #145da8, #287acb);
+    box-shadow: 0 6px 14px rgb(23 105 189 / 17%);
+    font-weight: 680;
+}
+
+.password-workspace .default > button:hover,
+.password-workspace .implantacao > button:not(.saveUsers):hover,
+.advanced-options .password-config-generate:hover:not(:disabled) {
+    background: #0e549d;
+}
+
+.password-workspace .saveUsers {
+    border-color: #d5e2ef;
+    border-radius: 9px;
+    color: #1769bd;
+}
+
+.password-workspace .saveUsers:hover {
+    border-color: #a8c5e3;
+    background: #f0f6fd;
+}
+
+.password-workspace .result > h2,
+.advanced-upload-copy h2,
+.advanced-results-heading h2 {
+    color: #1c426a;
+    font-family: var(--font-title);
+    letter-spacing: -.025em;
+}
+
+.password-workspace .resultGen {
+    border-color: #dce6f1;
+    border-radius: 13px;
+    background: #f8fbff;
+}
+
+.password-workspace .passwordResult {
+    border-color: #d7e3ef;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgb(23 60 98 / 4%);
+}
+
+.password-workspace .passwordResult > p,
+.advanced-password-cell code {
+    color: #203a54;
+}
+
+.password-workspace .btn-copy {
+    border-color: #d7e3ef;
+    border-radius: 8px;
+    background: #f3f8fe;
+}
+
+.password-workspace .btn-copy:hover {
+    border-color: #b5cde5;
+    background: #e7f1fc;
+}
+
+.password-workspace .saved-users-overlay {
+    background: rgb(15 39 67 / 55%);
+    backdrop-filter: blur(7px);
+}
+
+.password-workspace .saved-users-modal {
+    border-color: #dbe6f1;
+    border-radius: 18px;
+    box-shadow: 0 28px 80px rgb(8 34 65 / 28%);
+}
+
+.saved-users-header h2 {
+    font-family: var(--font-title);
+    font-weight: 720;
+}
+
+.saved-users-modal-icon,
+.saved-user-avatar,
+.saved-users-empty > span,
+.saved-users-action__icon {
+    color: #1769bd;
+    background: #eaf3fd;
+}
+
+.saved-users-list {
+    border-color: #e1eaf3;
+}
+
+.saved-user {
+    transition: background-color .16s ease;
+}
+
+.saved-user:hover {
+    background: #f5f9fe;
+}
+
+.saved-users-actions {
+    background: #f7faff;
+}
+
+.saved-users-actions .saved-users-action {
+    border-color: #d6e2ee;
+    color: #365471;
+    background: #fff;
+}
+
+.saved-users-actions .saved-users-action:hover:not(:disabled) {
+    border-color: #9bbce0;
+    color: #145da8;
+    background: #f1f7ff;
+}
+
+.saved-users-feedback {
+    border-radius: 9px;
+}
+
+.saved-users-confirmation {
+    border-color: #d2e1f0;
+    border-radius: 11px;
+    background: #f1f7fe;
+}
+
+.saved-users-confirmation .saved-users-confirmation__confirm {
+    border-color: #b83d49;
+    color: #fff;
+    background: #b83d49;
+}
+
+.saved-users-confirmation .saved-users-confirmation__confirm:hover {
+    border-color: #9c2e39;
+    background: #9c2e39;
+}
+
+/* Avisos curtos e claros, com o azul da marca e vermelho semântico para erro. */
+.notification-viewport {
+    width: min(380px, calc(100vw - 32px));
+    gap: 10px;
+}
+
+.app-notification {
+    min-height: 66px;
+    gap: 12px;
+    padding: 12px 13px;
+    overflow: hidden;
+    border: 1px solid #cfe0f2;
+    border-left: 4px solid #1769bd;
+    border-radius: 13px;
+    color: #203a54;
+    background: #fff;
+    box-shadow: 0 12px 32px rgb(20 55 91 / 16%);
+}
+
+.app-notification--success {
+    border-color: #cfe0f2;
+    border-left-color: #1769bd;
+    background: #fff;
+}
+
+.app-notification--error {
+    border-color: #f1d2d4;
+    border-left-color: #c54250;
+    background: #fff;
+}
+
+.app-notification__icon {
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
+    color: #1769bd;
+    background: #eaf3fd;
+    box-shadow: none;
+}
+
+.app-notification--error .app-notification__icon {
+    color: #b53643;
+    background: #fff0f0;
+}
+
+.app-notification__content p {
+    font-family: var(--font-text);
+}
+
+.app-notification__title {
+    color: #1c344e;
+    font-size: 12px;
+    font-weight: 720;
+}
+
+.app-notification__message {
+    color: #647b94;
+    font-size: 11px;
+    letter-spacing: 0;
+}
+
+.app-notification--error .app-notification__message {
+    color: #9e3943;
+}
+
+.app-notification__close {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+    color: #73879c;
+}
+
+.app-notification__close:hover {
+    color: #274966;
+    background: #eef4fb;
+}
+
+.app-notification__timer {
+    left: -4px;
+    height: 2px;
+    background: #3289e8;
+}
+
+.app-notification--error .app-notification__timer {
+    background: #c54250;
+}
+
+.app-shell[data-theme="dark"] {
+    --color-1: #102b46;
+    --color-2: #1c4e78;
+    --color-3: #5aa9f5;
+    --color-3b: #66b2f7;
+    --color-3c: #7fc2ff;
+    --color-4: #0a1624;
+    --color-5: #dceeff;
+    --color-6: #e4eef9;
+    --surface: #122338;
+    --surface-muted: #182b42;
+    --border: #2a4059;
+    --text: #e3edf8;
+    --text-muted: #9aafc5;
+    --brand-blue: #55a6ee;
+    --brand-cyan: #62b4fa;
+    --focus-ring: 0 0 0 3px rgb(77 163 238 / 30%);
+    color-scheme: dark;
+    background: #0a1624;
+}
+
+.app-shell[data-theme="dark"] .app-sidebar {
+    border-right-color: #243b54;
+    background: #0f1e31;
+    box-shadow: 5px 0 24px rgb(0 0 0 / 12%);
+}
+
+.app-shell[data-theme="dark"] .app-brand__logo {
+    border-color: #fff;
+    background: #fff;
+}
+
+.app-shell[data-theme="dark"] .app-brand__copy > span,
+.app-shell[data-theme="dark"] .app-breadcrumb strong {
+    color: #e1efff;
+}
+
+.app-shell[data-theme="dark"] .app-sidebar__footer,
+.app-shell[data-theme="dark"] .app-topbar {
+    border-color: #263e57;
+}
+
+.app-shell[data-theme="dark"] .app-main {
+    background: radial-gradient(ellipse at 100% 0%, rgb(40 112 182 / 10%), transparent 38rem);
+}
+
+.app-shell[data-theme="dark"] .app-nav__item {
+    color: #a9bdd2;
+}
+
+.app-shell[data-theme="dark"] .app-nav__item:hover:not(.active),
+.app-shell[data-theme="dark"] .theme-toggle:hover {
+    border-color: #2c4763;
+    color: #e0efff;
+    background: #172b42;
+}
+
+.app-shell[data-theme="dark"] .app-nav__item.active {
+    color: #fff;
+    background: linear-gradient(120deg, #1263a7, #237fca);
+}
+
+.app-shell[data-theme="dark"] .theme-toggle {
+    color: #c4d5e6;
+}
+
+.app-shell[data-theme="dark"] .workspace-main {
+    border-color: #293f57;
+    background: #122338;
+    box-shadow: 0 16px 44px rgb(0 0 0 / 18%);
+}
+
+.app-shell[data-theme="dark"] .page-intro h1,
+.app-shell[data-theme="dark"] #signature-workspace .signatureIntro h1,
+.app-shell[data-theme="dark"] #signature-workspace .configSigt > h2,
+.app-shell[data-theme="dark"] #signature-workspace .signature-person > h2,
+.app-shell[data-theme="dark"] #signature-workspace .configImage h2,
+.app-shell[data-theme="dark"] #signature-workspace .image-preview-container h2,
+.app-shell[data-theme="dark"] .password-workspace .result > h2,
+.app-shell[data-theme="dark"] .advanced-upload-copy h2,
+.app-shell[data-theme="dark"] .advanced-results-heading h2 {
+    color: #e0efff;
+}
+
+.app-shell[data-theme="dark"] .page-intro p,
+.app-shell[data-theme="dark"] #signature-workspace .signatureIntro p,
+.app-shell[data-theme="dark"] #signature-workspace .helper-text {
+    color: #9aafc5;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section,
+.app-shell[data-theme="dark"] #signature-workspace .configSigt,
+.app-shell[data-theme="dark"] #signature-workspace .signature-person,
+.app-shell[data-theme="dark"] #signature-workspace .configImage,
+.app-shell[data-theme="dark"] #signature-workspace .image-preview-container,
+.app-shell[data-theme="dark"] .password-workspace .default,
+.app-shell[data-theme="dark"] .password-workspace .implantacao,
+.app-shell[data-theme="dark"] .password-workspace .advanced,
+.app-shell[data-theme="dark"] .password-workspace .advanced-results,
+.app-shell[data-theme="dark"] .password-workspace .resultGen {
+    border-color: #2a4059;
+    background: #172b42;
+    box-shadow: none;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section {
+    border-color: #356184;
+    background: #14283e;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section:hover {
+    border-color: #62b4fa;
+    background: #182f49;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section > p,
+.app-shell[data-theme="dark"] #signature-workspace .checkbox-group,
+.app-shell[data-theme="dark"] #signature-workspace .addInfos h3,
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional > h3,
+.app-shell[data-theme="dark"] #signature-workspace .labels > label,
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field > label,
+.app-shell[data-theme="dark"] .password-workspace .labels > label,
+.app-shell[data-theme="dark"] .password-workspace .range-heading > label,
+.app-shell[data-theme="dark"] .password-workspace .labelEmail label,
+.app-shell[data-theme="dark"] .advanced-column-select label {
+    color: #c0d1e2;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .labels input,
+.app-shell[data-theme="dark"] #signature-workspace .labels textarea,
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field > input[type="number"],
+.app-shell[data-theme="dark"] .password-workspace .labels input:not([type="range"]),
+.app-shell[data-theme="dark"] .password-workspace .labelEmail input,
+.app-shell[data-theme="dark"] .advanced-column-select select {
+    border-color: #344d68;
+    color: #e2edf8;
+    background: #0f1e31;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .labels input::placeholder,
+.app-shell[data-theme="dark"] #signature-workspace .labels textarea::placeholder,
+.app-shell[data-theme="dark"] .password-workspace .labels input::placeholder {
+    color: #829ab2;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional button,
+.app-shell[data-theme="dark"] #signature-workspace .typeCrm button,
+.app-shell[data-theme="dark"] #signature-workspace .typeRQE button,
+.app-shell[data-theme="dark"] #signature-workspace .configImage button,
+.app-shell[data-theme="dark"] #signature-workspace .signature-extra-phrases > button,
+.app-shell[data-theme="dark"] #signature-workspace .signature-image-options-header > button,
+.app-shell[data-theme="dark"] .passwordModes,
+.app-shell[data-theme="dark"] .password-workspace #caracPass,
+.app-shell[data-theme="dark"] .password-workspace #upperPass,
+.app-shell[data-theme="dark"] .password-workspace .passwordResult {
+    border-color: #344d68;
+    color: #c6d9ec;
+    background: #1b3048;
+}
+
+.app-shell[data-theme="dark"] .passwordModes button.active {
+    border-color: #344d68;
+    color: #9dceff;
+    background: #243f5d;
+}
+
+.app-shell[data-theme="dark"] .passwordModes button:not(.active):hover {
+    color: #ddecff;
+    background: #223b57;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional button.active,
+.app-shell[data-theme="dark"] #signature-workspace .typeCrm button.active,
+.app-shell[data-theme="dark"] #signature-workspace .typeRQE button.active,
+.app-shell[data-theme="dark"] #signature-workspace .configImage button.active,
+.app-shell[data-theme="dark"] #signature-workspace .signature-extra-phrases > button.active {
+    border-color: #3c91d8;
+    color: #fff;
+    background: #1769bd;
+}
+
+.app-shell[data-theme="dark"] .password-workspace .passwordResult > p,
+.app-shell[data-theme="dark"] .advanced-password-cell code {
+    color: #e2edf8;
+}
+
+.app-shell[data-theme="dark"] .saved-users-modal {
+    border-color: #2a4059;
+    background: #122338;
+    color: #e3edf8;
+}
+
+.app-shell[data-theme="dark"] .saved-users-header,
+.app-shell[data-theme="dark"] .saved-users-list {
+    border-color: #2a4059;
+}
+
+.app-shell[data-theme="dark"] .saved-users-header h2,
+.app-shell[data-theme="dark"] .saved-users-list-heading h3,
+.app-shell[data-theme="dark"] .saved-user-info > p,
+.app-shell[data-theme="dark"] .saved-users-empty p {
+    color: #e3edf8;
+}
+
+.app-shell[data-theme="dark"] .saved-users-modal-icon,
+.app-shell[data-theme="dark"] .saved-user-avatar,
+.app-shell[data-theme="dark"] .saved-users-empty > span,
+.app-shell[data-theme="dark"] .saved-users-action__icon {
+    color: #8dc7ff;
+    background: #1b3856;
+}
+
+.app-shell[data-theme="dark"] .saved-users-actions {
+    background: #101f32;
+}
+
+.app-shell[data-theme="dark"] .saved-users-actions .saved-users-action,
+.app-shell[data-theme="dark"] .saved-users-header-actions > button {
+    border-color: #344d68;
+    color: #c4d6e8;
+    background: #1b3048;
+}
+
+.app-shell[data-theme="dark"] .saved-users-confirmation {
+    border-color: #5a4050;
+    background: #28273b;
+}
+
+.app-shell[data-theme="dark"] .saved-user:hover {
+    background: #172b42;
+}
+
+.app-shell[data-theme="dark"] .app-notification {
+    border-color: #385572;
+    border-left-color: #62b4fa;
+    color: #e3edf8;
+    background: #14283e;
+}
+
+.app-shell[data-theme="dark"] .app-notification--error {
+    border-color: #68434a;
+    border-left-color: #e06b76;
+}
+
+.app-shell[data-theme="dark"] .app-notification__title {
+    color: #e6f0fb;
+}
+
+.app-shell[data-theme="dark"] .app-notification__message {
+    color: #a8bdd2;
+}
+
+/* Regras responsivas reduzem margens e reorganizam o painel para telas compactas. */
+@media (max-width: 640px) {
+    .workspace-main {
+        margin-top: 14px;
+        padding: 22px 16px 24px;
+        border-radius: 16px;
+    }
+
+    #signature-workspace .image-preview-container {
+        padding: 15px;
+    }
+
+    .passwordModes {
+        width: 100%;
+    }
+
+    .passwordModes button {
+        flex: 1;
+        padding-inline: 8px;
+    }
+
+    .notification-viewport {
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(12px, env(safe-area-inset-bottom));
+        width: min(380px, calc(100vw - 24px));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

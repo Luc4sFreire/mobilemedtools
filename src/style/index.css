@@ -1,4 +1,4 @@
-/* Base visual compartilhada pela navegação e pelas ferramentas. */
+/* Base visual compartilhada: reset leve, tipografia, tokens, layout, tema e estados responsivos. */
 * {
     box-sizing: border-box;
 }
@@ -234,6 +234,7 @@ button {
     letter-spacing: 0;
 }
 
+/* Breakpoints ajustam navegação, espaçamentos e controles em dispositivos menores. */
 @media (max-width: 760px) {
     .app-header__inner {
         width: min(100% - 32px, 640px);

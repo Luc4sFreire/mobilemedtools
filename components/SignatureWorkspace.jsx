@@ -1,7 +1,7 @@
-import '../style/signature.css'
-import { useSignature } from '../hooks/useSignature'
+import '../src/style/signature.css'
+import { useSignature } from '../src/hooks/useSignature'
 
-// Rótulos e identificadores válidos usados para montar os botões de profissão.
+// Opções de categoria profissional; o identificador é consumido pelo hook de assinatura.
 const professional_options = [
     { value: 'doctor', label: '🩺 Médico' },
     { value: 'vet', label: '🐾 Veterinário' },
@@ -15,6 +15,7 @@ const professional_options = [
 function SignatureWorkspace(){
     // O hook centraliza dados, processamento de imagem e geração do PNG composto.
     const signature = useSignature()
+    // Formata o valor fracionário do controle conforme a convenção numérica brasileira.
     const thicknessLabel = Number(signature.imageOptions.espessura).toLocaleString('pt-BR', {
         minimumFractionDigits: 1,
         maximumFractionDigits: 1,
@@ -168,7 +169,7 @@ function SignatureWorkspace(){
                 </div>
             </section>
 
-            {/* Dados do profissional sempre fazem parte do fluxo principal da composição. */}
+            {/* Dados principais e categoria definem a identificação exibida no PNG. */}
             <section className="signature-professional">
                 <div className="signature-person">
                     <h2>👨‍⚕️ Assinatura Principal</h2>

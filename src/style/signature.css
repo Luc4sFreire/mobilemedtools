@@ -1,3 +1,5 @@
+/* Controles e composição visual do gerador de assinatura profissional. */
+
 /* Mantém a tipografia da interface consistente com os tokens globais. */
 *{
     font-family: var(--font-text);
@@ -470,7 +472,7 @@ main{
 
 /* Ícone de lixeira apresentado como imagem de fundo dentro do botão acessível. */
 .icon{
-    background-image: url("../assets/icons8-lixeira-24.png");
+    background-image: url("../../assets/icons8-lixeira-24.png");
     background-repeat: no-repeat;
     width: 25px;
     height: 25px;
@@ -483,6 +485,7 @@ main{
 }
 
 /* Em celulares, empilha cabeçalho e botão de restauração para evitar aperto. */
+/* Regras móveis reorganizam os campos da assinatura para telas estreitas. */
 @media (max-width: 600px){
     .signature-image-options-header{
         flex-direction: column;
@@ -615,6 +618,10 @@ main{
 #signature-workspace .checkbox-group input {
     flex: 0 0 auto;
     accent-color: var(--brand-blue);
+}
+
+.checkbox-group:hover{
+    cursor: pointer;
 }
 
 #signature-workspace .helper-text {

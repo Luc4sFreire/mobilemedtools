@@ -7,7 +7,7 @@ import {
     removeSavedUser,
     saveSavedCredential,
     USERS_STORAGE_KEY,
-} from "../utils/savedUsers.js";
+} from "../src/utils/savedUsers.js";
 
 function createStorage(initialValue = null) {
     const values = new Map(initialValue === null ? [] : [[USERS_STORAGE_KEY, initialValue]]);

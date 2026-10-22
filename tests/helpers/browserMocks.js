@@ -13,19 +13,16 @@ export function replaceGlobal(name, value) {
 
 export function installDeterministicCrypto(sequence = [0]) {
     let cursor = 0;
-    const requests = [];
     const restore = replaceGlobal("crypto", {
         getRandomValues(buffer) {
-            requests.push(buffer.length);
             for (let index = 0; index < buffer.length; index += 1) {
-                buffer[index] = sequence[cursor % sequence.length];
+                buffer[index] = sequence[Math.min(cursor, sequence.length - 1)];
                 cursor += 1;
             }
             return buffer;
         },
-        randomUUID: () => "test-uuid",
     });
-    return { restore, requests };
+    return { restore, get calls() { return cursor; } };
 }
 
 export function makeFile({ name = "usuarios.csv", size, text = "", bytes } = {}) {
@@ -41,12 +38,42 @@ export function makeFile({ name = "usuarios.csv", size, text = "", bytes } = {})
     };
 }
 
-export class MockImageData {
-    constructor(width, height) {
-        this.width = width;
-        this.height = height;
-        this.data = new Uint8ClampedArray(width * height * 4);
-    }
+export function installDownloadMocks() {
+    const blobs = new Map();
+    const clicks = [];
+    let nextId = 0;
+    const originalUrl = Object.getOwnPropertyDescriptor(globalThis, "URL");
+    const originalDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
+    const originalWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
+    const URLMock = class extends URL {};
+    URLMock.createObjectURL = (blob) => {
+        const url = `blob:test-${nextId++}`;
+        blobs.set(url, blob);
+        return url;
+    };
+    URLMock.revokeObjectURL = () => {};
+    globalThis.URL = URLMock;
+    globalThis.document = {
+        createElement(tagName) {
+            if (tagName !== "a") throw new Error(`Elemento inesperado: ${tagName}`);
+            return {
+                click() { clicks.push({ href: this.href, download: this.download }); },
+            };
+        },
+    };
+    globalThis.window = { setTimeout() { return 1; } };
+    return {
+        blobs,
+        clicks,
+        restore() {
+            if (originalUrl) Object.defineProperty(globalThis, "URL", originalUrl);
+            else delete globalThis.URL;
+            if (originalDocument) Object.defineProperty(globalThis, "document", originalDocument);
+            else delete globalThis.document;
+            if (originalWindow) Object.defineProperty(globalThis, "window", originalWindow);
+            else delete globalThis.window;
+        },
+    };
 }
 
 class MockCanvasContext {
@@ -54,30 +81,28 @@ class MockCanvasContext {
         this.canvas = canvas;
     }
 
-    getImageData(...args) {
-        const [, , width, height] = args;
-        const imageData = new MockImageData(width, height);
-        imageData.data.set(this.canvas.pixels.subarray(0, imageData.data.length));
-        return imageData;
+    getImageData(_x, _y, width, height) {
+        const data = new Uint8ClampedArray(width * height * 4);
+        data.set(this.canvas.pixels.subarray(0, data.length));
+        return { width, height, data };
+    }
+
+    createImageData(width, height) {
+        return { width, height, data: new Uint8ClampedArray(width * height * 4) };
     }
 
     putImageData(imageData) {
         this.canvas.pixels = new Uint8ClampedArray(imageData.data);
     }
 
-    createImageData(width, height) {
-        return new MockImageData(width, height);
-    }
-
-    drawImage(...args) {
-        const [source, , , width = source.width, height = source.height] = args;
+    drawImage(source, _x, _y, width = source.width, height = source.height) {
         const sourceWidth = source.width ?? source.naturalWidth;
         const sourceHeight = source.height ?? source.naturalHeight;
         const sourcePixels = source.pixels ?? source.data;
         if (!sourcePixels || !sourceWidth || !sourceHeight) return;
 
-        const destinationWidth = Math.round(width);
-        const destinationHeight = Math.round(height);
+        const destinationWidth = Math.max(1, Math.round(width));
+        const destinationHeight = Math.max(1, Math.round(height));
         const destination = new Uint8ClampedArray(destinationWidth * destinationHeight * 4);
         for (let y = 0; y < destinationHeight; y += 1) {
             for (let x = 0; x < destinationWidth; x += 1) {
@@ -122,81 +147,34 @@ export function makeRgbaCanvas(width, height, pixelAt) {
     const pixels = new Uint8ClampedArray(width * height * 4);
     for (let y = 0; y < height; y += 1) {
         for (let x = 0; x < width; x += 1) {
-            const offset = (y * width + x) * 4;
-            pixels.set(pixelAt(x, y), offset);
+            pixels.set(pixelAt(x, y), (y * width + x) * 4);
         }
     }
     return new MockCanvas(width, height, pixels);
 }
 
 export function installCanvasMocks() {
-    const created = [];
-    const originalDocument = globalThis.document;
+    const originalDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
     const originalImageData = Object.getOwnPropertyDescriptor(globalThis, "ImageData");
     globalThis.document = {
         createElement(tagName) {
             if (tagName !== "canvas") throw new Error(`Elemento inesperado: ${tagName}`);
-            const canvas = new MockCanvas(0, 0);
-            created.push(canvas);
-            return canvas;
+            return new MockCanvas(0, 0);
         },
     };
-    Object.defineProperty(globalThis, "ImageData", {
-        configurable: true,
-        writable: true,
-        value: MockImageData,
-    });
+    globalThis.ImageData = class {
+        constructor(width, height) {
+            this.width = width;
+            this.height = height;
+            this.data = new Uint8ClampedArray(width * height * 4);
+        }
+    };
     return {
-        created,
         restore() {
-            if (originalDocument === undefined) delete globalThis.document;
-            else globalThis.document = originalDocument;
+            if (originalDocument) Object.defineProperty(globalThis, "document", originalDocument);
+            else delete globalThis.document;
             if (originalImageData) Object.defineProperty(globalThis, "ImageData", originalImageData);
             else delete globalThis.ImageData;
-        },
-    };
-}
-
-export function installDownloadMocks() {
-    const blobs = new Map();
-    const clicks = [];
-    const revoked = [];
-    let nextId = 0;
-    const originalUrl = Object.getOwnPropertyDescriptor(globalThis, "URL");
-    const originalDocument = globalThis.document;
-    const originalWindow = globalThis.window;
-    const URLMock = class extends URL {};
-    URLMock.createObjectURL = (blob) => {
-        const url = `blob:test-${nextId++}`;
-        blobs.set(url, blob);
-        return url;
-    };
-    URLMock.revokeObjectURL = (url) => revoked.push(url);
-    globalThis.URL = URLMock;
-    globalThis.document = {
-        createElement(tagName) {
-            if (tagName !== "a") throw new Error(`Elemento inesperado: ${tagName}`);
-            return {
-                click() { clicks.push({ href: this.href, download: this.download }); },
-            };
-        },
-    };
-    globalThis.window = {
-        setTimeout(callback, delay) {
-            return { callback, delay };
-        },
-    };
-    return {
-        blobs,
-        clicks,
-        revoked,
-        restore() {
-            if (originalUrl) Object.defineProperty(globalThis, "URL", originalUrl);
-            else delete globalThis.URL;
-            if (originalDocument === undefined) delete globalThis.document;
-            else globalThis.document = originalDocument;
-            if (originalWindow === undefined) delete globalThis.window;
-            else globalThis.window = originalWindow;
         },
     };
 }

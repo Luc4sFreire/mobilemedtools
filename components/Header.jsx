@@ -1,5 +1,7 @@
+// Importa a marca usada no painel fixo da aplicação.
 import mobilemedLogo from "../assets/mobilemed-logo.png";
 
+// Define os destinos de navegação e os ícones decorativos de cada ferramenta.
 const navigation = [
     {
         id: "signature",
@@ -23,7 +25,7 @@ const navigation = [
     },
 ];
 
-// Navegação principal entre as ferramentas já disponíveis no aplicativo.
+// Renderiza o menu lateral e delega à raiz da aplicação as mudanças de tela/tema.
 function Header({ activeComponent, onSelectComponent, theme, onToggleTheme }) {
     return (
         <aside className="app-sidebar">
@@ -38,6 +40,7 @@ function Header({ activeComponent, onSelectComponent, theme, onToggleTheme }) {
             </div>
 
             <div className="app-sidebar__section-label">FERRAMENTAS</div>
+            {/* Os botões mantêm o estado selecionado visível e exposto a tecnologias assistivas. */}
             <nav className="app-nav" aria-label="Ferramentas">
                 {navigation.map((item) => (
                     <button
@@ -58,8 +61,9 @@ function Header({ activeComponent, onSelectComponent, theme, onToggleTheme }) {
 
             <div className="app-sidebar__spacer" />
 
+            {/* Rodapé do painel: alterna o tema sem guardar estado local neste componente. */}
             <div className="app-sidebar__footer">
-                <div className="sidebar-local-card">
+                {/* <div className="sidebar-local-card">
                     <span className="sidebar-local-card__icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24">
                             <rect x="4" y="5" width="16" height="14" rx="3" />
@@ -67,7 +71,7 @@ function Header({ activeComponent, onSelectComponent, theme, onToggleTheme }) {
                         </svg>
                     </span>
                     <span><strong>Ambiente local</strong><small>Seus dados ficam no navegador</small></span>
-                </div>
+                </div> */}
                 <button
                     type="button"
                     className="theme-toggle"

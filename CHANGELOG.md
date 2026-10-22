@@ -6,7 +6,7 @@ Este arquivo registra alterações relevantes para quem usa ou mantém o Mobilem
 
 **Status:** em desenvolvimento
 **Compatibilidade:** aplicação web executada no navegador; não há serviço ou API de aplicação no repositório.
-**Resumo:** consolidação dos geradores de assinatura e senhas, incluindo importação em lote, detecção de e-mails duplicados e exportação de credenciais.
+**Resumo:** ferramentas de assinatura, senhas e logos, com geração e processamento de imagens em lote no navegador.
 
 ### Adicionado
 
@@ -18,11 +18,12 @@ Este arquivo registra alterações relevantes para quem usa ou mantém o Mobilem
 - Geração com Web Crypto, descarte de valores que causariam viés de módulo e embaralhamento Fisher–Yates.
 - Identidade visual Mobilemed no cabeçalho, navegação entre ferramentas e leiaute adaptável para telas menores.
 - Processamento local da assinatura com prévia de 420 × 120 pixels e PNG final em resolução 3× (1260 × 360 pixels), com composição dos dados profissionais.
+- Gerador de logos com texto branco centralizado e fundos predefinidos no modo manual, além de cadastro simples ou em massa no modo automático, com transparência padrão e opção de fundo manual branco (#fff), comum ou individual por item.
 
 ### Alterado
 
 - O modo Implantação grava alterações no armazenamento local de forma síncrona e só confirma a ação na interface quando a persistência termina. Falhas de armazenamento são reportadas.
-- Senhas agora usam uma parte aleatória de 4 a 32 caracteres, iniciada em 8, e o prefixo `mobile` por padrão. Maiúsculas e números são obrigatórios; minúsculas e caracteres especiais são opcionais.
+- Senhas agora usam uma parte aleatória de 4 a 32 caracteres, iniciada em 8, e o prefixo `Mobile` por padrão. Maiúsculas e números são obrigatórios; minúsculas e caracteres especiais são opcionais.
 - A seleção de assinatura está limitada a PNG, JPEG, WebP, GIF, BMP e AVIF, com no máximo 12 MB e 12 megapixels. GIFs são exportados como imagem estática.
 - Campos profissionais têm limites de comprimento, e o módulo permite até cinco frases adicionais de até 120 caracteres.
 - A prévia é recomposta quando imagem, opções ou dados profissionais mudam; o download só fica disponível quando representa o estado atual.
@@ -30,6 +31,11 @@ Este arquivo registra alterações relevantes para quem usa ou mantém o Mobilem
 - A prévia mantém o layout visual de 420 × 120 pixels, enquanto o PNG baixado é rasterizado em 3× (1260 × 360 pixels) com interpolação de alta qualidade.
 
 ### Corrigido
+
+- O importador conserva a primeira linha de CSV que parece um e-mail inválido e aponta endereços localizados além das 100 colunas disponíveis.
+- Os caminhos dos ícones CSS foram corrigidos para incluí-los no build de produção.
+- A prévia dos logos passou a derivar carregamento e resultado das opções atuais, sem atualizações síncronas em efeitos.
+- A suíte automatizada foi criada para cobrir os utilitários principais, e `npm test` falha quando não encontra arquivos de teste.
 
 - O fundo da assinatura agora é removido com cobertura gradual, preservando traços claros e desconectados que a máscara binária descartava.
 - A histerese, o fechamento morfológico, a remoção de componentes por área e o filtro de mediana foram retirados do fluxo padrão; a espessura só é alterada quando solicitada.
@@ -58,20 +64,20 @@ Este arquivo registra alterações relevantes para quem usa ou mantém o Mobilem
 
 - A importação avançada processa apenas a primeira aba, com limite de 10 MB e 10.000 linhas; todas as ocorrências de e-mail duplicado e os e-mails inválidos não recebem senha e não entram nos downloads.
 - O processamento de imagem roda sincronamente na thread principal.
-- O package.json não configura script ou runner de testes; o arquivo local tests/processImage.test.js tem uma variável não utilizada apontada pelo lint.
+- Imagens de logo são verificadas por tamanho em bytes, mas a decodificação inicial ocorre antes de reduzir o maior lado a 1.000 px; arquivos com dimensões extremas podem exigir muita memória.
 - O identificador de versão nos arquivos do pacote usa Dev 1.1 / DEV 1.1 e não segue SemVer.
 - Os resultados quantitativos de ruído são de um ensaio local específico e não garantem o resultado para outras assinaturas.
 
 ### Validação
 
-- [ ] npm run lint — sinaliza `no-unused-vars` em tests/processImage.test.js; o lint direcionado dos arquivos da funcionalidade passou.
-- [x] Vite build — concluído sem erros em 21/10/2026 (41 módulos transformados; leitura/exportação XLSX em chunk sob demanda).
-- [x] git diff --check — concluído sem erros em 21/10/2026.
-- [x] npm audit — 0 vulnerabilidades após atualização compatível das dependências.
-- [ ] Testes automatizados — não configurados.
+- [x] `npm run lint` — concluído em 22/10/2026 sem erros.
+- [x] `npm run build` — concluído em 22/10/2026; 45 módulos transformados, sem avisos de recursos não resolvidos.
+- [x] `npm test` — 40 testes passaram em 22/10/2026.
+- [x] `git diff --check` — concluído em 22/10/2026 sem erros de whitespace; o Git emitiu apenas avisos de conversão LF/CRLF para arquivos da árvore.
+- [x] `npm audit --offline` — encontrou 0 vulnerabilidades nos dados disponíveis localmente; `npm audit` on-line não alcançou o registro npm por falha de DNS e a solicitação de acesso foi recusada.
 
 ### Referências
 
-- [Documentação principal organizada conforme o modelo do Notion](docs/documentacao-principal.md)
-- [Diagnóstico detalhado do algoritmo de imagem](docs/diagnostico-algoritmo-imagem.md)
+- [Documentação principal organizada conforme o modelo da página do Notion](docs/documentacao-principal.md)
+- [Diagnóstico teórico do algoritmo de imagem](docs/diagnostico-algoritmo-imagem.md)
 - [Modelo para futuras entradas](docs/modelo-changelog.md)

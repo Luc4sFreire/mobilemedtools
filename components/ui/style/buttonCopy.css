@@ -1,4 +1,6 @@
-@import url('../../../style/index.css');
+@import url('../../../src/style/index.css');
+
+/* Define o botão compacto e seu ícone reutilizados junto a senhas e credenciais. */
 
 /* Botão compacto com ícone de cópia compartilhado pelos resultados. */
 .btn-copy{

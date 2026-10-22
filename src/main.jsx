@@ -1,9 +1,14 @@
-// API do React que conecta a árvore de componentes ao elemento DOM da página.
+// Importa a API que cria a raiz React ligada ao DOM do navegador.
 import { createRoot } from 'react-dom/client'
-// Componente raiz que hospeda as funcionalidades da aplicação.
+// Importa a tela raiz, responsável por navegação, módulos e provedores globais.
 import App from './App.jsx'
-// Estilos e variáveis compartilhadas por todas as telas.
-import '../style/index.css'
+// Esta folha-base antiga não é carregada; as entradas visuais ativas estão abaixo.
+// import './style/index.css'
+// Carrega a fundação visual atual e suas regras comuns de layout.
+import './style/refresh.css'
+// Aplica ajustes visuais e variantes complementares sobre a fundação.
+import './style/modern.css'
 
-// Monta a aplicação no container declarado no index.html.
+// Encontra o elemento de montagem declarado em index.html.
+// A raiz React atualiza esse elemento com App e todos os seus componentes descendentes.
 createRoot(document.getElementById('root')).render(<App />)

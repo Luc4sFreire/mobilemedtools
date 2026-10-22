@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { composeSignature } from "../utils/composeSignature.js";
+import { composeSignature } from "../src/utils/composeSignature.js";
 import { replaceGlobal } from "./helpers/browserMocks.js";
 
 function installSignatureMocks({ imageWidth = 100, imageHeight = 50, imageError = false, noContext = false, emptyBlob = false } = {}) {

@@ -1,6 +1,6 @@
 import "./style/toggle.css";
 
-// Switch controlado: o estado pertence ao componente chamador.
+// Switch controlado e acessível: checked/onChange permanecem sob controle do chamador.
 export default function Toggle({ checked, onChange, label, disabled = false }) {
   return (
     <label className={`toggle ${disabled ? "toggle--disabled" : ""}`}>

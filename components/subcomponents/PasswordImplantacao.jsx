@@ -1,23 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import "../../style/password.css";
-import { usePassword } from "../../hooks/usePassword";
+import "../../src/style/password.css";
+import { usePassword } from "../../src/hooks/usePassword";
 import Toggle from "../ui/Toggle";
 import ButtonCopy from "../ui/ButtonCopy";
-import { useNotifications } from "../ui/useNotifications";
+import { useNotifications } from "../../src/hooks/useNotifications";
+import { formatCredentialList, formatCredentialMessages } from "../../src/utils/credentialMessages.js";
 
-// Formata os usuários salvos como uma lista simples de e-mails e senhas.
-function getCredentialText(users) {
-    return users.map(({ email, password }) => `E-mail: ${email}\nSenha: ${password}`).join("\n\n");
-}
-
-// Prepara os mesmos dados em mensagens individuais prontas para envio.
-function getMessageText(users) {
-    return users
-        .map(({ email, password }) => `Olá! Seguem os dados do seu acesso:\nE-mail: ${email}\nSenha: ${password}`)
-        .join("\n\n");
-}
-
-// Tela de implantação: gera senhas, associa e-mails e gerencia credenciais salvas.
+// Modo de implantação: associa senhas a e-mails e gerencia a lista local persistida.
 function PasswordImplantacao() {
     const pass = usePassword();
     const { notifySuccess, notifyError } = useNotifications();
@@ -27,6 +16,7 @@ function PasswordImplantacao() {
     const closeUsersModalRef = useRef(null);
     const reportedStorageLoadErrorRef = useRef("");
 
+    // Fecha tanto a lista quanto a confirmação aninhada de remoção em lote.
     function closeUsersModal() {
         setIsUsersModalOpen(false);
         setIsClearConfirmationOpen(false);
@@ -128,6 +118,7 @@ function PasswordImplantacao() {
         if (pass.users.length) setIsClearConfirmationOpen(true);
     }
 
+    // Executa a remoção em lote somente após confirmação e reflete falhas de persistência.
     function clearAllUsers() {
         if (pass.clearUsers()) {
             setIsClearConfirmationOpen(false);
@@ -137,6 +128,7 @@ function PasswordImplantacao() {
         }
     }
 
+    // Remove um registro pelo identificador e avisa se localStorage não foi atualizado.
     function removeSavedUser(user) {
         if (pass.removeUser(user.id)) {
             notifySuccess("Usuário removido!", `O acesso de ${user.email} saiu da lista salva.`);
@@ -178,7 +170,7 @@ function PasswordImplantacao() {
                         />
                         <button
                             type="button"
-                            onClick={() => pass.setPrefix("")}
+                            onClick={() => pass.setPrefix("Mobile")}
                             id="reload"
                             aria-label="Limpar prefixo personalizado"
                         ><div /></button>
@@ -369,7 +361,7 @@ function PasswordImplantacao() {
                                     className="saved-users-action"
                                     type="button"
                                     disabled={!pass.users.length}
-                                    onClick={() => exportText(getCredentialText(pass.users), "credenciais.txt")}
+                                    onClick={() => exportText(formatCredentialList(pass.users), "credenciais.txt")}
                                 >
                                     <span className="saved-users-action__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M5 17v3h14v-3" /></svg></span>
                                     <span>Exportar credenciais</span>
@@ -378,7 +370,7 @@ function PasswordImplantacao() {
                                     className="saved-users-action"
                                     type="button"
                                     disabled={!pass.users.length}
-                                    onClick={() => copyText(getCredentialText(pass.users), "Credenciais")}
+                                    onClick={() => copyText(formatCredentialList(pass.users), "Credenciais")}
                                 >
                                     <span className="saved-users-action__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h2" /></svg></span>
                                     <span>Copiar credenciais</span>
@@ -387,7 +379,7 @@ function PasswordImplantacao() {
                                     className="saved-users-action"
                                     type="button"
                                     disabled={!pass.users.length}
-                                    onClick={() => exportText(getMessageText(pass.users), "mensagens.txt")}
+                                    onClick={() => exportText(formatCredentialMessages(pass.users), "mensagens.txt")}
                                 >
                                     <span className="saved-users-action__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 4V5Z" /><path d="M8 9h8M8 13h5" /></svg></span>
                                     <span>Exportar mensagens</span>
@@ -396,7 +388,7 @@ function PasswordImplantacao() {
                                     className="saved-users-action"
                                     type="button"
                                     disabled={!pass.users.length}
-                                    onClick={() => copyText(getMessageText(pass.users), "Mensagens")}
+                                    onClick={() => copyText(formatCredentialMessages(pass.users), "Mensagens")}
                                 >
                                     <span className="saved-users-action__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h2" /></svg></span>
                                     <span>Copiar mensagens</span>

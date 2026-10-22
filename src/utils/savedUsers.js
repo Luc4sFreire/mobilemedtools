@@ -56,9 +56,7 @@ export function saveSavedCredential(users, emailValue, password, options = {}) {
         };
     }
 
-    const existingUser = users.find(
-        (user) => user.email.toLowerCase() === email.toLowerCase()
-    );
+    const existingUser = users.find((user) => user.email.toLowerCase() === email.toLowerCase());
     let user;
     try {
         const createId = options.createId ?? (() => globalThis.crypto.randomUUID());

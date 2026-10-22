@@ -1,9 +1,11 @@
-import { generatePassword } from "./passwordGenerator";
+import { generatePassword } from "./passwordGenerator.js";
 
+// Limites para manter importação em memória previsível e evitar planilhas enormes.
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const MAX_ROWS = 10000;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Normaliza rótulos de coluna para comparar cabeçalhos com e sem acentos/sinais.
 function normalizeHeader(value) {
     return String(value ?? "")
         .normalize("NFD")
@@ -12,6 +14,7 @@ function normalizeHeader(value) {
         .replace(/[^a-z0-9]/g, "");
 }
 
+// Reconhece nomes comuns usados para identificar uma coluna de e-mail.
 function isEmailHeader(value) {
     const header = normalizeHeader(value);
     return ["email", "emailusuario", "emaildo usuario", "emailaddress", "mail", "correioeletronico"]
@@ -19,10 +22,12 @@ function isEmailHeader(value) {
         .includes(header);
 }
 
+// Aplica uma validação básica de formato antes de gerar credenciais.
 function isEmail(value) {
     return EMAIL_PATTERN.test(String(value ?? "").trim());
 }
 
+// Converte o índice numérico da coluna em uma identificação amigável (A, B, ...).
 function columnLabel(index) {
     let current = index + 1;
     let label = "";
@@ -34,10 +39,12 @@ function columnLabel(index) {
     return `Coluna ${label}`;
 }
 
+// Normaliza células vazias e valores numéricos para exibição textual uniforme.
 function cellToString(value) {
     return value == null ? "" : String(value).trim();
 }
 
+// Identifica cabeçalho e coluna de e-mail, preservando linhas e nomes da origem.
 function inspectRows(rows, fileName, sheetName) {
     if (rows.length > MAX_ROWS + 20) {
         throw new Error(`O arquivo excede o limite de ${MAX_ROWS.toLocaleString("pt-BR")} linhas.`);
@@ -47,8 +54,9 @@ function inspectRows(rows, fileName, sheetName) {
         .slice(0, 20)
         .findIndex((row) => row.some(isEmailHeader));
     const hasEmailHeader = headerRowIndex >= 0;
-    const firstRowContainsEmail = (rows[0] ?? []).some(isEmail);
-    const hasUnlabeledHeader = !hasEmailHeader && rows.length > 1 && !firstRowContainsEmail;
+    // Um valor com "@" pode ser um endereço malformado; preserve-o como dado para classificá-lo.
+    const firstRowLooksLikeEmail = (rows[0] ?? []).some((value) => String(value ?? "").includes("@"));
+    const hasUnlabeledHeader = !hasEmailHeader && rows.length > 1 && !firstRowLooksLikeEmail;
     const columnHeaderRow = hasEmailHeader ? headerRowIndex : hasUnlabeledHeader ? 0 : -1;
     const dataStartIndex = hasEmailHeader ? headerRowIndex + 1 : hasUnlabeledHeader ? 1 : 0;
     if (rows.length - dataStartIndex > MAX_ROWS) {
@@ -57,6 +65,9 @@ function inspectRows(rows, fileName, sheetName) {
     const width = Math.max(1, ...rows.slice(0, Math.min(rows.length, MAX_ROWS + 1)).map((row) => row.length));
     const columnCount = Math.min(width, 100);
     const rawHeaders = columnHeaderRow >= 0 ? rows[columnHeaderRow] : [];
+    if (rawHeaders.findIndex(isEmailHeader) >= 100) {
+        throw new Error("O cabeçalho de e-mail está após o limite de 100 colunas.");
+    }
     const headers = Array.from({ length: columnCount }, (_, index) =>
         cellToString(rawHeaders[index]) || columnLabel(index)
     );
@@ -78,6 +89,7 @@ function inspectRows(rows, fileName, sheetName) {
     return { fileName, sheetName, headers, rows: dataRows, emailColumn };
 }
 
+// Lê CSV ou a primeira aba XLSX após validar extensão, tamanho e quantidade de linhas.
 export async function readCredentialFile(file) {
     if (!file) throw new Error("Selecione um arquivo CSV ou XLSX.");
     const extension = file.name.split(".").pop()?.toLowerCase();
@@ -97,7 +109,6 @@ export async function readCredentialFile(file) {
     const XLSX = await import("xlsx");
     const workbook = XLSX.read(contents, {
         type: extension === "csv" ? "string" : "array",
-        codepage: 65001,
         cellDates: false,
         dense: true,
     });
@@ -116,6 +127,7 @@ export async function readCredentialFile(file) {
     return inspectRows(rows, file.name, sheetName);
 }
 
+// Classifica e-mails antes de gerar: todas as ocorrências repetidas são bloqueadas.
 export function buildCredentialRows(sheet, emailColumn, options) {
     const sourceRows = sheet.rows.map(({ sourceRow, values }) => ({
         sourceRow,
@@ -148,6 +160,7 @@ export function buildCredentialRows(sheet, emailColumn, options) {
     });
 }
 
+// Converte um Blob em download do navegador e libera a URL temporária depois.
 function triggerDownload(blob, filename) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -157,16 +170,19 @@ function triggerDownload(blob, filename) {
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+// Protege células CSV contra fórmulas e escapa aspas no formato CSV.
 function escapeCsvCell(value) {
     const text = String(value ?? "");
     const safeText = /^[\s]*[=+@-]/.test(text) ? `'${text}` : text;
     return `"${safeText.replace(/"/g, '""')}"`;
 }
 
+// Escapa separadores e quebras de linha para preservar a estrutura de tabela Markdown.
 function escapeMarkdownCell(value) {
     return String(value ?? "").replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/[\r\n]+/g, " ");
 }
 
+// Exporta as credenciais válidas para XLSX, CSV ou Markdown.
 export async function downloadCredentials(credentials, format, filenameBase) {
     const rows = credentials.map(({ email, password }) => [email, password]);
     const filename = `${filenameBase}.${format}`;
@@ -201,6 +217,7 @@ export async function downloadCredentials(credentials, format, filenameBase) {
     triggerDownload(new Blob([markdown], { type: "text/markdown;charset=utf-8" }), filename);
 }
 
+// Gera um prefixo de nome de arquivo seguro e legível a partir do arquivo importado.
 export function credentialFilenameBase(fileName) {
     const base = String(fileName ?? "credenciais")
         .replace(/\.[^.]+$/, "")

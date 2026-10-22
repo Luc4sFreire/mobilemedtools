@@ -1,0 +1,1374 @@
+/* Camada de identidade visual atual: tokens, superfícies e ajustes para todas as ferramentas. */
+:root {
+    --surface: #fff;
+    --surface-muted: #f6f9fd;
+    --border: #dce7f2;
+    --text: #203a54;
+    --text-muted: #698099;
+    --brand-blue: #1769bd;
+    --brand-cyan: #3289e8;
+    --focus-ring: 0 0 0 3px rgb(50 137 232 / 22%);
+    --page-background: #f2f6fb;
+    --card-shadow: 0 8px 24px rgb(25 65 108 / 5%);
+    color-scheme: light;
+}
+
+html,
+body {
+    min-height: 100%;
+    background: var(--page-background);
+}
+
+body {
+    color: var(--text);
+    background:
+        radial-gradient(ellipse at 100% 0%, rgb(50 137 232 / 8%), transparent 34rem),
+        var(--page-background);
+    font-family: var(--font-text);
+    letter-spacing: 0;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.app-shell {
+    min-height: 100vh;
+    background: transparent;
+    color: var(--text);
+}
+
+.app-sidebar {
+    z-index: 2;
+    padding: 24px 18px 18px;
+    border-right-color: var(--border);
+    background: rgb(255 255 255 / 92%);
+    box-shadow: 5px 0 30px rgb(27 66 107 / 4%);
+    backdrop-filter: blur(18px);
+}
+
+.app-brand {
+    gap: 14px;
+    padding: 0 4px 28px;
+}
+
+.app-brand__logo {
+    min-height: 82px;
+    border: 1px solid #e7eef6;
+    border-radius: 17px;
+    background: linear-gradient(140deg, #fff, #f5faff);
+}
+
+.app-brand__logo > img {
+    width: min(100%, 185px);
+    max-height: 69px;
+}
+
+.app-brand__copy > span {
+    color: #234769;
+    font-family: var(--font-title);
+    font-size: 15px;
+    font-weight: 760;
+    letter-spacing: -.02em;
+}
+
+.app-brand__copy > small,
+.app-sidebar__section-label {
+    color: #8498ac;
+    font-size: 9px;
+    font-weight: 750;
+    letter-spacing: .12em;
+}
+
+.app-sidebar__section-label {
+    margin: 0 10px 10px;
+}
+
+.app-nav {
+    gap: 7px;
+}
+
+.app-nav__item {
+    min-height: 48px;
+    padding-inline: 12px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: #617991;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.app-nav__item:hover:not(.active) {
+    border-color: #e1edf8;
+    color: var(--brand-blue);
+    background: #f3f8fe;
+    transform: translateX(2px);
+}
+
+.app-nav__item.active {
+    color: #fff;
+    background: linear-gradient(125deg, #145da8, #3289e8);
+    box-shadow: 0 7px 18px rgb(23 105 189 / 21%);
+}
+
+.app-sidebar__footer {
+    gap: 12px;
+    padding-top: 15px;
+    border-color: #e6edf5;
+}
+
+.sidebar-local-card {
+    border-color: #e2ebf4;
+    border-radius: 12px;
+    background: #f8fbfe;
+}
+
+.sidebar-local-card__icon {
+    color: var(--brand-blue);
+    background: #e8f3ff;
+}
+
+.sidebar-local-card strong {
+    color: #315471;
+}
+
+.sidebar-local-card small {
+    color: #8295a8;
+}
+
+.theme-toggle {
+    min-height: 45px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    color: #526d86;
+}
+
+.theme-toggle:hover {
+    border-color: #e1eaf3;
+    background: #f6f9fc;
+}
+
+.theme-toggle__switch {
+    width: 34px;
+    height: 20px;
+    background: #c2d0de;
+}
+
+.theme-toggle__switch i {
+    width: 16px;
+    height: 16px;
+}
+
+.theme-toggle__switch.is-dark i {
+    transform: translateX(14px);
+}
+
+.app-main {
+    min-width: 0;
+    padding: 0 clamp(24px, 4vw, 58px) 46px;
+    background: radial-gradient(ellipse at 96% 0%, rgb(50 137 232 / 5%), transparent 38rem);
+}
+
+.app-topbar {
+    min-height: 68px;
+    border-color: #dfe8f1;
+}
+
+.app-breadcrumb {
+    gap: 11px;
+    color: #8598aa;
+    font-size: 12px;
+}
+
+.app-breadcrumb strong {
+    color: #365672;
+    font-weight: 700;
+}
+
+.app-breadcrumb__separator {
+    color: #b3c1ce;
+}
+
+.app-local-status {
+    color: #6f8499;
+    font-size: 11px;
+}
+
+.app-local-status > span {
+    background: #39b783;
+    box-shadow: 0 0 0 4px rgb(57 183 131 / 13%);
+}
+
+.app-content {
+    width: min(1320px, 100%);
+}
+
+.workspace-main {
+    width: 100%;
+    max-width: 1320px;
+    margin: 30px auto 44px;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.workspace-main::before {
+    display: none;
+}
+
+.page-intro {
+    margin: 0 0 27px;
+}
+
+.workspace-kicker {
+    gap: 9px;
+    margin-bottom: 12px;
+    color: #276da9;
+    font-size: 10px;
+    letter-spacing: .14em;
+}
+
+.workspace-kicker::before {
+    width: 8px;
+    height: 8px;
+    background: #36b8d4;
+    box-shadow: 0 0 0 4px rgb(54 184 212 / 12%);
+}
+
+.page-intro h1,
+#signature-workspace .signatureIntro h1 {
+    color: #1c4265;
+    font-family: var(--font-title);
+    font-size: clamp(30px, 3.4vw, 39px);
+    font-weight: 740;
+    letter-spacing: -.045em;
+    line-height: 1.12;
+}
+
+.page-intro p,
+#signature-workspace .signatureIntro p {
+    max-width: 720px;
+    margin-top: 10px;
+    color: #71869a;
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+.workspace-main :focus-visible,
+.app-nav__item:focus-visible,
+.theme-toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+/* Layout e controles do fluxo de assinatura, com prévia ampla ao final. */
+#signature-workspace {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 18px 20px;
+    color: var(--text);
+}
+
+#signature-workspace > .signatureIntro,
+#signature-workspace > .container-file,
+#signature-workspace > .signature-professional,
+#signature-workspace > .previewImage {
+    grid-column: 1 / -1;
+}
+
+#signature-workspace > .signatureIntro {
+    margin-bottom: 2px;
+}
+
+#signature-workspace .container-file.upload-section,
+#signature-workspace .configSigt,
+#signature-workspace .signature-person,
+#signature-workspace .configImage,
+#signature-workspace .image-preview-container {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+#signature-workspace .configSigt,
+#signature-workspace .configImage,
+#signature-workspace .signature-person {
+    padding: 23px;
+}
+
+#signature-workspace .container-file.upload-section {
+    display: grid;
+    grid-template-columns: minmax(190px, auto) minmax(0, 1fr);
+    align-items: center;
+    gap: 10px 20px;
+    min-height: 112px;
+    padding: 20px 22px;
+    border: 1px dashed #a9c8e3;
+    background: linear-gradient(125deg, #f7fbff, #fff 76%);
+}
+
+#signature-workspace .container-file.upload-section:hover {
+    border-color: var(--brand-cyan);
+    background: linear-gradient(125deg, #eff7ff, #fff 76%);
+}
+
+#signature-workspace .file-input-wrapper {
+    justify-content: center;
+    min-height: 46px;
+    margin: 0;
+    padding: 11px 16px;
+    border-radius: 11px;
+    background: linear-gradient(125deg, #145da8, #3289e8);
+    box-shadow: 0 7px 15px rgb(23 105 189 / 17%);
+}
+
+#signature-workspace .file-input-wrapper:hover {
+    background: #145da8;
+    transform: translateY(-1px);
+}
+
+#signature-workspace .file-input-wrapper > label {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 680;
+    letter-spacing: 0;
+}
+
+#signature-workspace .container-file.upload-section > p {
+    grid-column: 2;
+    margin: 0;
+    padding: 0;
+    overflow-wrap: anywhere;
+    color: #3e5c77;
+    font-size: 12px;
+    text-align: left;
+}
+
+#signature-workspace .container-file.upload-section > p:first-of-type:empty {
+    display: none;
+}
+
+#signature-workspace .container-file.upload-section > .helper-text {
+    color: #8498ab;
+    font-size: 11px;
+}
+
+#signature-workspace .configSigt,
+#signature-workspace .signature-person,
+#signature-workspace .configImage {
+    background: var(--surface);
+}
+
+#signature-workspace .configSigt > h2,
+#signature-workspace .signature-person > h2,
+#signature-workspace .configImage h2,
+#signature-workspace .configImage h1,
+#signature-workspace .image-preview-container h2 {
+    margin: 0 0 17px;
+    color: #234a6c;
+    font-family: var(--font-title);
+    font-size: 17px;
+    font-weight: 720;
+    letter-spacing: -.025em;
+}
+
+#signature-workspace .configSigt {
+    display: block;
+}
+
+#signature-workspace .addInfos {
+    display: grid;
+    gap: 9px;
+}
+
+#signature-workspace .addInfos h3,
+#signature-workspace .controlsProfessional > h3 {
+    margin: 0 0 2px;
+    color: #536e87;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+#signature-workspace .checkbox-group {
+    min-height: 42px;
+    margin: 0;
+    padding: 9px 11px;
+    border: 1px solid #e8eef5;
+    border-radius: 10px;
+    color: #4e6881;
+    background: #f9fbfd;
+    font-size: 12px;
+    line-height: 1.4;
+    transition: border-color .18s ease, background-color .18s ease;
+}
+
+#signature-workspace .checkbox-group:hover {
+    border-color: #d4e5f4;
+    background: #f3f8fd;
+}
+
+#signature-workspace .checkbox-group input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--brand-blue);
+}
+
+#signature-workspace .helper-text {
+    color: #8396a9;
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+#signature-workspace .signature-image-options-header {
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+#signature-workspace .signature-image-options-header h2 {
+    margin-bottom: 5px;
+}
+
+#signature-workspace .signature-image-options-header > button {
+    min-height: 34px;
+    padding: 7px 10px;
+    border: 1px solid #e1eaf3;
+    border-radius: 9px;
+    color: #55718b;
+    background: #f7fafc;
+    font-size: 11px;
+    font-weight: 650;
+}
+
+#signature-workspace .signature-image-options-header > button:hover {
+    border-color: #b9d4ed;
+    color: var(--brand-blue);
+    background: #f0f7fe;
+}
+
+#signature-workspace .signature-image-options-grid {
+    gap: 15px;
+}
+
+#signature-workspace .signature-option-field {
+    gap: 8px;
+    padding: 13px;
+    border: 1px solid #e8eef5;
+    border-radius: 11px;
+    background: #fafcfe;
+}
+
+#signature-workspace .signature-option-field > label,
+#signature-workspace .labels > h2,
+#signature-workspace .labels > label {
+    color: #405e79;
+    font-size: 12px;
+    font-weight: 670;
+    line-height: 1.45;
+}
+
+#signature-workspace .signature-option-field > input[type="range"] {
+    width: 100%;
+    accent-color: var(--brand-blue);
+}
+
+#signature-workspace .signature-option-field > input[type="range"]:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+#signature-workspace .configImage .helper-text {
+    margin: 0;
+}
+
+#signature-workspace .signature-image-checkboxes {
+    gap: 8px;
+    margin-top: 13px;
+}
+
+#signature-workspace .signature-image-checkboxes .checkbox-group {
+    flex: 1 1 145px;
+}
+
+#signature-workspace .signature-professional {
+    margin: 0;
+}
+
+#signature-workspace .signature-person {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 15px 18px;
+}
+
+#signature-workspace .signature-person > h2,
+#signature-workspace .signature-person > .controlsProfessional,
+#signature-workspace .signature-person > .helper-text,
+#signature-workspace .signature-person > .infoOptions {
+    grid-column: 1 / -1;
+}
+
+#signature-workspace .signature-person > h2 {
+    margin: 0;
+}
+
+#signature-workspace .controlsProfessional {
+    gap: 10px;
+    margin: 0;
+}
+
+#signature-workspace .controlsProfessional > div,
+#signature-workspace .typeCrm,
+#signature-workspace .typeRQE {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 7px 0 0;
+}
+
+#signature-workspace .controlsProfessional button,
+#signature-workspace .typeCrm button,
+#signature-workspace .typeRQE button,
+#signature-workspace .configImage button,
+#signature-workspace .signature-extra-phrases > button {
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid #dce7f1;
+    border-radius: 9px;
+    color: #4d6882;
+    background: #f8fafc;
+    box-shadow: none;
+    font-size: 11px;
+    font-weight: 620;
+    letter-spacing: 0;
+}
+
+#signature-workspace .controlsProfessional button.active,
+#signature-workspace .typeCrm button.active,
+#signature-workspace .typeRQE button.active,
+#signature-workspace .configImage button.active,
+#signature-workspace .signature-extra-phrases > button.active {
+    border-color: var(--brand-blue);
+    color: #fff;
+    background: var(--brand-blue);
+}
+
+#signature-workspace .controlsProfessional button:not(.active):hover,
+#signature-workspace .typeCrm button:not(.active):hover,
+#signature-workspace .typeRQE button:not(.active):hover,
+#signature-workspace .configImage button:not(.active):hover,
+#signature-workspace .signature-extra-phrases > button:not(.active):hover {
+    border-color: #b4cee7;
+    color: var(--brand-blue);
+    background: #eff6fd;
+    transform: translateY(-1px);
+}
+
+#signature-workspace .signature-person > .helper-text {
+    margin: -6px 0 0;
+}
+
+#signature-workspace .signature-person > .labels,
+#signature-workspace .infoOptions > .labels,
+#signature-workspace .infoOptions > .signature-extra-phrases {
+    min-width: 0;
+    margin: 0;
+}
+
+#signature-workspace .labels input,
+#signature-workspace .labels textarea,
+#signature-workspace .signature-option-field > input[type="number"] {
+    width: 100%;
+    min-height: 43px;
+    padding: 10px 12px;
+    border: 1px solid #d5e1ec;
+    border-radius: 9px;
+    color: #203a54;
+    background: #fff;
+    font-size: 13px;
+    box-shadow: inset 0 1px 2px rgb(23 60 98 / 2%);
+}
+
+#signature-workspace .labels textarea {
+    min-height: 74px;
+    resize: vertical;
+}
+
+#signature-workspace .labels input:focus,
+#signature-workspace .labels textarea:focus,
+#signature-workspace .signature-option-field > input[type="number"]:focus {
+    border-color: var(--brand-cyan);
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+#signature-workspace .infoOptions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 15px 18px;
+}
+
+#signature-workspace .infoOptions > .signature-extra-phrases {
+    grid-column: 1 / -1;
+}
+
+#signature-workspace .signature-extra-phrases {
+    gap: 9px;
+}
+
+#signature-workspace .signature-extra-phrases > button {
+    width: fit-content;
+    max-width: 100%;
+}
+
+#signature-workspace .signature-extra-phrases > button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+}
+
+#signature-workspace .extra-phrase-header {
+    align-items: center;
+}
+
+#signature-workspace .remove-phrase-button {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #f0dcdd;
+    border-radius: 8px;
+    background: #fff8f7;
+}
+
+#signature-workspace .remove-phrase-button:hover {
+    border-color: #e7b6b8;
+    background: #fff0ef;
+}
+
+#signature-workspace .signature-message {
+    padding: 12px 15px;
+    border: 1px solid #f1d3d5;
+    border-radius: 10px;
+    color: #9d3942;
+    background: #fff6f5;
+}
+
+#signature-workspace .previewImage {
+    display: grid;
+    gap: 14px;
+}
+
+#signature-workspace .image-preview-container {
+    display: grid;
+    justify-items: center;
+    gap: 7px;
+    padding: 22px;
+    background: linear-gradient(135deg, #f7fbff, #fff);
+    text-align: center;
+}
+
+#signature-workspace .image-preview-container h2,
+#signature-workspace .image-preview-container .helper-text {
+    margin: 0;
+}
+
+#signature-workspace .image-preview {
+    width: min(100%, 620px);
+    margin: 10px auto 0;
+    border: 1px solid #e0e9f2;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(25 65 108 / 7%);
+}
+
+#signature-workspace .download-signature-button {
+    justify-self: end;
+    min-height: 46px;
+    margin: 0;
+    padding: 11px 18px;
+    border: 0;
+    border-radius: 11px;
+    color: #fff;
+    background: linear-gradient(125deg, #145da8, #3289e8);
+    box-shadow: 0 7px 17px rgb(23 105 189 / 20%);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#signature-workspace .download-signature-button:hover:not(:disabled) {
+    background: #145da8;
+    transform: translateY(-1px);
+}
+
+#signature-workspace .download-signature-button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+    box-shadow: none;
+}
+
+/* Formulários, resultados e estados vazios dos modos de senha. */
+.passwordModes {
+    justify-content: flex-start;
+    gap: 7px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 0 17px;
+    padding: 5px;
+    overflow-x: auto;
+    border: 1px solid #e2eaf3;
+    border-radius: 12px;
+    background: #f5f8fc;
+}
+
+.passwordModes button {
+    min-height: 38px;
+    padding: 8px 15px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: #667d94;
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.passwordModes button.active {
+    border-color: #fff;
+    color: #145da8;
+    background: #fff;
+    box-shadow: 0 2px 7px rgb(24 60 98 / 10%);
+}
+
+.password-workspace .default,
+.password-workspace .implantacao,
+.password-workspace .advanced,
+.password-workspace .advanced-results {
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+}
+
+.password-workspace .default,
+.password-workspace .implantacao {
+    padding: 24px;
+}
+
+.password-workspace .labels > label,
+.password-workspace .range-heading > label,
+.password-workspace .labelEmail label,
+.advanced-column-select label {
+    color: #405e79;
+    font-size: 12px;
+    font-weight: 670;
+}
+
+.password-workspace .input-hint {
+    color: #8396a9;
+    font-size: 11px;
+}
+
+.password-workspace .labels input:not([type="range"]),
+.password-workspace .labelEmail input,
+.advanced-column-select select {
+    border-color: #d5e1ec;
+    border-radius: 9px;
+    color: #203a54;
+    background: #fff;
+    font-size: 13px;
+}
+
+.password-workspace .labels input:not([type="range"]):focus,
+.password-workspace .labelEmail input:focus,
+.advanced-column-select select:focus-visible {
+    border-color: var(--brand-cyan);
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+.password-workspace #caracPass,
+.password-workspace #upperPass {
+    border-color: #e4ebf2;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.password-workspace .default > button,
+.password-workspace .implantacao > button:not(.saveUsers),
+.advanced-options .password-config-generate {
+    min-height: 46px;
+    border-radius: 10px;
+    background: linear-gradient(125deg, #145da8, #3289e8);
+    box-shadow: 0 6px 14px rgb(23 105 189 / 17%);
+    font-weight: 680;
+}
+
+.password-workspace .default > button:hover,
+.password-workspace .implantacao > button:not(.saveUsers):hover,
+.advanced-options .password-config-generate:hover:not(:disabled) {
+    background: #0e549d;
+}
+
+.password-workspace .saveUsers {
+    border-color: #d5e2ef;
+    border-radius: 9px;
+    color: #1769bd;
+}
+
+.password-workspace .saveUsers:hover {
+    border-color: #a8c5e3;
+    background: #f0f6fd;
+}
+
+.password-workspace .result > h2,
+.advanced-upload-copy h2,
+.advanced-results-heading h2 {
+    color: #244c6e;
+    font-family: var(--font-title);
+    letter-spacing: -.025em;
+}
+
+.password-workspace .resultGen {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: #f7faff;
+}
+
+.password-workspace .passwordResult {
+    border-color: #d7e3ef;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgb(23 60 98 / 4%);
+}
+
+.password-workspace .passwordResult > p,
+.advanced-password-cell code {
+    color: #203a54;
+}
+
+.password-workspace .btn-copy {
+    border-color: #d7e3ef;
+    border-radius: 8px;
+    background: #f3f8fe;
+}
+
+.password-workspace .btn-copy:hover {
+    border-color: #b5cde5;
+    background: #e7f1fc;
+}
+
+/* Diálogo de usuários, notificações e elementos de feedback compartilhados. */
+.saved-users-overlay {
+    padding: 24px;
+    background: rgb(15 39 67 / 48%);
+    backdrop-filter: blur(8px);
+}
+
+.saved-users-modal {
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 28px 80px rgb(8 34 65 / 28%);
+}
+
+.saved-users-header h2 {
+    color: #234a6c;
+    font-family: var(--font-title);
+    font-weight: 720;
+}
+
+.saved-users-modal-icon,
+.saved-user-avatar,
+.saved-users-empty > span,
+.saved-users-action__icon {
+    color: #1769bd;
+    background: #eaf3fd;
+}
+
+.saved-users-list {
+    border-color: #e1eaf3;
+}
+
+.saved-user {
+    transition: background-color .16s ease;
+}
+
+.saved-user:hover {
+    background: #f5f9fe;
+}
+
+.saved-users-actions {
+    background: #f7faff;
+}
+
+.saved-users-actions .saved-users-action {
+    border-color: #d6e2ee;
+    color: #365471;
+    background: #fff;
+}
+
+.saved-users-actions .saved-users-action:hover:not(:disabled) {
+    border-color: #9bbce0;
+    color: #145da8;
+    background: #f1f7ff;
+}
+
+.saved-users-feedback,
+.saved-users-confirmation {
+    border-radius: 10px;
+}
+
+.saved-users-confirmation {
+    border-color: #d2e1f0;
+    background: #f1f7fe;
+}
+
+.saved-users-confirmation .saved-users-confirmation__confirm {
+    border-color: #b83d49;
+    color: #fff;
+    background: #b83d49;
+}
+
+.saved-users-confirmation .saved-users-confirmation__confirm:hover {
+    border-color: #9c2e39;
+    background: #9c2e39;
+}
+
+.notification-viewport {
+    width: min(390px, calc(100vw - 32px));
+    gap: 10px;
+}
+
+.app-notification {
+    min-height: 68px;
+    gap: 12px;
+    padding: 13px 14px;
+    border: 1px solid #d7e4f0;
+    border-left: 4px solid #3289e8;
+    border-radius: 14px;
+    color: #203a54;
+    background: #fff;
+    box-shadow: 0 15px 36px rgb(20 55 91 / 17%);
+}
+
+.app-notification--success { border-left-color: #2da77b; }
+.app-notification--error { border-color: #f1d2d4; border-left-color: #c54250; }
+
+.app-notification__icon {
+    color: #1769bd;
+    background: #eaf3fd;
+    box-shadow: none;
+}
+
+.app-notification--error .app-notification__icon {
+    color: #b53643;
+    background: #fff0f0;
+}
+
+.app-notification__title {
+    color: #1c344e;
+    font-size: 12px;
+    font-weight: 720;
+}
+
+.app-notification__message {
+    color: #647b94;
+    font-size: 11px;
+}
+
+.app-notification__close:hover {
+    color: #274966;
+    background: #eef4fb;
+}
+
+.app-notification__timer { background: #3289e8; }
+.app-notification--success .app-notification__timer { background: #2da77b; }
+.app-notification--error .app-notification__timer { background: #c54250; }
+
+/* Variante escura da paleta e superfícies para o tema noturno. */
+.app-shell[data-theme="dark"] {
+    --surface: #13263a;
+    --surface-muted: #192f46;
+    --border: #2b435b;
+    --text: #e2edf7;
+    --text-muted: #9baec1;
+    --brand-blue: #4a9be0;
+    --brand-cyan: #54b3df;
+    --focus-ring: 0 0 0 3px rgb(84 179 223 / 30%);
+    --page-background: #0d1927;
+    --card-shadow: 0 8px 24px rgb(0 0 0 / 15%);
+    color-scheme: dark;
+    background:
+        radial-gradient(ellipse at 100% 0%, rgb(49 135 202 / 10%), transparent 38rem),
+        var(--page-background);
+    color: var(--text);
+}
+
+.app-shell[data-theme="dark"] .app-sidebar {
+    border-color: #263b50;
+    background: rgb(15 29 45 / 94%);
+}
+
+.app-shell[data-theme="dark"] .app-brand__logo {
+    border-color: #fff;
+    background: #fff;
+}
+
+.app-shell[data-theme="dark"] .app-brand__copy > span,
+.app-shell[data-theme="dark"] .app-breadcrumb strong,
+.app-shell[data-theme="dark"] .page-intro h1,
+.app-shell[data-theme="dark"] #signature-workspace .signatureIntro h1,
+.app-shell[data-theme="dark"] #signature-workspace .configSigt > h2,
+.app-shell[data-theme="dark"] #signature-workspace .signature-person > h2,
+.app-shell[data-theme="dark"] #signature-workspace .configImage h2,
+.app-shell[data-theme="dark"] #signature-workspace .configImage h1,
+.app-shell[data-theme="dark"] #signature-workspace .image-preview-container h2,
+.app-shell[data-theme="dark"] .password-workspace .result > h2,
+.app-shell[data-theme="dark"] .advanced-upload-copy h2,
+.app-shell[data-theme="dark"] .advanced-results-heading h2 {
+    color: #e2edf7;
+}
+
+.app-shell[data-theme="dark"] .app-sidebar__footer,
+.app-shell[data-theme="dark"] .app-topbar {
+    border-color: #263b50;
+}
+
+.app-shell[data-theme="dark"] .app-sidebar__section-label,
+.app-shell[data-theme="dark"] .app-brand__copy > small,
+.app-shell[data-theme="dark"] .app-breadcrumb,
+.app-shell[data-theme="dark"] .app-local-status,
+.app-shell[data-theme="dark"] .page-intro p,
+.app-shell[data-theme="dark"] #signature-workspace .signatureIntro p,
+.app-shell[data-theme="dark"] #signature-workspace .helper-text,
+.app-shell[data-theme="dark"] .password-workspace .input-hint {
+    color: #9baec1;
+}
+
+.app-shell[data-theme="dark"] .app-nav__item { color: #adbed0; }
+
+.app-shell[data-theme="dark"] .app-nav__item:hover:not(.active),
+.app-shell[data-theme="dark"] .theme-toggle:hover {
+    border-color: #2e4964;
+    color: #e2edf7;
+    background: #1a3047;
+}
+
+.app-shell[data-theme="dark"] .app-nav__item.active {
+    color: #fff;
+    background: linear-gradient(125deg, #145d96, #2478b6);
+}
+
+.app-shell[data-theme="dark"] .sidebar-local-card {
+    border-color: var(--border);
+    background: #14283d;
+}
+
+.app-shell[data-theme="dark"] .sidebar-local-card strong,
+.app-shell[data-theme="dark"] .theme-toggle { color: #c6d5e3; }
+.app-shell[data-theme="dark"] .workspace-main { background: transparent; box-shadow: none; }
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section,
+.app-shell[data-theme="dark"] #signature-workspace .configSigt,
+.app-shell[data-theme="dark"] #signature-workspace .signature-person,
+.app-shell[data-theme="dark"] #signature-workspace .configImage,
+.app-shell[data-theme="dark"] #signature-workspace .image-preview-container,
+.app-shell[data-theme="dark"] .password-workspace .default,
+.app-shell[data-theme="dark"] .password-workspace .implantacao,
+.app-shell[data-theme="dark"] .password-workspace .advanced,
+.app-shell[data-theme="dark"] .password-workspace .advanced-results,
+.app-shell[data-theme="dark"] .password-workspace .resultGen {
+    border-color: var(--border);
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section {
+    border-style: dashed;
+    background: linear-gradient(125deg, #142b43, #13263a 76%);
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section:hover {
+    background: linear-gradient(125deg, #173652, #13263a 76%);
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .container-file.upload-section > p,
+.app-shell[data-theme="dark"] #signature-workspace .addInfos h3,
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional > h3,
+.app-shell[data-theme="dark"] #signature-workspace .checkbox-group,
+.app-shell[data-theme="dark"] #signature-workspace .labels > h2,
+.app-shell[data-theme="dark"] #signature-workspace .labels > label,
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field > label,
+.app-shell[data-theme="dark"] .password-workspace .labels > label,
+.app-shell[data-theme="dark"] .password-workspace .range-heading > label,
+.app-shell[data-theme="dark"] .password-workspace .labelEmail label,
+.app-shell[data-theme="dark"] .advanced-column-select label {
+    color: #c3d2e1;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .checkbox-group,
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field {
+    border-color: #2b435b;
+    background: #172c41;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .checkbox-group:hover {
+    border-color: #385b78;
+    background: #1a324b;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .labels input,
+.app-shell[data-theme="dark"] #signature-workspace .labels textarea,
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field > input[type="number"],
+.app-shell[data-theme="dark"] .password-workspace .labels input:not([type="range"]),
+.app-shell[data-theme="dark"] .password-workspace .labelEmail input,
+.app-shell[data-theme="dark"] .advanced-column-select select {
+    border-color: #344e67;
+    color: #e2edf7;
+    background: #0f1e2e;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .labels input::placeholder,
+.app-shell[data-theme="dark"] #signature-workspace .labels textarea::placeholder,
+.app-shell[data-theme="dark"] .password-workspace .labels input::placeholder { color: #8298ad; }
+
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional button,
+.app-shell[data-theme="dark"] #signature-workspace .typeCrm button,
+.app-shell[data-theme="dark"] #signature-workspace .typeRQE button,
+.app-shell[data-theme="dark"] #signature-workspace .configImage button,
+.app-shell[data-theme="dark"] #signature-workspace .signature-extra-phrases > button,
+.app-shell[data-theme="dark"] #signature-workspace .signature-image-options-header > button {
+    border-color: #344e67;
+    color: #c3d2e1;
+    background: #1a2e43;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional button.active,
+.app-shell[data-theme="dark"] #signature-workspace .typeCrm button.active,
+.app-shell[data-theme="dark"] #signature-workspace .typeRQE button.active,
+.app-shell[data-theme="dark"] #signature-workspace .configImage button.active,
+.app-shell[data-theme="dark"] #signature-workspace .signature-extra-phrases > button.active {
+    border-color: #358ac5;
+    color: #fff;
+    background: #1769a6;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .controlsProfessional button:not(.active):hover,
+.app-shell[data-theme="dark"] #signature-workspace .typeCrm button:not(.active):hover,
+.app-shell[data-theme="dark"] #signature-workspace .typeRQE button:not(.active):hover,
+.app-shell[data-theme="dark"] #signature-workspace .configImage button:not(.active):hover,
+.app-shell[data-theme="dark"] #signature-workspace .signature-extra-phrases > button:not(.active):hover {
+    border-color: #416787;
+    color: #d9edff;
+    background: #203a54;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .image-preview {
+    border-color: #344e67;
+    background: #fff;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signature-message {
+    border-color: #68434a;
+    color: #f0b2b5;
+    background: #35242e;
+}
+
+.app-shell[data-theme="dark"] .passwordModes {
+    border-color: var(--border);
+    background: #14283d;
+}
+
+.app-shell[data-theme="dark"] .passwordModes button { color: #adbed0; }
+
+.app-shell[data-theme="dark"] .passwordModes button.active {
+    border-color: #344e67;
+    color: #bde0ff;
+    background: #223b55;
+}
+
+.app-shell[data-theme="dark"] .passwordModes button:not(.active):hover {
+    color: #e2edf7;
+    background: #1d344b;
+}
+
+.app-shell[data-theme="dark"] .password-workspace .labels input[type="range"].range-slider::-webkit-slider-runnable-track {
+    background: linear-gradient(to right, var(--brand-cyan) 0, var(--brand-cyan) var(--range-progress), #344e67 var(--range-progress), #344e67 100%);
+}
+
+.app-shell[data-theme="dark"] .password-workspace #caracPass,
+.app-shell[data-theme="dark"] .password-workspace #upperPass,
+.app-shell[data-theme="dark"] .password-workspace .passwordResult {
+    border-color: #344e67;
+    background: #1a2e43;
+}
+
+.app-shell[data-theme="dark"] .password-workspace .passwordResult > p,
+.app-shell[data-theme="dark"] .advanced-password-cell code { color: #e2edf7; }
+
+.app-shell[data-theme="dark"] .password-workspace .btn-copy {
+    border-color: #344e67;
+    background: #203951;
+}
+
+.app-shell[data-theme="dark"] .saved-users-overlay { background: rgb(3 10 18 / 72%); }
+
+.app-shell[data-theme="dark"] .saved-users-modal {
+    border-color: var(--border);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 28px 80px rgb(0 0 0 / 48%);
+}
+
+.app-shell[data-theme="dark"] .saved-users-header,
+.app-shell[data-theme="dark"] .saved-users-list { border-color: var(--border); }
+
+.app-shell[data-theme="dark"] .saved-users-header h2,
+.app-shell[data-theme="dark"] .saved-users-list-heading h3,
+.app-shell[data-theme="dark"] .saved-user-info > p,
+.app-shell[data-theme="dark"] .saved-users-empty p { color: var(--text); }
+
+.app-shell[data-theme="dark"] .saved-users-modal-icon,
+.app-shell[data-theme="dark"] .saved-user-avatar,
+.app-shell[data-theme="dark"] .saved-users-empty > span,
+.app-shell[data-theme="dark"] .saved-users-action__icon {
+    color: #8dcfff;
+    background: #1b3856;
+}
+
+.app-shell[data-theme="dark"] .saved-users-count,
+.app-shell[data-theme="dark"] .saved-users-header-actions > button,
+.app-shell[data-theme="dark"] .saved-users-actions .saved-users-action {
+    border-color: #344e67;
+    color: #c4d6e8;
+    background: #1b3048;
+}
+
+.app-shell[data-theme="dark"] .saved-users-actions { background: #101f32; }
+
+.app-shell[data-theme="dark"] .saved-users-confirmation {
+    border-color: #5a4050;
+    color: var(--text);
+    background: #28273b;
+}
+
+.app-shell[data-theme="dark"] .saved-users-feedback {
+    border-color: #2c614f;
+    color: #9ee1c2;
+    background: #15332d;
+}
+
+.app-shell[data-theme="dark"] .app-notification {
+    border-color: #385572;
+    border-left-color: #54b3df;
+    color: var(--text);
+    background: #14283e;
+}
+
+.app-shell[data-theme="dark"] .app-notification--error {
+    border-color: #68434a;
+    border-left-color: #e06b76;
+}
+
+.app-shell[data-theme="dark"] .app-notification__title { color: #e6f0fb; }
+.app-shell[data-theme="dark"] .app-notification__message { color: #a8bdd2; }
+
+/* Regras responsivas reorganizam colunas e ações conforme diminui a largura da tela. */
+@media (max-width: 1000px) {
+    #signature-workspace { grid-template-columns: minmax(0, 1fr); }
+    #signature-workspace > .configSigt,
+    #signature-workspace > .configImage { grid-column: 1; }
+}
+
+@media (max-width: 900px) {
+    .app-sidebar { padding-inline: 16px; }
+    .app-brand { padding-bottom: 20px; }
+}
+
+@media (max-width: 640px) {
+    .app-sidebar { padding: 10px 14px 11px; }
+    .app-brand__logo { min-height: 40px; }
+    .app-main { padding: 0 15px 26px; }
+    .app-topbar { min-height: 54px; }
+    .app-local-status { font-size: 0; }
+    .workspace-main { margin: 23px auto 30px; }
+    .page-intro { margin-bottom: 20px; }
+    #signature-workspace { gap: 13px; }
+    #signature-workspace .container-file.upload-section {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 9px;
+        padding: 17px;
+    }
+    #signature-workspace .container-file.upload-section > p {
+        grid-column: 1;
+        text-align: center;
+    }
+    #signature-workspace .file-input-wrapper {
+        width: 100%;
+        white-space: normal;
+        text-align: center;
+    }
+    #signature-workspace .configSigt,
+    #signature-workspace .configImage,
+    #signature-workspace .signature-person { padding: 18px; }
+    #signature-workspace .signature-person,
+    #signature-workspace .infoOptions {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 13px;
+    }
+    #signature-workspace .signature-person > h2,
+    #signature-workspace .signature-person > .controlsProfessional,
+    #signature-workspace .signature-person > .helper-text,
+    #signature-workspace .signature-person > .infoOptions,
+    #signature-workspace .infoOptions > .signature-extra-phrases { grid-column: 1; }
+    #signature-workspace .signature-image-options-header { flex-direction: column; }
+    #signature-workspace .signature-image-options-header > button,
+    #signature-workspace .download-signature-button { width: 100%; }
+    #signature-workspace .download-signature-button { justify-self: stretch; }
+    #signature-workspace .image-preview-container { padding: 16px; }
+    .passwordModes { width: 100%; }
+    .passwordModes button { flex: 1; padding-inline: 8px; }
+    .password-workspace .default,
+    .password-workspace .implantacao { padding: 17px; }
+    .notification-viewport {
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(12px, env(safe-area-inset-bottom));
+        width: min(390px, calc(100vw - 24px));
+    }
+}
+
+@media (max-width: 420px) {
+    .app-main { padding-inline: 11px; }
+    .app-breadcrumb { gap: 7px; font-size: 11px; }
+    .page-intro h1,
+    #signature-workspace .signatureIntro h1 { font-size: 28px; }
+    #signature-workspace .typeCrm,
+    #signature-workspace .typeRQE {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+    #signature-workspace .typeCrm button,
+    #signature-workspace .typeRQE button { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
