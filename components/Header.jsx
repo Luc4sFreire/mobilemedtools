@@ -70,15 +70,6 @@ function Header({ activeComponent, onSelectComponent, theme, onToggleTheme }) {
 
             {/* Rodapé do painel: alterna o tema sem guardar estado local neste componente. */}
             <div className="app-sidebar__footer">
-                {/* <div className="sidebar-local-card">
-                    <span className="sidebar-local-card__icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="4" y="5" width="16" height="14" rx="3" />
-                            <path d="M8 9h8M8 13h5" />
-                        </svg>
-                    </span>
-                    <span><strong>Ambiente local</strong><small>Seus dados ficam no navegador</small></span>
-                </div> */}
                 <button
                     type="button"
                     className="theme-toggle"

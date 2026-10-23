@@ -184,7 +184,7 @@ function PasswordImplantacao() {
                             onClick={() => pass.setPrefix("Mobile")}
                             id="reload"
                             aria-label="Limpar prefixo personalizado"
-                        ><div /></button>
+                        ><div></div></button>
                     </div>
                 </div>
                 {/* Controla quantas senhas serão geradas em uma única operação. */}
