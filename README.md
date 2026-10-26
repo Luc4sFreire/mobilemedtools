@@ -13,9 +13,7 @@
 
 ## Sobre
 
-O MobilemedTools é uma aplicação web em desenvolvimento. O estado atual contém geradores de assinatura, senhas (modos Padrão, Implantação e Avançado) e logos.
-
-A aplicação é uma SPA React/Vite. O processamento de imagens e a geração de senhas ocorrem no navegador; o código atual não faz chamadas a uma API de aplicação. No modo Implantação, os usuários salvos ficam no armazenamento local do navegador, conforme a nota de privacidade abaixo.
+O MobilemedTools é uma aplicação web que baseia-se no conceito de SPA desenvolvida com a tecnologia React/Vite. O processamento de imagens e a geração de senhas ocorrem no navegador; o código atual não faz chamadas a uma API de aplicação. No modo Implantação, os usuários salvos ficam no armazenamento local do navegador, conforme a nota de privacidade abaixo.
 
 ## Funcionalidades
 
@@ -25,7 +23,7 @@ A aplicação é uma SPA React/Vite. O processamento de imagens e a geração de
 - Corrige variações de iluminação, realça o contraste e segmenta os traços manuscritos.
 - Permite ajustar escala, espessura, cor da tinta, suavização e transparência.
 - Compõe os dados de médico (CRM), veterinário (CRMV) ou dentista (CRO) com nome, registro, RQE, especialidade e até cinco frases adicionais.
-- Exibe a prévia em 420 × 120 px e gera o PNG final em 1260 × 360 px (resolução 3×). O download é liberado quando a prévia corresponde às opções e aos dados atuais.
+- Exibe a prévia em 1260 × 360 px (resolução 3×) e gera o PNG final em 420 × 120 px. O download é liberado quando a prévia corresponde às opções e aos dados atuais.
 
 ### Gerador de logos
 
@@ -41,16 +39,14 @@ A aplicação é uma SPA React/Vite. O processamento de imagens e a geração de
 - O modo Padrão mostra e permite copiar as senhas geradas.
 - O modo Implantação associa e-mails às senhas, salva usuários localmente, permite excluir registros e copiar/exportar listas de credenciais ou mensagens.
 - O modo Avançado importa a primeira aba de arquivos CSV ou XLSX (até 10 MB e 10.000 linhas), identifica ou permite selecionar a coluna de e-mail, gera senhas para endereços válidos e únicos e sinaliza todas as ocorrências duplicadas sem diferenciar maiúsculas de minúsculas.
-- No modo Avançado, cada senha pode ser copiada ou salva na lista local de usuários; a lista válida pode ser copiada em lote ou baixada como XLSX, CSV ou Markdown. E-mails duplicados e inválidos são excluídos dos downloads.
+- No modo Avançado, cada senha pode ser copiada ou salva na lista local de usuários; a lista válida pode ser copiada em lote ou baixada como XLSX ou CSV. E-mails duplicados e inválidos são excluídos dos downloads.
 
 ## Privacidade e armazenamento
 
-- As imagens e os dados profissionais da assinatura são usados em memória no navegador. O código da aplicação não os envia a um servidor nem grava esses dados em armazenamento persistente.
+- As imagens e os dados profissionais da assinatura são usados em memória no navegador. O código da aplicação não envia dados à servidor nem grava esses dados em armazenamento persistente.
 - Senhas geradas no modo Padrão permanecem no estado da tela enquanto a ferramenta está montada.
 - O modo Implantação grava e-mail e senha em texto legível no localStorage do navegador, sob a chave mobilemedtools.savedUsers. Esses dados permanecem no perfil local até serem removidos e não são criptografados. O acesso ao perfil do navegador ou a um script executado na mesma origem pode expô-los.
 - No modo Avançado, os dados importados e as senhas permanecem em memória enquanto a tela está montada. Ao escolher “Salvar usuário”, e-mail e senha passam ao mesmo localStorage em texto legível usado pelo modo Implantação. Os arquivos exportados contêm credenciais em texto legível; copiar credenciais envia o conteúdo à área de transferência do dispositivo.
-
-Use o armazenamento de credenciais somente em um ambiente apropriado para esses dados. A documentação completa descreve limitações e recomendações de evolução.
 
 ## Estado dos módulos
 
@@ -61,7 +57,6 @@ Use o armazenamento de credenciais somente em um ambiente apropriado para esses 
 | Senhas — modo Implantação | Implementado | Associação a e-mail, persistência local, exclusão e exportação |
 | Senhas — modo Avançado | Implementado | Importação CSV/XLSX, validação e duplicatas de e-mail, cópia, gravação local seletiva e exportação XLSX/CSV/MD |
 | Criação de logos | Implementado | Modo tipográfico e padronização de imagens, individual ou em lotes de até 50 |
-| Testes automatizados | 40 testes | Cobertura de geração de senhas, importação/exportação, imagem, composição e logos |
 
 ## Primeiros passos
 
@@ -87,9 +82,7 @@ O Vite inicia em http://localhost:3000.
 | npm run build | Gera os arquivos de produção em dist/ |
 | npm run preview | Serve localmente o build de produção |
 | npm run lint | Executa o ESLint |
-| npm test | Executa os testes da pasta `tests/`; falha se não houver arquivos de teste |
-
-Consulte [docs/documentacao-principal.md](docs/documentacao-principal.md) para o diagnóstico mais recente de lint, build, testes e auditoria de dependências.
+| npm test | Executa toda a suíte em `tests/`, incluindo imports sem extensão usados pelo Vite |
 
 ## Como usar
 
@@ -125,9 +118,7 @@ O fluxo em alto nível é:
       → redimensionamento de alta qualidade e espessura opcional
       → suavização, cor e remoção do fundo
       → assinatura PNG
-      → composição lógica de 420 × 120 px renderizada como PNG de 1260 × 360 px
-
-A documentação principal contém a explicação teórica dos algoritmos de imagem, senhas e logos, além do diagnóstico do sistema. O processador de assinatura também está descrito em [docs/diagnostico-algoritmo-imagem.md](docs/diagnostico-algoritmo-imagem.md).
+      → composição lógica de 420 × 120 px
 
 ## Arquitetura
 
@@ -156,10 +147,6 @@ A documentação principal contém a explicação teórica dos algoritmos de ima
     │   │   ├── composeSignature.js
     │   │   └── logoGenerator.js
     │   └── style/
-    ├── docs/
-    │   ├── documentacao-principal.md
-    │   ├── diagnostico-algoritmo-imagem.md
-    │   └── modelo-changelog.md
     ├── CHANGELOG.md
     └── README.md
 
@@ -178,23 +165,6 @@ A documentação principal contém a explicação teórica dos algoritmos de ima
 - Web Crypto API para sorteio de senhas
 - ESLint com plugins para React Hooks e React Refresh
 - Destino de hospedagem citado no projeto: Vercel
-
-## Documentação e changelog
-
-- [Documentação principal do projeto, organizada para o Notion](docs/documentacao-principal.md)
-- [Diagnóstico detalhado do algoritmo de imagem](docs/diagnostico-algoritmo-imagem.md)
-- [Modelo reutilizável de changelog](docs/modelo-changelog.md)
-- [Changelog do projeto](CHANGELOG.md)
-
-### Diagnóstico desta revisão (22/10/2026)
-
-- Os 40 testes cobrem utilitários com mocks, sem testes ponta a ponta em navegador ou avaliação visual representativa. O processamento da assinatura ocorre na thread principal; imagens de logo são decodificadas antes da redução. Consulte a documentação principal para achados e prioridades.
-
-- `npm run build`: concluído, sem avisos de recursos não resolvidos.
-- `npm run lint`: concluído sem erros.
-- `npm test`: 40 testes passaram.
-- `npm audit --offline`: 0 vulnerabilidades no cache local; o acesso on-line ao registro não foi liberado após falha de DNS.
-- Credenciais salvas pelo modo Implantação ou pelo modo Avançado ficam em texto legível no `localStorage` do navegador.
 
 ## Contribuindo
 

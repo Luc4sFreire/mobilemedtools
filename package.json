@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "test": "node --test tests/coreUtilities.test.js",
+    "test": "node --import=./tests/register-extensionless-loader.js --test",
     "preview": "vite preview"
   },
   "dependencies": {

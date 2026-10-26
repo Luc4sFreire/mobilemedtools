@@ -174,11 +174,6 @@ function escapeCsvCell(value) {
     return `"${safeText.replace(/"/g, '""')}"`;
 }
 
-// Escapa separadores e quebras de linha para preservar a estrutura de tabela Markdown.
-function escapeMarkdownCell(value) {
-    return String(value ?? "").replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/[\r\n]+/g, " ");
-}
-
 // Exporta as credenciais válidas para XLSX, CSV ou Markdown.
 export async function downloadCredentials(credentials, format, filenameBase) {
     const rows = credentials.map(({ email, password }) => [email, password]);
@@ -197,21 +192,10 @@ export async function downloadCredentials(credentials, format, filenameBase) {
         return;
     }
 
-    if (format === "csv") {
-        const csv = [["E-mail", "Senha"], ...rows]
-            .map((row) => row.map(escapeCsvCell).join(","))
-            .join("\r\n");
-        triggerDownload(new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" }), filename);
-        return;
-    }
-
-    const markdown = [
-        "| E-mail | Senha |",
-        "| --- | --- |",
-        ...rows.map(([email, password]) => `| ${escapeMarkdownCell(email)} | ${escapeMarkdownCell(password)} |`),
-        "",
-    ].join("\n");
-    triggerDownload(new Blob([markdown], { type: "text/markdown;charset=utf-8" }), filename);
+    const csv = [["E-mail", "Senha"], ...rows]
+        .map((row) => row.map(escapeCsvCell).join(","))
+        .join("\r\n");
+    triggerDownload(new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" }), filename);
 }
 
 // Gera um prefixo de nome de arquivo seguro e legível a partir do arquivo importado.

@@ -1,12 +1,16 @@
-# Changelog
-
-Este arquivo registra alterações relevantes para quem usa ou mantém o MobilemedTools. O guia para novas entradas está em [docs/modelo-changelog.md](docs/modelo-changelog.md).
-
 ## Não lançado
 
 **Status:** em desenvolvimento
 **Compatibilidade:** aplicação web executada no navegador; não há serviço ou API de aplicação no repositório.
 **Resumo:** ferramentas de assinatura, senhas e logos, com geração e processamento de imagens em lote no navegador.
+
+### Diagnóstico e documentação — 23/10/2026
+
+- Criada a documentação principal com arquitetura, privacidade, limitações, achados e prioridades; adicionados o diagnóstico do algoritmo de imagem e o modelo de changelog.
+- `npm test` passou a executar todos os casos da pasta `tests/`, com resolvedor para imports relativos sem extensão usados pelo Vite.
+- Os caminhos de dois ícones CSS foram corrigidos; o build agora conclui sem avisos de recursos não resolvidos.
+- A suíte completa encontrou 184 casos: 182 passam e dois casos de importação CSV falham. Os problemas são descritos na documentação principal e exigem mudanças no importador central.
+- `npm run lint` e `npm run build` passaram; `npm audit --offline` encontrou zero vulnerabilidades nos dados locais disponíveis.
 
 ### Adicionado
 
@@ -75,9 +79,3 @@ Este arquivo registra alterações relevantes para quem usa ou mantém o Mobilem
 - [x] `npm test` — 40 testes passaram em 22/10/2026.
 - [x] `git diff --check` — concluído em 22/10/2026 sem erros de whitespace; o Git emitiu apenas avisos de conversão LF/CRLF para arquivos da árvore.
 - [x] `npm audit --offline` — encontrou 0 vulnerabilidades nos dados disponíveis localmente; `npm audit` on-line não alcançou o registro npm por falha de DNS e a solicitação de acesso foi recusada.
-
-### Referências
-
-- [Documentação principal organizada conforme o modelo da página do Notion](docs/documentacao-principal.md)
-- [Diagnóstico teórico do algoritmo de imagem](docs/diagnostico-algoritmo-imagem.md)
-- [Modelo para futuras entradas](docs/modelo-changelog.md)

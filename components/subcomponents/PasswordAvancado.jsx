@@ -310,7 +310,7 @@ function PasswordAvancado() {
                                 value={prefix}
                                 onChange={(event) => setPrefix(event.target.value.slice(0, 24))}
                             />
-                            <button type="button" aria-label="Limpar prefixo personalizado" onClick={() => setPrefix("")}><div /></button>
+                            <button type="button" aria-label="Limpar prefixo personalizado" onClick={() => setPrefix("Mobile")}><div /></button>
                         </div>
                     </div>
                     <div className="labels password-config-length">
@@ -523,7 +523,6 @@ function PasswordAvancado() {
                             <button type="button" onClick={copyAllCredentials} disabled={!credentials.length}>Copiar todas</button>
                             <button type="button" onClick={() => exportCredentials("xlsx")} disabled={!credentials.length}>Baixar XLSX</button>
                             <button type="button" onClick={() => exportCredentials("csv")} disabled={!credentials.length}>Baixar CSV</button>
-                            <button type="button" onClick={() => exportCredentials("md")} disabled={!credentials.length}>Baixar MD</button>
                         </div>
                     </div>
 

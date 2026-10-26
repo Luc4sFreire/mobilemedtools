@@ -51,10 +51,10 @@ for (const size of [4, 8, 16, 32]) {
     }
 }
 
-test("senha padrão separa o prefixo previsível do tamanho aleatório", (t) => {
+test("senha mantém o prefixo previsível fora do tamanho aleatório", (t) => {
     const crypto = installDeterministicCrypto();
     t.after(crypto.restore);
-    const password = generatePassword();
+    const password = generatePassword({ prefix: "Mobile" });
     assert.equal(password.startsWith("Mobile@"), true);
     assert.equal(password.slice("Mobile@".length).length, 8);
 });
