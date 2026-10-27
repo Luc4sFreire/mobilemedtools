@@ -1,33 +1,41 @@
 // Dimensões lógicas usadas para compor o layout que será exibido a 420 × 120 CSS px.
 const FINAL_WIDTH = 420
 const FINAL_HEIGHT = 120
-// Renderiza três vezes acima do tamanho lógico para melhorar antialiasing e nitidez.
-const OUTPUT_SCALE = 3
-// Margem uniforme entre o conteúdo e as bordas do arquivo final.
-const PADDING = 10
+// Renderiza quatro vezes acima do tamanho lógico para melhorar antialiasing e nitidez.
+const OUTPUT_SCALE = 4
+// Margem interna padrão da composição individual.
+const PADDING = 4
 // Preserva uma área mínima para que a imagem manuscrita não desapareça quando há texto.
 const MIN_SIGNATURE_HEIGHT = 18
 // Escala mínima da tipografia antes de reportar que o texto não cabe.
 const MIN_TEXT_SCALE = 0.45
+const GRID_COLUMN_GAP = 8
+const GRID_ROW_GAP = 3
 
 /**
  * Compõe a assinatura processada e os dados profissionais em um PNG fixo.
  *
  * A função carrega a imagem, mede e quebra os textos, reduz a fonte se necessário,
  * reserva o espaço vertical para assinatura e texto, desenha ambos em um canvas
- * área lógica de 420 × 120 px, renderiza em 3× e resolve com um PNG de 1260 × 360 px.
+ * área lógica de 420 × 120 px, renderiza em 4× e resolve com um PNG de 1680 × 480 px.
  * Lança erro para falhas de leitura,
  * canvas ou conteúdo que não caiba nem na escala mínima.
  *
  * @param {string} imageUrl URL local do PNG da assinatura processada.
  * @param {{text: string, emphasis?: boolean}[]} details Linhas textuais a compor.
- * @param {{transparente?: boolean, escala?: number}} options Opções do fundo e escala.
- * @returns {Promise<Blob>} PNG final em resolução 3× (1260 × 360 px).
+ * @param {{
+ *   transparente?: boolean,
+ *   escala?: number,
+ *   textScale?: number,
+ *   layout?: "lines" | "compact" | "grid-2" | "grid-3",
+ *   textAlign?: "left" | "center" | "right"
+ * }} options Opções do fundo, escalas e organização do texto.
+ * @returns {Promise<Blob>} PNG final em resolução 4× (1680 × 480 px).
  */
 export async function composeSignature(imageUrl, details, options = {}) {
     // Decodifica o PNG antes de calcular seu tamanho de exibição.
     const image = await loadImage(imageUrl)
-    // A área lógica continua 420 × 120; o bitmap exportado tem três vezes essa resolução.
+    // A área lógica continua 420 × 120; o bitmap exportado tem quatro vezes essa resolução.
     const canvas = document.createElement("canvas")
     canvas.width = FINAL_WIDTH * OUTPUT_SCALE
     canvas.height = FINAL_HEIGHT * OUTPUT_SCALE
@@ -53,15 +61,19 @@ export async function composeSignature(imageUrl, details, options = {}) {
     const contentWidth = FINAL_WIDTH - PADDING * 2
     const hasDetails = details.length > 0
     // Reserva a altura mínima da assinatura antes de calcular o máximo permitido para o texto.
-    const maxTextHeight = FINAL_HEIGHT
-        - PADDING * 2
-        - (hasDetails ? MIN_SIGNATURE_HEIGHT : 0)
+    const maxTextHeight = FINAL_HEIGHT - PADDING * 2 - (hasDetails ? MIN_SIGNATURE_HEIGHT : 0)
     // Primeiro tenta a fonte no tamanho normal para preservar a melhor legibilidade.
-    let textLayout = buildTextLayout(context, details, contentWidth, 1)
+    const requestedTextScale = Math.min(150, Math.max(50, Number(options.textScale) || 100)) / 100
+    const layout = options.layout ?? "lines"
+    const gridColumns = layout === "grid-3" ? 3 : layout === "grid-2" ? 2 : 0
+    const createTextLayout = (scale) => gridColumns
+        ? buildGridLayout(context, details, contentWidth, gridColumns, scale)
+        : buildTextLayout(context, details, contentWidth, scale)
+    let textLayout = createTextLayout(requestedTextScale)
 
     // Se o texto exceder a área, faz uma segunda tentativa com a fonte reduzida.
     if (textLayout.height > maxTextHeight) {
-        textLayout = buildTextLayout(context, details, contentWidth, MIN_TEXT_SCALE)
+        textLayout = createTextLayout(requestedTextScale * MIN_TEXT_SCALE)
     }
     // Não omite nem recorta texto silenciosamente: devolve erro explícito.
     if (textLayout.height > maxTextHeight) {
@@ -97,18 +109,34 @@ export async function composeSignature(imageUrl, details, options = {}) {
         let textY = PADDING + signatureAreaHeight
         // Usa texto escuro sobre branco ou transparência, garantindo contraste.
         context.fillStyle = options.transparente ? "#000" : "#000"
-        // Centraliza cada linha no eixo horizontal da imagem final.
-        context.textAlign = "center"
+        // Desenha o texto conforme o alinhamento e o preset de layout escolhidos.
+        if (gridColumns) {
+            drawGridLayout(
+                context,
+                textLayout,
+                PADDING,
+                textY,
+                options.textAlign ?? "center"
+            )
+        } else {
+            const textAlign = options.textAlign ?? "center"
+            context.textAlign = textAlign
+            const textX = textAlign === "left"
+                ? PADDING
+                : textAlign === "right"
+                ? FINAL_WIDTH - PADDING
+                    : FINAL_WIDTH / 2
 
-        // Cada linha foi previamente medida e quebrada para caber na largura útil.
-        textLayout.lines.forEach((line) => {
-            context.font = `${line.emphasis ? "700" : "400"} ${line.fontSize}px Arial, sans-serif`
-            // Canvas recebe a coordenada da linha de base, não o topo da caixa do texto.
-            textY += line.fontSize
-            context.fillText(line.text, FINAL_WIDTH / 2, textY, contentWidth)
-            // Avança até a próxima linha respeitando seu espaçamento vertical.
-            textY += line.lineHeight - line.fontSize
-        })
+            // Cada linha foi previamente medida e quebrada para caber na largura útil.
+            textLayout.lines.forEach((line) => {
+                context.font = `${line.emphasis ? "700" : "400"} ${line.fontSize}px Arial, sans-serif`
+                // Canvas recebe a coordenada da linha de base, não o topo da caixa do texto.
+                textY += line.fontSize
+                context.fillText(line.text, textX, textY, contentWidth)
+                // Avança até a próxima linha respeitando seu espaçamento vertical.
+                textY += line.lineHeight - line.fontSize
+            })
+        }
     }
 
     // Codifica de forma assíncrona o canvas como PNG e rejeita se o navegador
@@ -121,6 +149,66 @@ export async function composeSignature(imageUrl, details, options = {}) {
                 reject(new Error("Não foi possível gerar a imagem final."))
             }
         }, "image/png")
+    })
+}
+
+function buildGridLayout(context, details, maxWidth, columns, scale) {
+    const cellWidth = (maxWidth - GRID_COLUMN_GAP * (columns - 1)) / columns
+    const cells = details.map((detail) => {
+        const baseFontSize = detail.emphasis ? 14 : 11
+        const fontSize = baseFontSize * scale
+        context.font = `${detail.emphasis ? "700" : "400"} ${fontSize}px Arial, sans-serif`
+        const lines = wrapText(context, detail.text, cellWidth).map((text) => ({
+            text,
+            fontSize,
+            lineHeight: fontSize * 1.25,
+            emphasis: detail.emphasis,
+        }))
+
+        return {
+            lines,
+            height: lines.reduce((height, line) => height + line.lineHeight, 0),
+        }
+    })
+    const rows = []
+
+    for (let index = 0; index < cells.length; index += columns) {
+        const rowCells = cells.slice(index, index + columns)
+        rows.push({
+            cells: rowCells,
+            height: Math.max(...rowCells.map((cell) => cell.height)),
+        })
+    }
+
+    return {
+        height: rows.reduce((height, row) => height + row.height, 0) +
+            Math.max(0, rows.length - 1) * GRID_ROW_GAP,
+        grid: { columns, cellWidth, rows },
+    }
+}
+
+function drawGridLayout(context, textLayout, left, top, textAlign) {
+    const { cellWidth, rows } = textLayout.grid
+    let rowTop = top
+    context.textAlign = textAlign
+
+    rows.forEach((row) => {
+        row.cells.forEach((cell, columnIndex) => {
+            const cellCenter = left + columnIndex * (cellWidth + GRID_COLUMN_GAP) + cellWidth / 2
+            const textX = textAlign === "left"
+                ? cellCenter - cellWidth / 2
+                : textAlign === "right"
+                    ? cellCenter + cellWidth / 2
+                    : cellCenter
+            let textY = rowTop + (row.height - cell.height) / 2
+            cell.lines.forEach((line) => {
+                context.font = `${line.emphasis ? "700" : "400"} ${line.fontSize}px Arial, sans-serif`
+                textY += line.fontSize
+                context.fillText(line.text, textX, textY, cellWidth)
+                textY += line.lineHeight - line.fontSize
+            })
+        })
+        rowTop += row.height + GRID_ROW_GAP
     })
 }
 

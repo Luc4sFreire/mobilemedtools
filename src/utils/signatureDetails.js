@@ -1,5 +1,13 @@
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
 const MAX_PHRASES = 5;
+export const SIGNATURE_DETAIL_ORDER = ["name", "credential", "rqe", "specialty", "phrases"];
+export const SIGNATURE_DETAIL_LABELS = {
+    name: "Nome",
+    credential: "Registro",
+    rqe: "RQE",
+    specialty: "Especialidade",
+    phrases: "Frases extras",
+};
 const ACCEPTED_IMAGE_TYPES = new Set([
     "image/png",
     "image/jpeg",
@@ -49,25 +57,70 @@ export function buildSignatureDetails({
     specialty = "",
     includeExtraPhrases = false,
     phrases = [],
+    layout = "lines",
+    order = SIGNATURE_DETAIL_ORDER,
 }) {
     const details = [];
     const name = professionalName.trim();
     const credential = formatCredential(credentialValue, credentialLabel, credentialFormat);
 
-    if (name) details.push({ text: name, emphasis: true });
-    if (credential) details.push({ text: credential });
+    if (name) details.push({ key: "name", text: name, emphasis: true });
+    if (credential) details.push({ key: "credential", text: credential });
     if (includeRqe) {
         const rqe = formatCredential(rqeValue, "RQE", rqeFormat);
-        if (rqe) details.push({ text: rqe });
+        if (rqe) details.push({ key: "rqe", text: rqe });
     }
-    if (includeSpecialty && specialty.trim()) details.push({ text: specialty.trim() });
+    if (includeSpecialty && specialty.trim()) {
+        details.push({ key: "specialty", text: specialty.trim() });
+    }
     if (includeExtraPhrases) {
         phrases.forEach((phrase) => {
-            if (phrase.value?.trim()) details.push({ text: phrase.value.trim() });
+            if (phrase.value?.trim()) {
+                details.push({ key: "phrases", text: phrase.value.trim() });
+            }
         });
     }
 
-    return details;
+    const orderIndex = new Map(order.map((key, index) => [key, index]));
+    details.sort((first, second) =>
+        (orderIndex.get(first.key) ?? SIGNATURE_DETAIL_ORDER.length) -
+        (orderIndex.get(second.key) ?? SIGNATURE_DETAIL_ORDER.length)
+    );
+
+    if (layout !== "compact" || details.length < 2) return removeDetailKeys(details);
+
+    const nameIndex = details.findIndex((detail) => detail.key === "name");
+    const compactGroup = (group) => group.length > 0
+        ? [{ text: group.map((detail) => detail.text).join(" · ") }]
+        : [];
+    if (nameIndex < 0) return compactGroup(details);
+
+    return removeDetailKeys([
+        ...compactGroup(details.slice(0, nameIndex)),
+        details[nameIndex],
+        ...compactGroup(details.slice(nameIndex + 1)),
+    ]);
+}
+
+function removeDetailKeys(details) {
+    return details.map((detail) => {
+        const visibleDetail = { ...detail };
+        delete visibleDetail.key;
+        return visibleDetail;
+    });
+}
+
+export function moveSignatureDetail(order, key, direction) {
+    const currentIndex = order.indexOf(key);
+    const targetIndex = currentIndex + direction;
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= order.length) return order;
+
+    const nextOrder = [...order];
+    ;[nextOrder[currentIndex], nextOrder[targetIndex]] = [
+        nextOrder[targetIndex],
+        nextOrder[currentIndex],
+    ];
+    return nextOrder;
 }
 
 export function addSignaturePhrase(phrases) {

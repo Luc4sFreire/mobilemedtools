@@ -23,7 +23,10 @@ O MobilemedTools é uma aplicação web que baseia-se no conceito de SPA desenvo
 - Corrige variações de iluminação, realça o contraste e segmenta os traços manuscritos.
 - Permite ajustar escala, espessura, cor da tinta, suavização e transparência.
 - Compõe os dados de médico (CRM), veterinário (CRMV) ou dentista (CRO) com nome, registro, RQE, especialidade e até cinco frases adicionais.
-- Exibe a prévia em 1260 × 360 px (resolução 3×) e gera o PNG final em 420 × 120 px. O download é liberado quando a prévia corresponde às opções e aos dados atuais.
+- Permite adicionar uma segunda assinatura com imagem e dados profissionais independentes; nesse modo, as duas composições são reunidas lado a lado em um único PNG.
+- Oferece ajustes independentes de escala da imagem e do texto para cada assinatura, com layouts em linhas, compactos ou em grades de duas/três colunas; também permite escolher a ordem dos dados e o alinhamento do texto.
+- Na segunda assinatura, permite incluir uma imagem já pronta sem aplicar o processamento de traço nem adicionar informações profissionais.
+- Exibe a prévia em 420 × 120 px. O PNG de uma assinatura é exportado em 1680 × 480 px (resolução 4×); para duas assinaturas, a prévia é renderizada em 4× e o arquivo baixado é reduzido com suavização para exatamente 420 × 120 px. O espaçamento central é ajustável e o padding aplica uma margem única ao redor do bloco das duas assinaturas. O download é liberado quando a prévia corresponde às opções e aos dados atuais.
 
 ### Gerador de logos
 
@@ -52,7 +55,7 @@ O MobilemedTools é uma aplicação web que baseia-se no conceito de SPA desenvo
 
 | Módulo ou recurso | Estado | Observação |
 | --- | --- | --- |
-| Gerador de assinatura | Implementado | Pré-processamento, formulário, prévia e PNG final |
+| Gerador de assinatura | Implementado | Uma ou duas assinaturas, pré-processamento, prévia e PNG final |
 | Senhas — modo Padrão | Implementado | Geração e cópia de senhas |
 | Senhas — modo Implantação | Implementado | Associação a e-mail, persistência local, exclusão e exportação |
 | Senhas — modo Avançado | Implementado | Importação CSV/XLSX, validação e duplicatas de e-mail, cópia, gravação local seletiva e exportação XLSX/CSV/MD |
@@ -91,8 +94,9 @@ O Vite inicia em http://localhost:3000.
 1. Selecione uma imagem válida.
 2. Escolha a categoria profissional e informe nome e registro.
 3. Ative e preencha RQE, especialidade ou frases adicionais conforme necessário.
-4. Ajuste os controles da imagem e confira a prévia.
-5. Baixe o PNG quando o processamento e a composição terminarem.
+4. Ajuste o tamanho da imagem e do texto, o layout, o alinhamento e a ordem das informações separadamente para cada assinatura.
+5. Opcionalmente, ative a segunda assinatura, selecione sua imagem e informe os dados do outro profissional. Ajuste o espaçamento entre elas e o padding externo do bloco conjunto. Se a imagem já estiver pronta, marque a opção para incluí-la sem o processamento de traço.
+6. Confira a prévia, que mantém a imagem acima das informações, e baixe o PNG quando a composição terminar.
 
 Uma foto bem iluminada, em papel claro e sem sombras fortes tende a facilitar a segmentação. O algoritmo não reconhece escrita nem valida registros profissionais.
 

@@ -288,8 +288,40 @@ button {
 #signature-workspace > .signatureIntro,
 #signature-workspace > .container-file,
 #signature-workspace > .signature-professional,
+#signature-workspace > .signature-settings-list,
+#signature-workspace > .signature-gap-options,
 #signature-workspace > .previewImage {
     grid-column: 1 / -1;
+}
+
+#signature-workspace > .signature-settings-list {
+    display: grid;
+    gap: 18px;
+}
+
+#signature-workspace > .signature-gap-options {
+    display: grid;
+    gap: 9px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+}
+
+#signature-workspace > .signature-gap-options > label {
+    color: #405e79;
+    font-size: 12px;
+    font-weight: 670;
+}
+
+#signature-workspace > .signature-gap-options > input[type="range"] {
+    width: 100%;
+    accent-color: var(--brand-blue);
+}
+
+#signature-workspace > .signature-gap-options > .helper-text {
+    margin: 0;
 }
 
 #signature-workspace > .signatureIntro {
@@ -493,6 +525,87 @@ button {
 #signature-workspace .signature-option-field > input[type="range"]:focus-visible {
     outline: none;
     box-shadow: var(--focus-ring);
+}
+
+#signature-workspace .signature-option-field > select {
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid #dce6ef;
+    border-radius: 8px;
+    color: #405e79;
+    background: #fff;
+    font-size: 12px;
+}
+
+#signature-workspace .signature-option-field > select:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+#signature-workspace .signature-detail-order {
+    display: grid;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+#signature-workspace .signature-detail-order > h3 {
+    margin: 0;
+    color: #405e79;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+#signature-workspace .signature-detail-order > .helper-text {
+    margin: 0;
+}
+
+#signature-workspace .signature-detail-order > ol {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#signature-workspace .signature-detail-order li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 38px;
+    padding: 5px 8px 5px 12px;
+    border: 1px solid #e8eef5;
+    border-radius: 9px;
+    color: #4e6881;
+    background: #fafcfe;
+    font-size: 12px;
+}
+
+#signature-workspace .signature-detail-order li > div {
+    display: flex;
+    gap: 5px;
+}
+
+#signature-workspace .signature-detail-order li button {
+    width: 30px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid #dce6ef;
+    border-radius: 7px;
+    color: #55718b;
+    background: #fff;
+    font-size: 15px;
+    line-height: 1;
+}
+
+#signature-workspace .signature-detail-order li button:disabled {
+    cursor: not-allowed;
+    opacity: .4;
+}
+
+#signature-workspace .signature-detail-order li button:not(:disabled):hover {
+    border-color: #b9d4ed;
+    color: var(--brand-blue);
 }
 
 #signature-workspace .configImage .helper-text {
@@ -1125,9 +1238,34 @@ button {
 }
 
 .app-shell[data-theme="dark"] #signature-workspace .checkbox-group,
-.app-shell[data-theme="dark"] #signature-workspace .signature-option-field {
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field,
+.app-shell[data-theme="dark"] #signature-workspace .signature-detail-order li {
     border-color: #2b435b;
     background: #172c41;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signature-detail-order > h3 {
+    color: #c3d2e1;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace > .signature-gap-options > label {
+    color: #c3d2e1;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signature-detail-order li {
+    color: #c3d2e1;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signature-detail-order li button {
+    border-color: #344e67;
+    color: #c3d2e1;
+    background: #1a2e43;
+}
+
+.app-shell[data-theme="dark"] #signature-workspace .signature-option-field > select {
+    border-color: #344e67;
+    color: #e2edf7;
+    background: #0f1e2e;
 }
 
 .app-shell[data-theme="dark"] #signature-workspace .checkbox-group:hover {

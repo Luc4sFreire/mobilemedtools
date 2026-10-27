@@ -4,6 +4,7 @@ import {
     addSignaturePhrase,
     buildSignatureDetails,
     formatCredential,
+    moveSignatureDetail,
     removeSignaturePhrase,
     updateSignaturePhrase,
     validateSignatureFile,
@@ -76,7 +77,53 @@ test("SD-07: omite campos desativados, vazios e frases extras não habilitadas",
     }), []);
 });
 
-test("SD-08: adiciona frases com IDs crescentes e limita a cinco", () => {
+test("SD-08: compacte apenas informações presentes, preservando o nome em destaque", () => {
+    assert.deepEqual(buildSignatureDetails({
+        professionalName: "Dra. Ana",
+        credentialValue: "12345/SP",
+        credentialLabel: "CRM",
+        includeRqe: true,
+        rqeValue: "",
+        includeSpecialty: true,
+        specialty: "Cardiologia",
+        layout: "compact",
+    }), [
+        { text: "Dra. Ana", emphasis: true },
+        { text: "CRM: 12345/SP · Cardiologia" },
+    ]);
+});
+
+test("SD-09: aplica a ordem escolhida às informações e preserva o nome em destaque", () => {
+    assert.deepEqual(buildSignatureDetails({
+        professionalName: "Dra. Ana",
+        credentialValue: "12345/SP",
+        credentialLabel: "CRM",
+        includeRqe: true,
+        rqeValue: "9988",
+        includeSpecialty: true,
+        specialty: "Cardiologia",
+        includeExtraPhrases: true,
+        phrases: [{ value: "Atendimento" }],
+        order: ["specialty", "phrases", "name", "rqe", "credential"],
+    }), [
+        { text: "Cardiologia" },
+        { text: "Atendimento" },
+        { text: "Dra. Ana", emphasis: true },
+        { text: "RQE: 9988" },
+        { text: "CRM: 12345/SP" },
+    ]);
+});
+
+test("SD-10: reordena categorias sem ultrapassar os limites da lista", () => {
+    const order = ["name", "credential", "rqe", "specialty", "phrases"];
+    assert.deepEqual(moveSignatureDetail(order, "credential", 1), [
+        "name", "rqe", "credential", "specialty", "phrases",
+    ]);
+    assert.equal(moveSignatureDetail(order, "name", -1), order);
+    assert.equal(moveSignatureDetail(order, "phrases", 1), order);
+});
+
+test("SD-11: adiciona frases com IDs crescentes e limita a cinco", () => {
     const first = addSignaturePhrase([]);
     const second = addSignaturePhrase(first);
     const afterRemoval = addSignaturePhrase([{ id: 1, value: "A" }, { id: 3, value: "C" }]);
@@ -86,14 +133,14 @@ test("SD-08: adiciona frases com IDs crescentes e limita a cinco", () => {
     assert.equal(addSignaturePhrase(full), full);
 });
 
-test("SD-09: atualiza só a frase escolhida e limita o texto a 120 caracteres", () => {
+test("SD-12: atualiza só a frase escolhida e limita o texto a 120 caracteres", () => {
     const phrases = [{ id: 1, value: "A" }, { id: 2, value: "B" }];
     const updated = updateSignaturePhrase(phrases, 2, "X".repeat(140));
     assert.equal(updated[0], phrases[0]);
     assert.equal(updated[1].value.length, 120);
 });
 
-test("SD-10: remover uma frase mantém as demais; remover a última deixa campo vazio", () => {
+test("SD-13: remover uma frase mantém as demais; remover a última deixa campo vazio", () => {
     assert.deepEqual(removeSignaturePhrase([
         { id: 1, value: "A" },
         { id: 2, value: "B" },

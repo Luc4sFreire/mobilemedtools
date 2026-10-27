@@ -33,6 +33,7 @@ main{
     background-color: #ffffff26;
     border: 2px dashed rgba(255, 255, 255, 0.2);
     border-radius: 20px;
+    margin: 20px 0;
 }
 
 /* Alinha e estiliza os elementos de seleção que ficam dentro da área de upload. */
@@ -202,6 +203,11 @@ main{
 }
 
 /* Cartões com moldura translúcida para dados e configurações avançadas. */
+/* .signature-person{
+    display: flex;
+    flex-direction: column;
+} */
+
 .signature-person, .configSigt{
     margin: 20px 0;
     padding: 22px;
@@ -394,7 +400,7 @@ main{
 /* Grade adaptável para sliders e outros controles de personalização. */
 .signature-image-options-grid{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, minmax(200px, 1fr));
     gap: 18px;
 }
 
@@ -784,6 +790,10 @@ main{
 
 #signature-workspace .download-signature-button:hover:not(:disabled) {
     background: #064c8b;
+}
+
+#fileSecond{
+    background-color: red;
 }
 
 @media (max-width: 600px) {

@@ -257,11 +257,11 @@ function installSignatureMocks(t, { imageError = false, noContext = false } = {}
     return { draws, textDraws, get canvas() { return outputCanvas; } };
 }
 
-test("compositor gera PNG 3× com fundo branco", async (t) => {
+test("compositor gera PNG 4× com fundo branco", async (t) => {
     const mocks = installSignatureMocks(t);
     const blob = await composeSignature("blob:assinatura", []);
     assert.equal(blob.type, "image/png");
-    assert.deepEqual([mocks.canvas.width, mocks.canvas.height], [1260, 360]);
+    assert.deepEqual([mocks.canvas.width, mocks.canvas.height], [1680, 480]);
     assert.equal(mocks.draws.length, 1);
 });
 

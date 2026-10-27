@@ -66,12 +66,12 @@ function installForTest(t, options) {
     return mocks;
 }
 
-test("CS-01: compõe PNG 3× no tamanho final, com fundo branco por padrão", async (t) => {
+test("CS-01: compõe PNG 4× no tamanho final, com fundo branco por padrão", async (t) => {
     const mocks = installForTest(t);
     const blob = await composeSignature("blob:assinatura", []);
     assert.equal(blob.type, "image/png");
-    assert.equal(mocks.canvas.width, 1260);
-    assert.equal(mocks.canvas.height, 360);
+    assert.equal(mocks.canvas.width, 1680);
+    assert.equal(mocks.canvas.height, 480);
     assert.deepEqual(mocks.fills[0], { color: "#ffffff", args: [0, 0, 420, 120] });
     assert.equal(mocks.draws.length, 1);
 });
@@ -82,14 +82,14 @@ test("CS-02: fundo transparente não recebe retângulo opaco", async (t) => {
     assert.equal(mocks.fills.length, 0);
 });
 
-const scaleCases = [[50, 50], [100, 100], [200, 200], [0, 100], [500, 200], [-10, 50]];
+const scaleCases = [[50, 56], [100, 112], [200, 224], [0, 112], [500, 224], [-10, 56]];
 for (const [input, normalized] of scaleCases) {
     test(`CS-SCALE-${input}: limita escala de imagem ao intervalo suportado`, async (t) => {
         const mocks = installForTest(t);
         await composeSignature("blob:assinatura", [], { escala: input });
         const [, , , width, height] = mocks.draws[0];
-        assert.equal(width, normalized);
-        assert.equal(height, normalized / 2);
+        assert.ok(Math.abs(width - normalized) < 0.001);
+        assert.ok(Math.abs(height - normalized / 2) < 0.001);
     });
 }
 
@@ -105,6 +105,40 @@ test("CS-03: desenha linhas centralizadas e aplica negrito apenas ao detalhe enf
     assert.equal(mocks.textDraws.every((item) => item.align === "center" && item.args[1] === 210), true);
 });
 
+test("CS-TEXT-SCALE: aplica o controle de tamanho do texto", async (t) => {
+    const mocks = installForTest(t);
+    await composeSignature("blob:assinatura", [
+        { text: "Dra. Ana", emphasis: true },
+        { text: "CRM 123" },
+    ], { textScale: 125 });
+
+    assert.match(mocks.textDraws[0].font, /^700 17.5px/);
+    assert.match(mocks.textDraws[1].font, /^400 13.75px/);
+});
+
+test("CS-GRID-2: organiza informações em duas colunas", async (t) => {
+    const mocks = installForTest(t);
+    await composeSignature("blob:assinatura", [
+        { text: "CRM 123" },
+        { text: "RQE 456" },
+    ], { layout: "grid-2" });
+
+    assert.deepEqual(mocks.textDraws.map((draw) => draw.args[1]), [105, 315]);
+    assert.equal(mocks.textDraws.every((draw) => draw.align === "center"), true);
+});
+
+test("CS-GRID-3: organiza informações em três colunas com alinhamento personalizado", async (t) => {
+    const mocks = installForTest(t);
+    await composeSignature("blob:assinatura", [
+        { text: "CRM 123" },
+        { text: "RQE 456" },
+        { text: "Cardiologia" },
+    ], { layout: "grid-3", textAlign: "left" });
+
+    assert.deepEqual(mocks.textDraws.map((draw) => draw.args[1]), [4, 144, 284]);
+    assert.equal(mocks.textDraws.every((draw) => draw.align === "left"), true);
+});
+
 test("CS-04: respeita quebras de parágrafo explícitas e espaços repetidos", async (t) => {
     const mocks = installForTest(t);
     await composeSignature("blob:assinatura", [{ text: "  CRM   123\nCRO 456  " }]);
@@ -118,7 +152,7 @@ test("CS-05: fragmenta palavras longas para que cada linha caiba na largura úti
     const fragments = mocks.textDraws.map((item) => item.args[0]);
     assert.ok(fragments.length > 1);
     assert.equal(fragments.join(""), word);
-    assert.equal(fragments.every((fragment) => fragment.length * 11 * 0.6 <= 400), true);
+    assert.equal(fragments.every((fragment) => fragment.length * 11 * 0.6 <= 412), true);
 });
 
 test("CS-06: reduz tipografia quando o conteúdo fica alto, preservando todas as linhas", async (t) => {

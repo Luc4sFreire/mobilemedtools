@@ -1,5 +1,7 @@
 import '../src/style/signature.css'
 import { useSignature } from '../src/hooks/useSignature'
+import SignatureForm from './subcomponents/SignatureForm'
+import SignatureOptions from './subcomponents/SignatureOptions'
 
 // Opções de categoria profissional; o identificador é consumido pelo hook de assinatura.
 const professional_options = [
@@ -14,12 +16,21 @@ const professional_options = [
  */
 function SignatureWorkspace(){
     // O hook centraliza dados, processamento de imagem e geração do PNG composto.
-    const signature = useSignature()
-    // Formata o valor fracionário do controle conforme a convenção numérica brasileira.
-    const thicknessLabel = Number(signature.imageOptions.espessura).toLocaleString('pt-BR', {
-        minimumFractionDigits: 1,
-        maximumFractionDigits: 1,
-    })
+    const signatureState = useSignature()
+    const signature = {
+        ...signatureState.sig1,
+        addSecondSig: signatureState.addSecondSig,
+        setAddSecondSig: signatureState.setAddSecondSig,
+        signatureGap: signatureState.signatureGap,
+        setSignatureGap: signatureState.setSignatureGap,
+        signaturePadding: signatureState.signaturePadding,
+        setSignaturePadding: signatureState.setSignaturePadding,
+        previewUrl: signatureState.previewUrl,
+        hasCurrentPreview: signatureState.hasCurrentPreview,
+        isProcessing: signatureState.isProcessing,
+        isComposing: signatureState.isComposing,
+        downloadSignature: signatureState.downloadSignature,
+    }
 
     return(
         <main id="signature-workspace" className="workspace-main">
@@ -45,133 +56,49 @@ function SignatureWorkspace(){
                 <p className="helper-text">Formatos: PNG, JPEG, WebP, GIF, BMP ou AVIF. Limite: 12 MB e 12 megapixels.</p>
             </section>
 
-            {/* Opções que determinam quais metadados adicionais entram na composição. */}
-            <section className="configSigt">
-                <h2>Configurações Avançadas</h2>
-                <section className="addInfos">
-                    <h3>Informações do Profissional</h3>
-                    <label className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            checked={signature.addRQE}
-                            onChange={(event) => signature.setAddRQE(event.target.checked)}
-                        />
-                        Adicionar RQE (Registro de Qualificação de Especialista)
-                    </label>
-                    <label className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            checked={signature.addExtraPhrase}
-                            onChange={(event) => signature.setAddExtraPhrase(event.target.checked)}
-                        />
-                        Adicionar frases extras
-                    </label>
-                    <label className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            checked={signature.addSpecialty}
-                            onChange={(event) => signature.setAddSpecialty(event.target.checked)}
-                        />
-                        Adicionar Especialidade
-                    </label>
-                </section>
-            </section>
-
-            {/* Controles ligados ao processador e à escala final da assinatura. */}
-            <section className="configImage signature-image-options">
-                {/* Restaurar padrão redefine opções do processador e escala composta. */}
-                <div className="signature-image-options-header">
-                    <div>
-                        <h2>Personalização da Imagem</h2>
-                        <p className="helper-text">
-                            As alterações são aplicadas automaticamente à prévia e ao PNG final.
-                        </p>
-                    </div>
-                    <button type="button" onClick={signature.resetImageOptions}>
-                        Restaurar padrão
-                    </button>
-                </div>
-                {/* Sliders controlam escala visual e espessura do traço. */}
-                <div className="signature-image-options-grid">
-                    <div className="signature-option-field">
-                        <label htmlFor="signature-scale">
-                            Tamanho da assinatura: {signature.imageScale}%
-                        </label>
-                        <input
-                            id="signature-scale"
-                            type="range"
-                            min="50"
-                            max="200"
-                            step="1"
-                            value={signature.imageScale}
-                            onChange={(event) => signature.setImageScale(Number(event.target.value))}
-                        />
-                        <span className="helper-text">
-                            100% é o tamanho padrão; o tamanho é ajustado automaticamente para caber junto com o texto.
-                        </span>
-                    </div>
-                    <div className="signature-option-field">
-                        <label htmlFor="signature-thickness">
-                            Espessura do traço: {thicknessLabel} px
-                        </label>
-                        <input
-                            id="signature-thickness"
-                            type="range"
-                            min="-10"
-                            max="10"
-                            step="0.1"
-                            value={signature.imageOptions.espessura}
-                            onChange={(event) => signature.setImageOption(
-                                "espessura",
-                                Number(event.target.value)
-                            )}
-                        />
-                        <span className="helper-text">
-                            Ajuste gradual de 0,1 px: valores negativos afinam e positivos engrossam o traço.
-                        </span>
-                    </div>
-                </div>
-                {/* Estes booleanos controlam alfa do fundo, cor da tinta e bordas. */}
-                <div className="signature-image-checkboxes">
-                    <label className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            checked={signature.imageOptions.transparente}
-                            onChange={(event) => signature.setImageOption(
-                                "transparente",
-                                event.target.checked
-                            )}
-                        />
-                        Fundo transparente
-                    </label>
-                    <label className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            checked={signature.imageOptions.pretoPuro}
-                            onChange={(event) => signature.setImageOption(
-                                "pretoPuro",
-                                event.target.checked
-                            )}
-                        />
-                        Usar preto puro na assinatura
-                    </label>
-                    <label className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            checked={signature.imageOptions.suavizar}
-                            onChange={(event) => signature.setImageOption(
-                                "suavizar",
-                                event.target.checked
-                            )}
-                        />
-                        Suavizar as bordas
-                    </label>
-                </div>
-            </section>
-
             {/* Dados principais e categoria definem a identificação exibida no PNG. */}
             <section className="signature-professional">
                 <div className="signature-person">
+                    {/* Opções que determinam quais metadados adicionais entram na composição. */}
+                    <section className="configSigt">
+                        <h2>Configurações Avançadas</h2>
+                        <section className="addInfos">
+                            <h3>Informações da assinatura principal</h3>
+                            <label className="checkbox-group">
+                                <input
+                                    type="checkbox"
+                                    checked={signature.addRQE}
+                                    onChange={(event) => signature.setAddRQE(event.target.checked)}
+                                />
+                                Adicionar RQE (Registro de Qualificação de Especialista)
+                            </label>
+                            <label className="checkbox-group">
+                                <input
+                                    type="checkbox"
+                                    checked={signature.addExtraPhrase}
+                                    onChange={(event) => signature.setAddExtraPhrase(event.target.checked)}
+                                />
+                                Adicionar frases extras
+                            </label>
+                            <label className="checkbox-group">
+                                <input
+                                    type="checkbox"
+                                    checked={signature.addSpecialty}
+                                    onChange={(event) => signature.setAddSpecialty(event.target.checked)}
+                                />
+                                Adicionar Especialidade
+                            </label>
+                            <label className="checkbox-group">
+                                <input
+                                    type="checkbox"
+                                    checked={signature.addSecondSig}
+                                    onChange={(event) => signature.setAddSecondSig(event.target.checked)}
+                                />
+                                Adicionar Segunda Assinatura
+                            </label>
+                        </section>
+                    </section>
+
                     <h2>👨‍⚕️ Assinatura Principal</h2>
                     {/* Os botões alteram profissão e, consequentemente, a sigla do registro. */}
                     <div className="controlsProfessional">
@@ -334,6 +261,61 @@ function SignatureWorkspace(){
                     </div>
                 </div>
             </section>
+            {signature.addSecondSig && (
+                <section className="signature-professional">
+                    <SignatureForm signature={signatureState.sig2} />
+                </section>
+            )}
+
+            <section className="signature-settings-list" aria-label="Configurações individuais">
+                <SignatureOptions
+                    signature={signatureState.sig1}
+                    label="assinatura principal"
+                    idPrefix="primary-signature"
+                />
+                {signature.addSecondSig && (
+                    <SignatureOptions
+                        signature={signatureState.sig2}
+                        label="segunda assinatura"
+                        idPrefix="second-signature"
+                    />
+                )}
+            </section>
+
+            {signature.addSecondSig && (
+                <section className="signature-gap-options">
+                    <label htmlFor="signature-gap">
+                        Espaçamento entre as assinaturas: {signature.signatureGap} px
+                    </label>
+                    <input
+                        id="signature-gap"
+                        type="range"
+                        min="0"
+                        max="80"
+                        step="1"
+                        value={signature.signatureGap}
+                        onChange={(event) => signature.setSignatureGap(Number(event.target.value))}
+                    />
+                    <p className="helper-text">
+                        Ajusta a distância central; a saída permanece em 420 × 120 px.
+                    </p>
+                    <label htmlFor="signature-block-padding">
+                        Espaçamento interno do bloco: {signature.signaturePadding} px
+                    </label>
+                    <input
+                        id="signature-block-padding"
+                        type="range"
+                        min="0"
+                        max="20"
+                        step="1"
+                        value={signature.signaturePadding}
+                        onChange={(event) => signature.setSignaturePadding(Number(event.target.value))}
+                    />
+                    <p className="helper-text">
+                        Aplica uma margem única ao redor das duas assinaturas em conjunto.
+                    </p>
+                </section>
+            )}
             {/* A prévia fica oculta/desatualizada durante regeneração; o download só é liberado
                 quando a imagem corresponder ao arquivo, dados e opções atualmente escolhidos. */}
             <section className="previewImage">
@@ -341,8 +323,16 @@ function SignatureWorkspace(){
                 {signature.isComposing && <p role="status">Atualizando prévia final...</p>}
                 {signature.hasCurrentPreview && (
                     <div className="image-preview-container">
-                        <h2>Prévia final da assinatura (PNG 1260 × 360 px)</h2>
-                        <p className="helper-text">Exibida em 420 × 120 px; arquivo renderizado em resolução 3×.</p>
+                        <h2>
+                            Prévia final da assinatura (PNG {signature.addSecondSig
+                                ? "420 × 120"
+                                : "1680 × 480"} px)
+                        </h2>
+                        <p className="helper-text">
+                            {signature.addSecondSig
+                                ? "Preview em alta resolução; PNG baixado em exatamente 420 × 120 px."
+                                : "Exibida em 420 × 120 px; preview renderizado em resolução 4×."}
+                        </p>
                         <img
                             src={signature.previewUrl}
                             className="image-preview"
