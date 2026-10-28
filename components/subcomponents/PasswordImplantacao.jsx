@@ -4,7 +4,7 @@ import { usePassword } from "../../src/hooks/usePassword";
 import Toggle from "../ui/Toggle";
 import ButtonCopy from "../ui/ButtonCopy";
 import { useNotifications } from "../../src/hooks/useNotifications";
-import ModalUsers from "../ui/ModalUsers.jsx";
+import ModalUser from "../ui/ModalUser.jsx";
 import { formatCredentialMessages } from "../../src/utils/credentialMessages";
 
 // Converte a coleção de usuários em texto legível para cópia ou exportação.
@@ -203,7 +203,7 @@ function PasswordImplantacao() {
             </section>
             {/* Modal condicional para consultar, excluir, exportar e copiar usuários salvos. */}
             {isUsersModalOpen && (
-                <ModalUsers
+                <ModalUser
                     users={pass.users}
                     onClose={closeUsersModal}
                     onRemoveUser={removeSavedUser}

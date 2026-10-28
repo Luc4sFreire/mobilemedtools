@@ -4,7 +4,7 @@ import { usePassword } from "../../src/hooks/usePassword";
 import Toggle from "../ui/Toggle";
 import ButtonCopy from "../ui/ButtonCopy";
 import { useNotifications } from "../../src/hooks/useNotifications";
-import ModalUsers from "../ui/ModalUsers.jsx";
+import ModalUser from "../ui/ModalUser";
 import { formatCredentialMessages } from "../../src/utils/credentialMessages";
 import {
     buildCredentialRows,
@@ -366,7 +366,7 @@ function PasswordAvancado() {
 
             {/* Modal condicional para consultar, excluir, exportar e copiar usuários salvos. */}
             {isUsersModalOpen && (
-                <ModalUsers
+                <ModalUser
                     users={pass.users}
                     onClose={closeUsersModal}
                     onRemoveUser={removeSavedUser}
