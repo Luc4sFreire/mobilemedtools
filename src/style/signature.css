@@ -543,7 +543,7 @@ main{
 }
 
 #signature-workspace .container-file.upload-section {
-    margin: 0;
+    margin-top: 15px;
     padding: 24px;
     border: 1px dashed #9cbdd6;
     background: #f6fbff;

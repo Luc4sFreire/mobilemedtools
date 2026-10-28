@@ -95,7 +95,7 @@ for (const [id, file, expectedError] of rejectionCases.slice(0, 6)) {
     });
 }
 
-test("CF-IMPORT-XLSX-01: lê a primeira aba XLSX e ignora abas posteriores", async () => {
+test("CF-IMPORT-XLSX-01: usa a primeira aba por padrão e disponibiliza todas as abas", async () => {
     const XLSX = await import("xlsx");
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([["Email", "Nome"], ["ana@example.com", "Ana"]]), "Equipe");
@@ -103,11 +103,33 @@ test("CF-IMPORT-XLSX-01: lê a primeira aba XLSX e ignora abas posteriores", asy
     const bytes = new Uint8Array(XLSX.write(workbook, { bookType: "xlsx", type: "array" }));
     const sheet = await readCredentialFile(makeFile({ name: "lista.xlsx", bytes }));
     assert.equal(sheet.sheetName, "Equipe");
+    assert.deepEqual(sheet.sheetNames, ["Equipe", "Outra"]);
     assert.equal(sheet.rows.length, 1);
     assert.equal(sheet.rows[0].values[0], "ana@example.com");
 });
 
-test("CF-IMPORT-XLSX-02: identifica a coluna de e-mail de uma planilha sem cabeçalho canônico", async () => {
+test("CF-IMPORT-XLSX-02: importa os dados da aba XLSX escolhida", async () => {
+    const XLSX = await import("xlsx");
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([["Email"], ["ana@example.com"]]), "Equipe");
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([["Email", "Nome"], ["segunda@example.com", "Bia"]]), "Outra");
+    const bytes = new Uint8Array(XLSX.write(workbook, { bookType: "xlsx", type: "array" }));
+    const sheet = await readCredentialFile(makeFile({ name: "lista.xlsx", bytes }), "Outra");
+    assert.equal(sheet.sheetName, "Outra");
+    assert.equal(sheet.emailColumn, 0);
+    assert.equal(sheet.rows[0].values[0], "segunda@example.com");
+    assert.equal(sheet.rows[0].values[1], "Bia");
+});
+
+test("CF-IMPORT-XLSX-03: rejeita uma aba que não existe", async () => {
+    const XLSX = await import("xlsx");
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([["Email"], ["ana@example.com"]]), "Equipe");
+    const bytes = new Uint8Array(XLSX.write(workbook, { bookType: "xlsx", type: "array" }));
+    await assert.rejects(readCredentialFile(makeFile({ name: "lista.xlsx", bytes }), "Ausente"), /aba selecionada não existe/i);
+});
+
+test("CF-IMPORT-XLSX-04: identifica a coluna de e-mail de uma planilha sem cabeçalho canônico", async () => {
     const XLSX = await import("xlsx");
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([["Funcionário", "Contato"], ["Ana", "ana@example.com"]]), "Dados");
@@ -135,7 +157,7 @@ for (const [id, email, expectedStatus] of buildRowsCases) {
     test(`${id}: valida, omite ou gera senha para ${JSON.stringify(email)}`, (t) => {
         const crypto = installDeterministicCrypto();
         t.after(crypto.restore);
-        const result = buildCredentialRows({ rows: [{ sourceRow: 7, values: [email] }] }, 0, { size: 12 });
+        const result = buildCredentialRows({ emailColumn: 0, rows: [{ sourceRow: 7, values: [email] }] }, { size: 12 });
         if (expectedStatus === "omit") {
             assert.deepEqual(result, []);
             return;
@@ -170,7 +192,7 @@ for (const [id, email, expectedStatus] of emailValidationCases) {
     test(`${id}: aplica o formato de e-mail definido para a importação`, (t) => {
         const crypto = installDeterministicCrypto();
         t.after(crypto.restore);
-        const [row] = buildCredentialRows({ rows: [{ sourceRow: 2, values: [email] }] }, 0, {});
+        const [row] = buildCredentialRows({ emailColumn: 0, rows: [{ sourceRow: 2, values: [email] }] }, {});
         assert.equal(row.status, expectedStatus);
     });
 }
@@ -178,11 +200,11 @@ for (const [id, email, expectedStatus] of emailValidationCases) {
 test("CF-ROWS-13: marca e-mails repetidos ignorando maiúsculas e minúsculas", (t) => {
     const crypto = installDeterministicCrypto();
     t.after(crypto.restore);
-    const result = buildCredentialRows({ rows: [
+    const result = buildCredentialRows({ emailColumn: 0, rows: [
         { sourceRow: 2, values: ["ana@example.com"] },
         { sourceRow: 3, values: ["ANA@EXAMPLE.COM"] },
         { sourceRow: 4, values: ["bia@example.com"] },
-    ] }, 0, {});
+    ] }, {});
     assert.deepEqual(result.map((row) => row.status), ["duplicate", "duplicate", "generated"]);
     assert.equal(result[0].password, "");
     assert.equal(result[1].password, "");
@@ -191,21 +213,21 @@ test("CF-ROWS-13: marca e-mails repetidos ignorando maiúsculas e minúsculas", 
 test("CF-ROWS-14: inválidos não ocupam a chave de deduplicação e linhas válidas seguintes geram senha", (t) => {
     const crypto = installDeterministicCrypto();
     t.after(crypto.restore);
-    const result = buildCredentialRows({ rows: [
+    const result = buildCredentialRows({ emailColumn: 0, rows: [
         { sourceRow: 2, values: ["ana@example"] },
         { sourceRow: 3, values: ["ana@example.com"] },
         { sourceRow: 4, values: ["ana@example.com"] },
-    ] }, 0, {});
+    ] }, {});
     assert.deepEqual(result.map((row) => row.status), ["invalid", "duplicate", "duplicate"]);
 });
 
-test("CF-ROWS-15: lê a coluna selecionada e preserva linhas de origem", (t) => {
+test("CF-ROWS-15: usa a coluna de e-mail identificada e preserva linhas de origem", (t) => {
     const crypto = installDeterministicCrypto();
     t.after(crypto.restore);
-    const result = buildCredentialRows({ rows: [
+    const result = buildCredentialRows({ emailColumn: 1, rows: [
         { sourceRow: 5, values: ["Ana", "ana@example.com"] },
         { sourceRow: 6, values: ["Bia", "bia@example.com"] },
-    ] }, 1, { prefix: "Batch", onlyUpper: true, special: true, size: 16 });
+    ] }, { prefix: "Batch", onlyUpper: true, special: true, size: 16 });
     assert.deepEqual(result.map((row) => row.sourceRow), [5, 6]);
     assert.equal(result.every((row) => row.status === "generated" && row.password.startsWith("Batch@")), true);
     assert.equal(result.every((row) => /[A-Z]/.test(row.password) && /\d/.test(row.password) && /[!@#$&]/.test(row.password)), true);
@@ -247,16 +269,6 @@ test("CF-EXPORT-CSV-01: exporta UTF-8 com BOM, aspas, vírgulas e proteção de 
     assert.match(await blob.text(), /"'@comando"/);
 });
 
-test("CF-EXPORT-MD-01: escapa barra, pipe e quebra de linha em células Markdown", async (t) => {
-    const browser = installDownloadMocks();
-    t.after(browser.restore);
-    await downloadCredentials([{ email: "ana|bia@example.com", password: "linha\\um\nlinha|dois" }], "md", "credenciais");
-    const blob = browser.blobs.get(browser.clicks[0].href);
-    assert.equal(blob.type, "text/markdown;charset=utf-8");
-    assert.match(await blob.text(), /ana\\\|bia@example\.com/);
-    assert.match(await blob.text(), /linha\\\\um linha\\\|dois/);
-});
-
 test("CF-EXPORT-XLSX-01: exporta XLSX com cabeçalho, aba e credenciais legíveis", async (t) => {
     const browser = installDownloadMocks();
     t.after(browser.restore);
@@ -271,13 +283,39 @@ test("CF-EXPORT-XLSX-01: exporta XLSX com cabeçalho, aba e credenciais legívei
     ]);
 });
 
-test("CF-EXPORT-EMPTY-01: CSV, Markdown e XLSX aceitam lista vazia com cabeçalhos", async (t) => {
+test("CF-EXPORT-ADDITIONAL-01: inclui colunas adicionais selecionadas em CSV e XLSX", async (t) => {
+    const browser = installDownloadMocks();
+    t.after(browser.restore);
+    const rows = [{
+        email: "ana@example.com",
+        password: "SenhaA1",
+        additionalValues: ["Ana", "Equipe A"],
+    }];
+    const headers = ["Nome", "Departamento"];
+
+    await downloadCredentials(rows, "csv", "lote", headers);
+    const csv = await browser.blobs.get(browser.clicks[0].href).text();
+    assert.match(csv, /"E-mail","Senha","Nome","Departamento"/);
+    assert.match(csv, /"ana@example\.com","SenhaA1","Ana","Equipe A"/);
+
+    await downloadCredentials(rows, "xlsx", "lote", headers);
+    const XLSX = await import("xlsx");
+    const blob = browser.blobs.get(browser.clicks[1].href);
+    const workbook = XLSX.read(await blob.arrayBuffer(), { type: "array" });
+    assert.deepEqual(XLSX.utils.sheet_to_json(workbook.Sheets.Credenciais, { header: 1 }), [
+        ["E-mail", "Senha", "Nome", "Departamento"],
+        ["ana@example.com", "SenhaA1", "Ana", "Equipe A"],
+    ]);
+});
+
+test("CF-EXPORT-EMPTY-01: CSV e XLSX aceitam lista vazia com cabeçalhos", async (t) => {
     const browser = installDownloadMocks();
     t.after(browser.restore);
     await downloadCredentials([], "csv", "vazio");
-    await downloadCredentials([], "md", "vazio");
     await downloadCredentials([], "xlsx", "vazio");
-    assert.deepEqual(browser.clicks.map(({ download }) => download), ["vazio.csv", "vazio.md", "vazio.xlsx"]);
+    assert.deepEqual(browser.clicks.map(({ download }) => download), ["vazio.csv", "vazio.xlsx"]);
     assert.match(await browser.blobs.get(browser.clicks[0].href).text(), /E-mail/);
-    assert.match(await browser.blobs.get(browser.clicks[1].href).text(), /\| --- \| --- \|/);
+    const XLSX = await import("xlsx");
+    const workbook = XLSX.read(await browser.blobs.get(browser.clicks[1].href).arrayBuffer(), { type: "array" });
+    assert.deepEqual(XLSX.utils.sheet_to_json(workbook.Sheets.Credenciais, { header: 1 }), [["E-mail", "Senha"]]);
 });

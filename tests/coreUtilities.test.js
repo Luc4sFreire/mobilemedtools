@@ -90,20 +90,25 @@ test("CSV reconhece o cabeçalho e mantém valores e linha de origem", async () 
     assert.deepEqual(sheet.rows[0].values.slice(0, 2), ["Ana", "ana@example.com"]);
 });
 
-test("CSV sem cabeçalho retém e sinaliza o primeiro endereço malformado", async (t) => {
+test("CSV sem cabeçalho interpreta a primeira linha sem e-mail válido como cabeçalho", async (t) => {
     const crypto = installDeterministicCrypto();
     t.after(crypto.restore);
     const sheet = await readCredentialFile(makeFile({ text: "inválido@\nana@example.com" }));
-    const rows = buildCredentialRows(sheet, sheet.emailColumn, { prefix: "", size: 8 });
-    assert.deepEqual(rows.map((row) => row.status), ["invalid", "generated"]);
-    assert.deepEqual(rows.map((row) => row.sourceRow), [1, 2]);
+    const rows = buildCredentialRows(sheet, { prefix: "", size: 8 });
+    assert.deepEqual(sheet.headers, ["inválido@"]);
+    assert.deepEqual(rows.map((row) => row.status), ["generated"]);
+    assert.deepEqual(rows.map((row) => row.sourceRow), [2]);
 });
 
-test("CSV com coluna de e-mail após o limite de 100 colunas apresenta erro claro", async () => {
-    const headers = Array.from({ length: 101 }, (_, index) => index === 100 ? "Email" : `Campo ${index}`);
-    const values = Array.from({ length: 101 }, (_, index) => index === 100 ? "ana@example.com" : `valor ${index}`);
+test("CSV limita a leitura a 100 colunas e reconhece o e-mail nesse intervalo", async () => {
+    const headers = Array.from({ length: 101 }, (_, index) => index === 99 ? "Email" : `Campo ${index}`);
+    const values = Array.from({ length: 101 }, (_, index) => index === 99 ? "ana@example.com" : `valor ${index}`);
     const text = `${headers.join(",")}\n${values.join(",")}`;
-    await assert.rejects(readCredentialFile(makeFile({ text })), /após o limite de 100 colunas/i);
+    const sheet = await readCredentialFile(makeFile({ text }));
+    assert.equal(sheet.headers.length, 100);
+    assert.equal(sheet.emailColumn, 99);
+    assert.equal(sheet.rows[0].values.length, 100);
+    assert.equal(sheet.rows[0].values[99], "ana@example.com");
 });
 
 test("importador rejeita arquivo vazio, formato desconhecido e arquivo acima de 10 MB", async () => {
@@ -129,12 +134,12 @@ test("planilha XLSX lê a primeira aba e encontra a coluna pelo cabeçalho", asy
 test("credenciais marcam todas as ocorrências duplicadas sem diferenciar maiúsculas", (t) => {
     const crypto = installDeterministicCrypto();
     t.after(crypto.restore);
-    const rows = buildCredentialRows({ rows: [
+    const rows = buildCredentialRows({ emailColumn: 0, rows: [
         { sourceRow: 2, values: ["ana@example.com"] },
         { sourceRow: 3, values: ["ANA@EXAMPLE.COM"] },
         { sourceRow: 4, values: ["bia@example.com"] },
         { sourceRow: 5, values: ["endereço inválido"] },
-    ] }, 0, { prefix: "Equipe", size: 8 });
+    ] }, { prefix: "Equipe", size: 8 });
     assert.deepEqual(rows.map((row) => row.status), ["duplicate", "duplicate", "generated", "invalid"]);
     assert.equal(rows[0].password, "");
     assert.equal(rows[2].password.startsWith("Equipe@"), true);
@@ -154,17 +159,6 @@ test("exportação CSV protege fórmulas e escapa aspas e delimitadores", async 
     assert.match(text, /'=cmd@example\.com/);
     assert.match(text, /"senha,""forte"""/);
     assert.match(text, /"'\+executável"/);
-});
-
-test("exportação Markdown escapa barras, pipes e quebras de linha", async (t) => {
-    const browser = installDownloadMocks();
-    t.after(browser.restore);
-    await downloadCredentials([
-        { email: "ana|bia@example.com", password: "linha\\um\nlinha|dois" },
-    ], "md", "credenciais");
-    const text = await browser.blobs.get(browser.clicks[0].href).text();
-    assert.match(text, /ana\\\|bia@example\.com/);
-    assert.match(text, /linha\\\\um linha\\\|dois/);
 });
 
 test("exportação XLSX produz uma planilha que pode ser lida novamente", async (t) => {

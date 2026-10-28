@@ -85,8 +85,8 @@ function inspectRows(rows, fileName, sheetName) {
     return { fileName, sheetName, headers, rows: dataRows, emailColumn };
 }
 
-// Lê CSV ou a primeira aba XLSX após validar extensão, tamanho e quantidade de linhas.
-export async function readCredentialFile(file) {
+// Lê a aba selecionada de XLSX (ou a única tabela CSV) após validar o arquivo.
+export async function readCredentialFile(file, selectedSheetName) {
     if (!file) throw new Error("Selecione um arquivo CSV ou XLSX.");
     const extension = file.name.split(".").pop()?.toLowerCase();
     if (!["csv", "xlsx"].includes(extension)) {
@@ -105,11 +105,14 @@ export async function readCredentialFile(file) {
     const XLSX = await import("xlsx");
     const workbook = XLSX.read(contents, {
         type: extension === "csv" ? "string" : "array",
-        codepage: 65001,
         cellDates: false,
         dense: true,
     });
-    const sheetName = workbook.SheetNames[0];
+    const sheetNames = workbook.SheetNames;
+    const sheetName = selectedSheetName ?? sheetNames[0];
+    if (!sheetNames.includes(sheetName)) {
+        throw new Error("A aba selecionada não existe neste arquivo.");
+    }
     const worksheet = sheetName ? workbook.Sheets[sheetName] : null;
     if (!worksheet) throw new Error("Não encontrei uma aba com dados nesse arquivo.");
 
@@ -119,16 +122,16 @@ export async function readCredentialFile(file) {
         raw: false,
         blankrows: true,
     });
-    if (!rows.length) throw new Error("A primeira aba do arquivo não contém linhas.");
+    if (!rows.length) throw new Error("A aba selecionada não contém linhas.");
 
-    return inspectRows(rows, file.name, sheetName);
+    return { ...inspectRows(rows, file.name, sheetName), sheetNames };
 }
 
-// Classifica e-mails antes de gerar: todas as ocorrências repetidas são bloqueadas.
-export function buildCredentialRows(sheet, emailColumn, options) {
+// Usa a coluna identificada na leitura e bloqueia todas as ocorrências repetidas.
+export function buildCredentialRows(sheet, options) {
     const sourceRows = sheet.rows.map(({ sourceRow, values }) => ({
         sourceRow,
-        email: cellToString(values[emailColumn]),
+        email: cellToString(values[sheet.emailColumn]),
     })).filter(({ email }) => email);
     const emailCounts = new Map();
 
@@ -174,16 +177,21 @@ function escapeCsvCell(value) {
     return `"${safeText.replace(/"/g, '""')}"`;
 }
 
-// Exporta as credenciais válidas para XLSX, CSV ou Markdown.
-export async function downloadCredentials(credentials, format, filenameBase) {
-    const rows = credentials.map(({ email, password }) => [email, password]);
+// Exporta as credenciais válidas e quaisquer colunas adicionais para XLSX ou CSV.
+export async function downloadCredentials(credentials, format, filenameBase, additionalHeaders = []) {
+    const headers = ["E-mail", "Senha", ...additionalHeaders];
+    const rows = credentials.map(({ email, password, additionalValues = [] }) => [
+        email,
+        password,
+        ...additionalHeaders.map((_, index) => additionalValues[index] ?? ""),
+    ]);
     const filename = `${filenameBase}.${format}`;
 
     if (format === "xlsx") {
         const XLSX = await import("xlsx");
         const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.aoa_to_sheet([["E-mail", "Senha"], ...rows]);
-        worksheet["!cols"] = [{ wch: 34 }, { wch: 38 }];
+        const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+        worksheet["!cols"] = [{ wch: 34 }, { wch: 38 }, ...additionalHeaders.map(() => ({ wch: 24 }))];
         XLSX.utils.book_append_sheet(workbook, worksheet, "Credenciais");
         const content = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
         triggerDownload(new Blob([content], {
@@ -192,7 +200,7 @@ export async function downloadCredentials(credentials, format, filenameBase) {
         return;
     }
 
-    const csv = [["E-mail", "Senha"], ...rows]
+    const csv = [headers, ...rows]
         .map((row) => row.map(escapeCsvCell).join(","))
         .join("\r\n");
     triggerDownload(new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" }), filename);

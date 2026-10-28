@@ -40,9 +40,10 @@ O MobilemedTools é uma aplicação web que baseia-se no conceito de SPA desenvo
 - Garante ao menos uma letra maiúscula e um número; minúsculas podem ser desativadas e caracteres especiais podem ser ativados.
 - Usa a API Web Crypto do navegador para sortear os caracteres e embaralhá-los.
 - O modo Padrão mostra e permite copiar as senhas geradas.
-- O modo Implantação associa e-mails às senhas, salva usuários localmente, permite excluir registros e copiar/exportar listas de credenciais ou mensagens.
-- O modo Avançado importa a primeira aba de arquivos CSV ou XLSX (até 10 MB e 10.000 linhas), identifica ou permite selecionar a coluna de e-mail, gera senhas para endereços válidos e únicos e sinaliza todas as ocorrências duplicadas sem diferenciar maiúsculas de minúsculas.
-- No modo Avançado, cada senha pode ser copiada ou salva na lista local de usuários; a lista válida pode ser copiada em lote ou baixada como XLSX ou CSV. E-mails duplicados e inválidos são excluídos dos downloads.
+- Os modos Implantação e Avançado compartilham a lista local de usuários salvos. O modal permite consultar e excluir registros individualmente ou apagar a lista, além de copiar ou exportar credenciais e mensagens em lote.
+- As mensagens podem usar modelos prontos das marcas Mobilemed, MobileVet e Cuesta ou um texto personalizado. No modelo personalizado, os marcadores `{email}` e `{password}` posicionam os dados na mensagem; se um deles não for incluído, o campo correspondente é acrescentado automaticamente.
+- O modo Avançado importa arquivos CSV ou XLSX (até 10 MB, 10.000 linhas e 100 colunas). Em XLSX, permite escolher a aba e identifica automaticamente a coluna de e-mail, gera senhas para endereços válidos e únicos e sinaliza todas as ocorrências duplicadas sem diferenciar maiúsculas de minúsculas.
+- No modo Avançado, cada senha pode ser copiada ou salva na lista local de usuários; a lista válida pode ser copiada em lote ou baixada como XLSX ou CSV. É possível incluir colunas adicionais selecionadas pelo usuário, exceto a coluna de e-mail detectada automaticamente e cabeçalhos que contenham “Coluna”. E-mails duplicados e inválidos são excluídos dos downloads.
 
 ## Privacidade e armazenamento
 
@@ -57,8 +58,9 @@ O MobilemedTools é uma aplicação web que baseia-se no conceito de SPA desenvo
 | --- | --- | --- |
 | Gerador de assinatura | Implementado | Uma ou duas assinaturas, pré-processamento, prévia e PNG final |
 | Senhas — modo Padrão | Implementado | Geração e cópia de senhas |
-| Senhas — modo Implantação | Implementado | Associação a e-mail, persistência local, exclusão e exportação |
-| Senhas — modo Avançado | Implementado | Importação CSV/XLSX, validação e duplicatas de e-mail, cópia, gravação local seletiva e exportação XLSX/CSV/MD |
+| Senhas — modo Implantação | Implementado | Associação a e-mail, lista compartilhada persistente, exclusão e exportação/cópia de credenciais e mensagens |
+| Senhas — modo Avançado | Implementado | Importação CSV/XLSX, seleção de aba e colunas adicionais, validação e duplicatas de e-mail, cópia, gravação local seletiva e exportação XLSX/CSV |
+| Usuários salvos e mensagens | Implementado | Modal compartilhado com ações em lote, modelos por marca e mensagens personalizadas |
 | Criação de logos | Implementado | Modo tipográfico e padronização de imagens, individual ou em lotes de até 50 |
 
 ## Primeiros passos
@@ -75,7 +77,7 @@ O MobilemedTools é uma aplicação web que baseia-se no conceito de SPA desenvo
     npm install
     npm run dev
 
-O Vite inicia em http://localhost:3000.
+O Vite inicia em http://localhost:3001.
 
 ### Scripts
 
@@ -105,7 +107,8 @@ Uma foto bem iluminada, em papel claro e sem sombras fortes tende a facilitar a 
 1. Abra Senha no menu.
 2. Escolha Padrão, Implantação ou Avançado.
 3. Ajuste tamanho, quantidade, prefixo e grupos de caracteres.
-4. Gere as senhas. No modo Implantação, informe um e-mail para associar e salvar cada usuário. No modo Avançado, envie um CSV ou XLSX com os e-mails e revise a coluna identificada antes de exportar.
+4. Gere as senhas. No modo Implantação, informe um e-mail para associar e salvar cada usuário. No modo Avançado, envie um CSV ou XLSX; a coluna de e-mail será identificada automaticamente. Em arquivos XLSX, escolha a aba desejada e, opcionalmente, selecione colunas adicionais com cabeçalhos que não contenham “Coluna” para incluir nos downloads.
+5. Abra Usuários salvos nos modos Implantação ou Avançado para consultar, remover ou exportar/copiar dados em lote. Ao exportar ou copiar mensagens, escolha uma marca e um modelo pronto ou selecione Personalizada para escrever o texto e inserir `{email}` e `{password}` nos pontos desejados. Marcadores não inseridos são acrescentados ao final da mensagem para que as credenciais não sejam omitidas.
 
 O prefixo é fixo e previsível; ele não faz parte dos caracteres aleatórios e reduz a imprevisibilidade total da senha. A opção de exportação de credenciais deve ser tratada com o mesmo cuidado que qualquer arquivo contendo senhas.
 
@@ -137,6 +140,7 @@ O fluxo em alto nível é:
     │   │   ├── PasswordImplantacao.jsx
     │   │   └── PasswordAvancado.jsx
     │   └── ui/
+    │       └── ModalUsers.jsx
     ├── src/
     │   ├── App.jsx
     │   ├── main.jsx
@@ -146,6 +150,7 @@ O fluxo em alto nível é:
     │   │   └── useNotifications.js
     │   ├── utils/
     │   │   ├── credentialFiles.js
+    │   │   ├── credentialMessages.js
     │   │   ├── passwordGenerator.js
     │   │   ├── processImage.js
     │   │   ├── composeSignature.js

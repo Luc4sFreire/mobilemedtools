@@ -215,6 +215,11 @@ button {
     width: min(1320px, 100%);
 }
 
+.app-shell--users-modal-open .app-sidebar,
+.app-shell--users-modal-open .app-main {
+    filter: blur(5px);
+}
+
 .workspace-main {
     width: 100%;
     max-width: 1320px;
@@ -333,7 +338,7 @@ button {
 #signature-workspace .signature-person,
 #signature-workspace .configImage,
 #signature-workspace .image-preview-container {
-    margin: 0;
+    margin-top: 0;
     border: 1px solid var(--border);
     border-radius: 17px;
     background: var(--surface);
@@ -356,6 +361,7 @@ button {
     padding: 20px 22px;
     border: 1px dashed #a9c8e3;
     background: linear-gradient(125deg, #f7fbff, #fff 76%);
+    margin-top: 15px;
 }
 
 #signature-workspace .container-file.upload-section:hover {
@@ -990,8 +996,7 @@ button {
 /* Diálogo de usuários, notificações e elementos de feedback compartilhados. */
 .saved-users-overlay {
     padding: 24px;
-    background: rgb(15 39 67 / 48%);
-    backdrop-filter: blur(8px);
+    background: transparent;
 }
 
 .saved-users-modal {
@@ -1367,7 +1372,7 @@ button {
     background: #203951;
 }
 
-.app-shell[data-theme="dark"] .saved-users-overlay { background: rgb(3 10 18 / 72%); }
+.app-shell[data-theme="dark"] .saved-users-overlay { background: transparent; }
 
 .app-shell[data-theme="dark"] .saved-users-modal {
     border-color: var(--border);
@@ -1430,10 +1435,17 @@ button {
 .app-shell[data-theme="dark"] .app-notification__message { color: #a8bdd2; }
 
 /* Regras responsivas reorganizam colunas e ações conforme diminui a largura da tela. */
+@media (max-width: 1480px) {
+    #signature-workspace .container-file.upload-section{
+        display: flex;
+    }
+}
+
 @media (max-width: 1000px) {
     #signature-workspace { grid-template-columns: minmax(0, 1fr); }
     #signature-workspace > .configSigt,
     #signature-workspace > .configImage { grid-column: 1; }
+    .signature-image-options-grid{grid-template-columns: minmax(0, 1fr);}
 }
 
 @media (max-width: 900px) {
@@ -1514,4 +1526,42 @@ button {
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
     }
+}
+
+* {
+    scrollbar-color: var(--brand-blue) transparent;
+    scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+*::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+*::-webkit-scrollbar-track {
+    margin: 4px;
+    border-radius: 999px;
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    min-height: 32px;
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+    background: var(--brand-blue);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-cyan);
+}
+
+*::-webkit-scrollbar-corner {
+    background: transparent;
 }
