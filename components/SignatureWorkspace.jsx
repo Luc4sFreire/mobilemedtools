@@ -10,6 +10,15 @@ const professional_options = [
     { value: 'dentist', label: '🦷 Dentista' },
 ]
 
+async function teste() {
+    try{
+        const response = fetch("https://mobilemedtools.vercel.app/api/users")
+        console.log(response);
+    }catch(err){
+        console.error(err)
+    }
+}
+
 /**
  * Interface principal do gerador. Conecta os controles do formulário ao hook,
  * apresenta erros/estados de processamento e mostra a prévia baixável atual.
