@@ -10,10 +10,11 @@ const professional_options = [
     { value: 'dentist', label: '🦷 Dentista' },
 ]
 
-async function teste() {
+async function getUsers() {
     try{
-        const response = fetch("https://mobilemedtoolsapi.vercel.app/api/users")
-        console.log(response);
+        const response = await fetch("https://mobilemedtoolsapi.vercel.app/api/users");
+        const res = await response.json();
+        return res.data;
     }catch(err){
         console.error(err)
     }
@@ -43,7 +44,10 @@ function SignatureWorkspace(){
 
     return(
         <main id="signature-workspace" className="workspace-main">
-            <button onClick={teste}>Teste API</button>
+            <button onClick={async () => {
+                const users = await getUsers();
+                console.log(users)
+            }}>Teste API</button>
             {/* Título e instrução inicial sobre o fluxo de criação da assinatura. */}
             <section className="signatureIntro page-intro">
                 <span className="workspace-kicker">FERRAMENTA · GERADOR DE ASSINATURA</span>
