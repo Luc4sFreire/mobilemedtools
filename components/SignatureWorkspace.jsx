@@ -43,6 +43,7 @@ function SignatureWorkspace(){
 
     return(
         <main id="signature-workspace" className="workspace-main">
+            <button onClick={teste}>Teste API</button>
             {/* Título e instrução inicial sobre o fluxo de criação da assinatura. */}
             <section className="signatureIntro page-intro">
                 <span className="workspace-kicker">FERRAMENTA · GERADOR DE ASSINATURA</span>
