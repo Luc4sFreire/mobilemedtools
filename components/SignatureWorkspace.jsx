@@ -12,7 +12,7 @@ const professional_options = [
 
 async function teste() {
     try{
-        const response = fetch("https://mobilemedtools.vercel.app/api/users")
+        const response = fetch("https://mobilemedtoolsapi.vercel.app/api/users")
         console.log(response);
     }catch(err){
         console.error(err)
