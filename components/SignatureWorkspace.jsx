@@ -10,15 +10,15 @@ const professional_options = [
     { value: 'dentist', label: '🦷 Dentista' },
 ]
 
-async function getUsers() {
-    try{
-        const response = await fetch("https://mobilemedtoolsapi.vercel.app/api/users");
-        const res = await response.json();
-        return res.data;
-    }catch(err){
-        console.error(err)
-    }
-}
+// async function getUsers() {
+//     try{
+//         const response = await fetch("https://mobilemedtoolsapi.vercel.app/api/users");
+//         const res = await response.json();
+//         return res.data;
+//     }catch(err){
+//         console.error(err)
+//     }
+// }
 
 /**
  * Interface principal do gerador. Conecta os controles do formulário ao hook,
@@ -44,10 +44,10 @@ function SignatureWorkspace(){
 
     return(
         <main id="signature-workspace" className="workspace-main">
-            <button onClick={async () => {
+            {/* <button onClick={async () => {
                 const users = await getUsers();
                 console.log(users)
-            }}>Teste API</button>
+            }}>Teste API</button> */}
             {/* Título e instrução inicial sobre o fluxo de criação da assinatura. */}
             <section className="signatureIntro page-intro">
                 <span className="workspace-kicker">FERRAMENTA · GERADOR DE ASSINATURA</span>
